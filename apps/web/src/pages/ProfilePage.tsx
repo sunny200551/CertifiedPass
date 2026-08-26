@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ShieldCheck, Award, ExternalLink, Share2, Check, User, Sparkles } from "lucide-react";
+import { ShieldCheck, Award, ExternalLink, Share2, Check, User, Sparkles, Code } from "lucide-react";
 import { Layout } from "../components/layout/Layout.js";
 import { Button } from "../components/ui/Button.js";
 import { Badge } from "../components/ui/Badge.js";
 import { HolographicCard3D } from "../components/credential/HolographicCard3D.js";
+import { ProfileBadgeEmbedModal } from "../components/profile/ProfileBadgeEmbedModal.js";
 import { api } from "../lib/api.js";
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
   const [copied, setCopied] = useState(false);
+  const [showEmbed, setShowEmbed] = useState(false);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -110,7 +112,10 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <Button variant="secondary" size="sm" onClick={() => setShowEmbed(true)} className="gap-1.5">
+                <Code className="h-4 w-4" /> Embed Badge
+              </Button>
               <Button variant="secondary" size="sm" onClick={copyProfileLink}>
                 {copied ? <Check className="h-4 w-4 mr-1.5" /> : <Share2 className="h-4 w-4 mr-1.5" />}
                 {copied ? "Copied" : "Share Profile"}
@@ -173,6 +178,14 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Embed Badge Modal */}
+      <ProfileBadgeEmbedModal
+        isOpen={showEmbed}
+        onClose={() => setShowEmbed(false)}
+        username={profile?.user?.username || username || "alexrivera"}
+        displayName={profile?.user?.displayName || "Alex Rivera"}
+      />
     </Layout>
   );
 }
