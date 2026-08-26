@@ -52,43 +52,29 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
     const cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9._-]/g, "");
 
     try {
-      if (user?.walletAddress) {
-        // Sync to database
-        const res = await api.post("/profiles/sync", {
-          walletAddress: user.walletAddress,
-          displayName: displayName.trim(),
-          username: cleanUsername || undefined,
-          bio: bio.trim() || undefined,
-        });
-
-        if (res.data?.data) {
-          updateUserProfile(res.data.data);
-        } else {
-          updateUserProfile({
-            displayName: displayName.trim(),
-            username: cleanUsername,
-            bio: bio.trim(),
-          });
-        }
-      }
+      updateUserProfile({
+        displayName: displayName.trim(),
+        username: cleanUsername || null,
+        bio: bio.trim() || null,
+      });
 
       setSavedSuccess(true);
       setTimeout(() => {
         setSavedSuccess(false);
         onClose();
-      }, 1200);
+      }, 1000);
     } catch (err: any) {
-      console.warn("Profile sync saved locally:", err.message);
+      console.warn("Profile save:", err);
       updateUserProfile({
         displayName: displayName.trim(),
-        username: cleanUsername,
-        bio: bio.trim(),
+        username: cleanUsername || null,
+        bio: bio.trim() || null,
       });
       setSavedSuccess(true);
       setTimeout(() => {
         setSavedSuccess(false);
         onClose();
-      }, 1200);
+      }, 1000);
     } finally {
       setIsSaving(false);
     }

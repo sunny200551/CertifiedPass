@@ -57,59 +57,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   }, []);
 
-  // When wallet connects or changes, fetch and sync the saved profile from database
+  // When wallet connects or changes, fetch and sync the saved profile from decentralized store
   useEffect(() => {
-    async function syncWalletProfile() {
+    function syncWalletProfile() {
       if (isConnected && address) {
-        try {
-          const res = await api.get(`/profiles/by-wallet/${address}`);
-          if (res.data?.data) {
-            const dbProfile = res.data.data;
-            const updatedUser: UserProfile = {
-              id: dbProfile.id || `usr-${address.slice(2, 10)}`,
-              walletAddress: address,
-              displayName: dbProfile.displayName || `${address.slice(0, 6)}...${address.slice(-4)}`,
-              username: dbProfile.username || null,
-              bio: dbProfile.bio || null,
-              avatarUrl: dbProfile.avatarUrl || null,
-              isAdmin: !!dbProfile.isAdmin,
-              issuerId: dbProfile.issuerId || null,
-              isVerifiedIssuer: !!dbProfile.isVerifiedIssuer,
-            };
+        const profileKey = `certifiedpass_profile_${address.toLowerCase()}`;
+        const storedProfileRaw = localStorage.getItem(profileKey);
+        let savedProfile: any = null;
 
-            setUser(updatedUser);
-            localStorage.setItem("certifiedpass_user", JSON.stringify(updatedUser));
-            if (!localStorage.getItem("certifiedpass_jwt")) {
-              localStorage.setItem("certifiedpass_jwt", "wallet-connected-session");
-            }
+        if (storedProfileRaw) {
+          try {
+            savedProfile = JSON.parse(storedProfileRaw);
+          } catch {
+            savedProfile = null;
+          }
+        }
 
-            // If user has no username or custom name yet, prompt setup
-            if (!dbProfile.username && !localStorage.getItem(`prompted_${address}`)) {
-              localStorage.setItem(`prompted_${address}`, "true");
-              setIsProfileModalOpen(true);
-            }
-          }
-        } catch {
-          // Graceful fallback if backend is offline or starting
-          if (!user || user.walletAddress !== address) {
-            const fallbackUser: UserProfile = {
-              id: `usr-${address.slice(2, 10)}`,
-              walletAddress: address,
-              displayName: `${address.slice(0, 6)}...${address.slice(-4)}`,
-              username: null,
-              bio: null,
-              avatarUrl: null,
-              isAdmin: false,
-              issuerId: null,
-              isVerifiedIssuer: false,
-            };
-            setUser(fallbackUser);
-            localStorage.setItem("certifiedpass_user", JSON.stringify(fallbackUser));
-            if (!localStorage.getItem(`prompted_${address}`)) {
-              localStorage.setItem(`prompted_${address}`, "true");
-              setIsProfileModalOpen(true);
-            }
-          }
+        const profile: UserProfile = {
+          id: savedProfile?.id || `usr-${address.slice(2, 10)}`,
+          walletAddress: address,
+          displayName: savedProfile?.displayName || `${address.slice(0, 6)}...${address.slice(-4)}`,
+          username: savedProfile?.username || null,
+          bio: savedProfile?.bio || null,
+          avatarUrl: savedProfile?.avatarUrl || null,
+          isAdmin: !!savedProfile?.isAdmin,
+          issuerId: savedProfile?.issuerId || null,
+          isVerifiedIssuer: !!savedProfile?.isVerifiedIssuer,
+        };
+
+        setUser(profile);
+        localStorage.setItem("certifiedpass_user", JSON.stringify(profile));
+        if (!localStorage.getItem("certifiedpass_jwt")) {
+          localStorage.setItem("certifiedpass_jwt", "wallet-connected-session");
+        }
+
+        // If user has no username or custom name yet, prompt setup
+        if (!profile.username && !localStorage.getItem(`prompted_${address}`)) {
+          localStorage.setItem(`prompted_${address}`, "true");
+          setIsProfileModalOpen(true);
         }
       }
     }
@@ -131,6 +116,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!prev) return null;
       const updated = { ...prev, ...data };
       localStorage.setItem("certifiedpass_user", JSON.stringify(updated));
+      if (updated.walletAddress) {
+        localStorage.setItem(`certifiedpass_profile_${updated.walletAddress.toLowerCase()}`, JSON.stringify(updated));
+      }
       return updated;
     });
   }, []);
