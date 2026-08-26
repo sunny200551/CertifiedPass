@@ -7,6 +7,7 @@ import { Badge } from "../components/ui/Badge.js";
 import { HolographicCard3D } from "../components/credential/HolographicCard3D.js";
 import { HashComparisonWidget } from "../components/credential/HashComparisonWidget.js";
 import { CredentialQRModal } from "../components/credential/CredentialQRModal.js";
+import { ShareModal } from "../components/credential/ShareModal.js";
 import { api } from "../lib/api.js";
 import type { VerificationResult } from "@certifiedpass/types";
 
@@ -15,7 +16,7 @@ export default function CredentialPage() {
   const [result, setResult] = useState<VerificationResult | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showQR, setShowQR] = useState<boolean>(false);
-  const [copiedLink, setCopiedLink] = useState<boolean>(false);
+  const [showShare, setShowShare] = useState<boolean>(false);
 
   useEffect(() => {
     async function fetchVerification() {
@@ -49,12 +50,6 @@ export default function CredentialPage() {
     fetchVerification();
   }, [credentialId]);
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
-  };
-
   if (loading) {
     return (
       <Layout>
@@ -70,7 +65,6 @@ export default function CredentialPage() {
 
   const isVerified = result?.status === "VALID";
   const isRevoked = result?.status === "REVOKED";
-  const isInvalid = result?.status === "INVALID";
 
   const statusThemes = {
     VALID: {
@@ -125,9 +119,8 @@ export default function CredentialPage() {
               <Button variant="secondary" size="sm" onClick={() => setShowQR(true)}>
                 <QrCode className="h-4 w-4 mr-1.5" /> Scan QR
               </Button>
-              <Button variant="secondary" size="sm" onClick={handleShare}>
-                {copiedLink ? <Check className="h-4 w-4 mr-1.5" /> : <Share2 className="h-4 w-4 mr-1.5" />}
-                {copiedLink ? "Copied" : "Share"}
+              <Button variant="secondary" size="sm" onClick={() => setShowShare(true)}>
+                <Share2 className="h-4 w-4 mr-1.5" /> Share / LinkedIn
               </Button>
             </div>
           </div>
@@ -242,6 +235,17 @@ export default function CredentialPage() {
         onClose={() => setShowQR(false)}
         credentialId={credentialId || "cp-credential"}
         title="1st Place Winner — Global Web3 AI Hackathon"
+      />
+
+      {/* Social / LinkedIn Share Modal */}
+      <ShareModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        credentialId={credentialId || "cp-credential"}
+        title="1st Place Winner — Global Web3 AI Hackathon"
+        issuerName="ETHSF & Polygon Labs"
+        issuedAt={result?.verifiedAt || new Date().toISOString()}
+        credentialHash={result?.onChainHash || "4a9d721183c509539fbe54b5df16a7f85dc9eb3e85e507f3531b790d0ef093ac"}
       />
     </Layout>
   );

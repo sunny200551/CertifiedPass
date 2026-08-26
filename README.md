@@ -164,7 +164,7 @@ pnpm build
 3. **Zod Validation**: Untrusted inputs and AI outputs are strictly sanitized against type schemas before database insertion.
 4. **Permanent Revocation**: Once revoked on-chain by the issuing entity, credentials cannot be un-revoked or re-issued under the same ID.
 
----
+
 
 ---
 
