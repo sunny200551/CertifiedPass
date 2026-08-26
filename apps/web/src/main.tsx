@@ -9,8 +9,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider, createConfig, http } from "wagmi";
-import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
+import { WagmiProvider, http } from "wagmi";
+import { getDefaultConfig, RainbowKitProvider, lightTheme } from "@rainbow-me/rainbowkit";
+import { polygonAmoy, polygon } from "wagmi/chains";
 
 import App from "./App.js";
 import { AuthProvider } from "./context/AuthContext.js";
@@ -18,18 +19,19 @@ import "./styles/global.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
 // ---------------------------------------------------------------------------
-// Wagmi config — Polygon Amoy testnet as primary chain
+// Wagmi + RainbowKit Configuration with complete wallet connectors
 // ---------------------------------------------------------------------------
-import { polygonAmoy } from "wagmi/chains";
-import { colors } from "@certifiedpass/design-tokens";
-
-const wagmiConfig = createConfig({
-  chains: [polygonAmoy],
+const wagmiConfig = getDefaultConfig({
+  appName: "CertifiedPass",
+  projectId: "21fef48091f12692cad574a6f7753643", // Public demo Project ID
+  chains: [polygonAmoy, polygon],
   transports: {
     [polygonAmoy.id]: http(
       import.meta.env["VITE_RPC_URL"] ?? "https://rpc-amoy.polygon.technology"
     ),
+    [polygon.id]: http("https://polygon-rpc.com"),
   },
+  ssr: false,
 });
 
 // ---------------------------------------------------------------------------
@@ -39,19 +41,19 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 2,
+      retry: 1,
       refetchOnWindowFocus: false,
     },
   },
 });
 
 // ---------------------------------------------------------------------------
-// RainbowKit theme — matches CertifiedPass dark palette
+// RainbowKit Apple-style Light Theme
 // ---------------------------------------------------------------------------
-const rainbowTheme = darkTheme({
-  accentColor: colors.accent.cyan,
-  accentColorForeground: colors.bg.primary,
-  borderRadius: "medium",
+const rainbowTheme = lightTheme({
+  accentColor: "#4F46E5",
+  accentColorForeground: "#FFFFFF",
+  borderRadius: "large",
   fontStack: "system",
   overlayBlur: "small",
 });
