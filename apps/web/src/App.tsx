@@ -1,31 +1,11 @@
 /**
  * CertifiedPass Web App — Route Map
- *
- * Routes from §19:
- *
- * PUBLIC (no wallet required):
- *   /                          → Landing page
- *   /verify                    → Verify by credential ID
- *   /c/:credentialId           → Public credential verification page
- *   /u/:username               → Holder's Proof Profile
- *   /issuers/:id               → Public issuer profile
- *
- * USER (wallet connected, authenticated):
- *   /dashboard                 → Holder dashboard
- *   /credentials               → My credentials list
- *   /profile                   → Edit my profile
- *   /settings                  → Account settings
- *
- * ISSUER (wallet connected + issuer account):
- *   /issuer                    → Issuer dashboard
- *   /issuer/events             → My events list
- *   /issuer/events/:id         → Event detail + credentials
- *   /issuer/credentials        → All issued credentials
- *   /issuer/issue              → Issue new credentials (AI flow)
  */
 
 import { Route, Routes } from "react-router-dom";
 import { Suspense, lazy } from "react";
+import { useAuth } from "./context/AuthContext.js";
+import { ProfileSetupModal } from "./components/profile/ProfileSetupModal.js";
 
 // ---------------------------------------------------------------------------
 // Lazy-loaded page components (code split per route)
@@ -56,18 +36,11 @@ const IssuerIssuePage  = lazy(() => import("./pages/issuer/IssuerIssuePage.js"))
 // ---------------------------------------------------------------------------
 function PageLoader() {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        background: "var(--bg-primary)",
-        color: "var(--text-secondary)",
-        fontFamily: "var(--font-body)",
-      }}
-    >
-      Loading…
+    <div className="flex min-h-screen items-center justify-center bg-[#FBFBFD] text-slate-500 font-medium">
+      <div className="flex flex-col items-center gap-3">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+        <span className="text-xs font-mono">Loading CertifiedPass...</span>
+      </div>
     </div>
   );
 }
@@ -76,35 +49,37 @@ function PageLoader() {
 // App
 // ---------------------------------------------------------------------------
 export default function App() {
+  const { isProfileModalOpen, closeProfileModal } = useAuth();
+
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* ---------------------------------------------------------------- */}
-        {/* Public routes                                                     */}
-        {/* ---------------------------------------------------------------- */}
+        {/* Public routes */}
         <Route path="/"                   element={<LandingPage />} />
         <Route path="/verify"             element={<VerifyPage />} />
         <Route path="/c/:credentialId"    element={<CredentialPage />} />
         <Route path="/u/:username"        element={<ProfilePage />} />
         <Route path="/issuers/:id"        element={<IssuerPublicPage />} />
 
-        {/* ---------------------------------------------------------------- */}
-        {/* Holder routes (require wallet + auth)                             */}
-        {/* ---------------------------------------------------------------- */}
+        {/* Holder routes */}
         <Route path="/dashboard"          element={<DashboardPage />} />
         <Route path="/credentials"        element={<MyCredentials />} />
         <Route path="/profile"            element={<MyProfile />} />
         <Route path="/settings"           element={<SettingsPage />} />
 
-        {/* ---------------------------------------------------------------- */}
-        {/* Issuer routes (require wallet + issuer account)                   */}
-        {/* ---------------------------------------------------------------- */}
+        {/* Issuer routes */}
         <Route path="/issuer"                       element={<IssuerDashboard />} />
         <Route path="/issuer/events"                element={<IssuerEvents />} />
         <Route path="/issuer/events/:id"            element={<IssuerEventDetail />} />
         <Route path="/issuer/credentials"           element={<IssuerCredentials />} />
         <Route path="/issuer/issue"                 element={<IssuerIssuePage />} />
       </Routes>
+
+      {/* Global Cross-Device Profile Setup / Edit Modal */}
+      <ProfileSetupModal
+        isOpen={isProfileModalOpen}
+        onClose={closeProfileModal}
+      />
     </Suspense>
   );
 }

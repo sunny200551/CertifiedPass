@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Award, Shield, PlusCircle, ExternalLink, Share2, Sparkles, LayoutDashboard, QrCode } from "lucide-react";
+import { Award, Shield, PlusCircle, ExternalLink, Share2, Sparkles, LayoutDashboard, QrCode, User, Edit3 } from "lucide-react";
 import { Layout } from "../components/layout/Layout.js";
 import { Button } from "../components/ui/Button.js";
 import { Badge } from "../components/ui/Badge.js";
@@ -10,7 +10,7 @@ import { useAuth } from "../context/AuthContext.js";
 import { api } from "../lib/api.js";
 
 export default function DashboardPage() {
-  const { user, isAuthenticated, login } = useAuth();
+  const { user, isAuthenticated, login, openProfileModal } = useAuth();
   const [credentials, setCredentials] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedQR, setSelectedQR] = useState<{ id: string; title: string } | null>(null);
@@ -53,36 +53,77 @@ export default function DashboardPage() {
 
   return (
     <Layout>
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 text-slate-900">
         {/* Welcome Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/90 pb-8 mb-8">
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-extrabold text-slate-900 sm:text-3xl font-display">Holder Dashboard</h1>
               <Badge variant="active" size="sm">
-                Live Wallet
+                Polygon Amoy
               </Badge>
             </div>
             <p className="text-sm text-slate-500 mt-1">
-              Manage, view, and share your Polygon Amoy verified credentials.
+              Manage, view, and share your verifiable blockchain achievements.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={openProfileModal}
+              className="gap-1.5 text-xs shadow-apple-sm"
+            >
+              <Edit3 className="h-3.5 w-3.5" /> Edit Profile & Name
+            </Button>
             {user?.username && (
               <Link to={`/u/${user.username}`}>
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs shadow-apple-sm">
-                  <ExternalLink className="h-3.5 w-3.5" /> View Public Profile
+                <Button variant="secondary" size="sm" className="gap-1.5 text-xs shadow-apple-sm">
+                  <ExternalLink className="h-3.5 w-3.5" /> Public Profile
                 </Button>
               </Link>
             )}
             <Link to="/verify">
               <Button variant="primary" size="sm" className="gap-1.5 text-xs shadow-apple-sm">
-                Verify Any Credential
+                Verify Any Pass
               </Button>
             </Link>
           </div>
         </div>
+
+        {/* Profile Card Banner */}
+        {isAuthenticated && user && (
+          <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-apple-sm mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-700 text-xl font-bold font-display shadow-apple-sm">
+                {user.displayName?.slice(0, 2).toUpperCase() || "PH"}
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-slate-900 font-display">{user.displayName}</h3>
+                  {user.username && (
+                    <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-mono text-slate-700 font-semibold">
+                      @{user.username}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500">
+                  {user.bio || "No bio added yet. Click 'Edit Profile & Name' to customize."}
+                </p>
+                <p className="text-[11px] font-mono text-slate-400 truncate max-w-xs sm:max-w-md">
+                  {user.walletAddress}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Button variant="outline" size="sm" onClick={openProfileModal} className="text-xs">
+                Change Details
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Not Authenticated Callout */}
         {!isAuthenticated && (
@@ -95,7 +136,7 @@ export default function DashboardPage() {
               Sign in with your EVM wallet using Sign-In with Ethereum (SIWE) to load all credentials issued to your wallet address.
             </p>
             <div className="pt-2">
-              <Button variant="cyan" size="md" onClick={login}>
+              <Button variant="primary" size="md" onClick={login} className="shadow-apple-sm">
                 Sign In (SIWE)
               </Button>
             </div>

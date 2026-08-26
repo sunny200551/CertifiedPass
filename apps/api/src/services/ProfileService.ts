@@ -1,6 +1,49 @@
 import { prisma } from "../utils/prisma.js";
 
 export class ProfileService {
+  /**
+   * Look up user profile by wallet address or create placeholder if new.
+   * Ensures details persist across all devices.
+   */
+  static async getProfileByWallet(walletAddress: string) {
+    const checksum = walletAddress.trim();
+    let user = await prisma.user.findFirst({
+      where: {
+        walletAddress: { equals: checksum, mode: "insensitive" },
+      },
+      include: {
+        receivedCredentials: {
+          where: { status: "ACTIVE" },
+          orderBy: { createdAt: "desc" },
+        },
+      },
+    });
+
+    if (!user) {
+      // Create user record in DB
+      user = await prisma.user.create({
+        data: {
+          walletAddress: checksum,
+          displayName: `PassHolder ${checksum.slice(0, 6)}...${checksum.slice(-4)}`,
+        },
+        include: {
+          receivedCredentials: true,
+        },
+      });
+    }
+
+    return {
+      id: user.id,
+      walletAddress: user.walletAddress,
+      username: user.username,
+      displayName: user.displayName,
+      bio: user.bio,
+      avatarUrl: user.avatarUrl,
+      isAdmin: user.isAdmin,
+      credentialsCount: user.receivedCredentials.length,
+    };
+  }
+
   static async getPublicProfile(username: string) {
     const user = await prisma.user.findFirst({
       where: {
@@ -51,6 +94,7 @@ export class ProfileService {
     return {
       user: {
         id: user.id,
+        walletAddress: user.walletAddress,
         username: user.username ?? username,
         displayName: user.displayName ?? username,
         bio: user.bio,
@@ -85,6 +129,26 @@ export class ProfileService {
     return prisma.user.update({
       where: { id: userId },
       data,
+    });
+  }
+
+  static async upsertProfileByWallet(
+    walletAddress: string,
+    data: {
+      username?: string;
+      displayName?: string;
+      bio?: string;
+      avatarUrl?: string;
+    }
+  ) {
+    const checksum = walletAddress.trim();
+    return prisma.user.upsert({
+      where: { walletAddress: checksum },
+      update: data,
+      create: {
+        walletAddress: checksum,
+        ...data,
+      },
     });
   }
 }

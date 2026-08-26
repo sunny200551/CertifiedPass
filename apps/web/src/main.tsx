@@ -9,9 +9,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider, http } from "wagmi";
+import { WagmiProvider, fallback, http } from "wagmi";
 import { getDefaultConfig, RainbowKitProvider, lightTheme } from "@rainbow-me/rainbowkit";
-import { polygonAmoy, polygon } from "wagmi/chains";
+import { polygonAmoy } from "wagmi/chains";
 
 import App from "./App.js";
 import { AuthProvider } from "./context/AuthContext.js";
@@ -19,17 +19,18 @@ import "./styles/global.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
 // ---------------------------------------------------------------------------
-// Wagmi + RainbowKit Configuration with complete wallet connectors
+// Wagmi + RainbowKit Configuration with reliable Amoy RPC transports
 // ---------------------------------------------------------------------------
 const wagmiConfig = getDefaultConfig({
   appName: "CertifiedPass",
-  projectId: "21fef48091f12692cad574a6f7753643", // Public demo Project ID
-  chains: [polygonAmoy, polygon],
+  projectId: "21fef48091f12692cad574a6f7753643",
+  chains: [polygonAmoy],
   transports: {
-    [polygonAmoy.id]: http(
-      import.meta.env["VITE_RPC_URL"] ?? "https://rpc-amoy.polygon.technology"
-    ),
-    [polygon.id]: http("https://polygon-rpc.com"),
+    [polygonAmoy.id]: fallback([
+      http("https://rpc-amoy.polygon.technology"),
+      http("https://polygon-amoy.drpc.org"),
+      http("https://1rpc.io/amoy"),
+    ]),
   },
   ssr: false,
 });

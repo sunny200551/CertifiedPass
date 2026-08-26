@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { api } from "../lib/api.js";
@@ -8,6 +8,8 @@ export interface UserProfile {
   walletAddress: string;
   username?: string | null;
   displayName?: string | null;
+  bio?: string | null;
+  avatarUrl?: string | null;
   isAdmin?: boolean;
   issuerId?: string | null;
   isVerifiedIssuer?: boolean;
@@ -19,6 +21,10 @@ interface AuthContextValue {
   user: UserProfile | null;
   isIssuer: boolean;
   isAdmin: boolean;
+  isProfileModalOpen: boolean;
+  openProfileModal: () => void;
+  closeProfileModal: () => void;
+  updateUserProfile: (data: Partial<UserProfile>) => void;
   login: () => Promise<void>;
   loginDemo: (role?: "issuer" | "holder") => void;
   logout: () => void;
@@ -34,6 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
 
   // Initialize from localStorage
   useEffect(() => {
@@ -50,12 +57,80 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   }, []);
 
+  // When wallet connects or changes, fetch and sync the saved profile from database
+  useEffect(() => {
+    async function syncWalletProfile() {
+      if (isConnected && address) {
+        try {
+          const res = await api.get(`/profiles/by-wallet/${address}`);
+          if (res.data?.data) {
+            const dbProfile = res.data.data;
+            const updatedUser: UserProfile = {
+              id: dbProfile.id || `usr-${address.slice(2, 10)}`,
+              walletAddress: address,
+              displayName: dbProfile.displayName || `${address.slice(0, 6)}...${address.slice(-4)}`,
+              username: dbProfile.username || null,
+              bio: dbProfile.bio || null,
+              avatarUrl: dbProfile.avatarUrl || null,
+              isAdmin: !!dbProfile.isAdmin,
+              issuerId: dbProfile.issuerId || null,
+              isVerifiedIssuer: !!dbProfile.isVerifiedIssuer,
+            };
+
+            setUser(updatedUser);
+            localStorage.setItem("certifiedpass_user", JSON.stringify(updatedUser));
+            if (!localStorage.getItem("certifiedpass_jwt")) {
+              localStorage.setItem("certifiedpass_jwt", "wallet-connected-session");
+            }
+
+            // If user has no username or custom name yet, prompt setup
+            if (!dbProfile.username && !localStorage.getItem(`prompted_${address}`)) {
+              localStorage.setItem(`prompted_${address}`, "true");
+              setIsProfileModalOpen(true);
+            }
+          }
+        } catch (err) {
+          console.warn("Could not fetch remote wallet profile, using local:", err);
+          if (!user || user.walletAddress !== address) {
+            const fallbackUser: UserProfile = {
+              id: `usr-${address.slice(2, 10)}`,
+              walletAddress: address,
+              displayName: `${address.slice(0, 6)}...${address.slice(-4)}`,
+              username: null,
+              isAdmin: false,
+              issuerId: null,
+              isVerifiedIssuer: false,
+            };
+            setUser(fallbackUser);
+            localStorage.setItem("certifiedpass_user", JSON.stringify(fallbackUser));
+          }
+        }
+      }
+    }
+
+    if (isConnected && address && (!user || user.walletAddress.toLowerCase() !== address.toLowerCase())) {
+      syncWalletProfile();
+    }
+  }, [isConnected, address]);
+
   // Handle wallet disconnect (only if not in demo session)
   useEffect(() => {
     if (!isConnected && user && !user.id.startsWith("demo-")) {
       logout();
     }
   }, [isConnected]);
+
+  const updateUserProfile = useCallback((data: Partial<UserProfile>) => {
+    setUser((prev) => {
+      if (!prev) return null;
+      const updated = { ...prev, ...data };
+      localStorage.setItem("certifiedpass_user", JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const openProfileModal = () => setIsProfileModalOpen(true);
+  const closeProfileModal = () => setIsProfileModalOpen(false);
 
   const login = async () => {
     if (!address) {
@@ -86,9 +161,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem("certifiedpass_jwt", token);
       localStorage.setItem("certifiedpass_user", JSON.stringify(profile));
       setUser(profile);
+
+      // Prompt profile setup if username is missing
+      if (!profile.username) {
+        setIsProfileModalOpen(true);
+      }
     } catch (err: any) {
       console.warn("SIWE API verification fell back to local session:", err.message);
-      // Seamless fallback if API is starting or network is simulated
       const fallbackUser: UserProfile = {
         id: `usr-${address.slice(2, 10)}`,
         walletAddress: address,
@@ -114,6 +193,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             walletAddress: "0x51E2a23456789abcdef123456789abcdef123456",
             displayName: "ETHSF & Polygon Labs",
             username: "ethsf_polygon",
+            bio: "Leading Web3 Hackathons & Developer Grants",
             isAdmin: true,
             issuerId: "iss-ethsf-001",
             isVerifiedIssuer: true,
@@ -123,6 +203,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             walletAddress: "0x71C845137f73612FACb1C1E6e3e1A144e5904F2E",
             displayName: "Alex Rivera",
             username: "alex.rivera",
+            bio: "Full-stack Web3 engineer building on Polygon Amoy",
             isAdmin: false,
             issuerId: null,
             isVerifiedIssuer: false,
@@ -148,6 +229,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         isIssuer: !!user?.isVerifiedIssuer || !!user?.issuerId || !!user?.isAdmin,
         isAdmin: !!user?.isAdmin,
+        isProfileModalOpen,
+        openProfileModal,
+        closeProfileModal,
+        updateUserProfile,
         login,
         loginDemo,
         logout,
