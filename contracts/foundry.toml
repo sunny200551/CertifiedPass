@@ -1,0 +1,35 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+test = "test"
+script = "script"
+solc_version = "0.8.24"
+
+# Optimizer settings
+optimizer = true
+optimizer_runs = 200
+
+# EVM version — paris is widely supported across all target chains
+evm_version = "paris"
+
+# Remappings (also in remappings.txt)
+remappings = [
+  "@openzeppelin/=lib/openzeppelin-contracts/",
+]
+
+# Gas reporting for tests
+gas_reports = ["CertifiedPassRegistry"]
+
+# Formatter
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = true
+int_types = "long"
+multiline_func_header = "params_first"
+quote_style = "double"
+number_underscore = "thousands"
+override_spacing = false
+wrap_comments = true
+ignore = []

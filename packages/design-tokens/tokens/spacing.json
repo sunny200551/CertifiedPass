@@ -1,0 +1,70 @@
+{
+  "borderRadius": {
+    "none":   { "value": "0px" },
+    "sm":     { "value": "6px",  "comment": "Small elements — status pills, tags" },
+    "md":     { "value": "10px", "comment": "Buttons, small cards" },
+    "lg":     { "value": "12px", "comment": "Cards (min radius)" },
+    "xl":     { "value": "16px", "comment": "Cards (max radius), panels" },
+    "2xl":    { "value": "20px", "comment": "Modals, large panels" },
+    "full":   { "value": "9999px", "comment": "Pills, badges, circular avatars" }
+  },
+  "spacing": {
+    "1":  { "value": "4px" },
+    "2":  { "value": "8px" },
+    "3":  { "value": "12px" },
+    "4":  { "value": "16px" },
+    "5":  { "value": "20px" },
+    "6":  { "value": "24px" },
+    "8":  { "value": "32px" },
+    "10": { "value": "40px" },
+    "12": { "value": "48px" },
+    "16": { "value": "64px" },
+    "20": { "value": "80px" },
+    "24": { "value": "96px" }
+  },
+  "shadows": {
+    "ctaGlow": {
+      "value": "0 0 24px rgba(34, 211, 238, 0.25)",
+      "comment": "Primary CTA glow — no drop shadow, glow only"
+    },
+    "cardHover": {
+      "value": "0 8px 32px rgba(0, 0, 0, 0.4)",
+      "comment": "Card lift shadow on hover"
+    },
+    "verifiedGlow": {
+      "value": "0 0 16px rgba(52, 211, 153, 0.35)",
+      "comment": "VERIFIED status green glow"
+    },
+    "focusRingAi": {
+      "value": "0 0 0 2px rgba(124, 107, 255, 0.5)",
+      "comment": "Violet focus ring for AI-generated editable fields"
+    },
+    "focusRingDefault": {
+      "value": "0 0 0 2px rgba(34, 211, 238, 0.4)",
+      "comment": "Default cyan focus ring"
+    }
+  },
+  "borders": {
+    "subtle": {
+      "value": "1px solid #1E2536",
+      "comment": "Standard card border"
+    },
+    "accentHover": {
+      "value": "1px solid rgba(34, 211, 238, 0.3)",
+      "comment": "Accent border on card hover — accent-cyan at 30% opacity"
+    },
+    "ctaSecondary": {
+      "value": "1px solid #22D3EE",
+      "comment": "Secondary CTA border — transparent fill, text in accent-cyan"
+    }
+  },
+  "zIndex": {
+    "base":    { "value": 0 },
+    "card":    { "value": 10 },
+    "overlay": { "value": 100 },
+    "nav":     { "value": 200 },
+    "modal":   { "value": 300 },
+    "toast":   { "value": 400 },
+    "tooltip": { "value": 500 }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "colors": {
+    "bg": {
+      "primary":  { "value": "#05070D", "comment": "App background — near-black navy, keeps depth in gradients" },
+      "surface":  { "value": "#0B0F1A", "comment": "Cards, panels" },
+      "elevated": { "value": "#121826", "comment": "Modals, popovers, dropdowns" }
+    },
+    "border": {
+      "subtle": { "value": "#1E2536", "comment": "Hairline borders — 1px only" }
+    },
+    "text": {
+      "primary":   { "value": "#F5F7FA", "comment": "Headings, primary body text" },
+      "secondary": { "value": "#9AA4B8", "comment": "Body/secondary text, metadata" },
+      "muted":     { "value": "#4A5568", "comment": "Placeholder text, disabled states" }
+    },
+    "accent": {
+      "cyan":   { "value": "#22D3EE", "comment": "Primary — links, active states, verified glow, CTAs" },
+      "blue":   { "value": "#3B82F6", "comment": "Secondary — CTA gradient endpoint, highlights" },
+      "violet": { "value": "#7C6BFF", "comment": "Tertiary — AI-related UI only (keeps AI visually distinct)" }
+    },
+    "status": {
+      "verified": { "value": "#34D399", "comment": "VERIFIED — green" },
+      "invalid":  { "value": "#F87171", "comment": "INVALID — red" },
+      "revoked":  { "value": "#FB923C", "comment": "REVOKED — amber" },
+      "pending":  { "value": "#94A3B8", "comment": "Draft / pending — slate" }
+    },
+    "gradient": {
+      "cta":    { "value": "linear-gradient(135deg, #22D3EE 0%, #3B82F6 100%)", "comment": "Primary CTA button fill" },
+      "heroGlow": { "value": "radial-gradient(ellipse at 60% 40%, rgba(34,211,238,0.10) 0%, rgba(59,130,246,0.08) 50%, transparent 80%)", "comment": "Hero section background glow — subtle, 8-15% opacity" },
+      "cardGlow": { "value": "radial-gradient(ellipse at 50% 0%, rgba(34,211,238,0.06) 0%, transparent 70%)", "comment": "Credential card top glow — very subtle" }
+    },
+    "glass": {
+      "overlay": { "value": "rgba(255, 255, 255, 0.04)", "comment": "Glass surface base — 4% white overlay" },
+      "overlayHover": { "value": "rgba(255, 255, 255, 0.06)", "comment": "Glass surface on hover" },
+      "blur": { "value": "20px", "comment": "backdrop-filter blur value for glass surfaces (nav, modals, QR overlay)" }
+    }
+  }
+}

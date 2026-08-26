@@ -1,0 +1,93 @@
+{
+  "durations": {
+    "instant":   { "value": "0ms",   "comment": "prefers-reduced-motion fallback — all animations collapse to this" },
+    "fast":      { "value": "150ms", "comment": "Button press, micro-interactions" },
+    "normal":    { "value": "200ms", "comment": "Page transitions — 200ms fade + 8px vertical slide" },
+    "moderate":  { "value": "300ms", "comment": "Card hover lift, status badge mount" },
+    "slow":      { "value": "600ms", "comment": "Counter count-up animations" },
+    "seal":      { "value": "1400ms","comment": "3D credential seal animation (§20.4.2) — under 1.5s total" },
+    "float":     { "value": "4000ms","comment": "Hero 3D credential Y-axis float sine wave period" }
+  },
+  "easings": {
+    "linear":     { "value": "linear" },
+    "ease-out":   { "value": "cubic-bezier(0.0, 0.0, 0.2, 1.0)", "comment": "Decelerate — elements entering" },
+    "ease-in":    { "value": "cubic-bezier(0.4, 0.0, 1.0, 1.0)", "comment": "Accelerate — elements leaving" },
+    "ease-in-out":{ "value": "cubic-bezier(0.4, 0.0, 0.2, 1.0)", "comment": "Standard motion" },
+    "spring":     { "value": "cubic-bezier(0.34, 1.56, 0.64, 1.0)", "comment": "Subtle spring — not bouncy, just alive" },
+    "press":      { "value": "cubic-bezier(0.0, 0.0, 0.2, 1.0)", "comment": "Button press compression" }
+  },
+  "animations": {
+    "buttonPress": {
+      "scale":    0.98,
+      "duration": "150ms",
+      "easing":   "press",
+      "comment":  "Scale + glow on press — NOT bounce"
+    },
+    "cardHover": {
+      "translateY": "-5px",
+      "borderOpacity": 0.3,
+      "borderColor": "accent-cyan",
+      "duration": "200ms",
+      "easing": "ease-out",
+      "comment": "4-6px lift + border brightens to accent-cyan at 30% opacity"
+    },
+    "verifiedBadge": {
+      "type": "ring-pulse",
+      "color": "status-verified",
+      "cycles": 1,
+      "duration": "600ms",
+      "comment": "Soft green ring, plays once on mount"
+    },
+    "revokedBadge": {
+      "type": "shake",
+      "distance": "2px",
+      "cycles": 2,
+      "duration": "300ms",
+      "comment": "2px horizontal shake, 2 cycles — draws eye without alarm"
+    },
+    "pageTransition": {
+      "opacity": { "from": 0, "to": 1 },
+      "translateY": { "from": "8px", "to": "0px" },
+      "duration": "200ms",
+      "easing": "ease-out",
+      "comment": "Consistent fade + 8px vertical slide on all page changes"
+    },
+    "counterUp": {
+      "duration": "600ms",
+      "easing": "ease-out",
+      "comment": "Dashboard stat counters animate from 0 to value on mount"
+    },
+    "heroFloat": {
+      "type": "sine-wave",
+      "axis": "Y",
+      "amplitude": "12px",
+      "period": "4000ms",
+      "comment": "Hero 3D credential card gentle bob"
+    },
+    "heroRotate": {
+      "axis": "Y",
+      "degreesPerSecond": 15,
+      "comment": "Hero 3D credential slow Y-axis rotation"
+    },
+    "credentialSeal": {
+      "totalDuration": "1400ms",
+      "phases": [
+        { "name": "rim-trace", "duration": "600ms", "description": "Cyan light traces border edge" },
+        { "name": "lock-morph", "duration": "500ms", "description": "Lock/checkmark morphs in at center" },
+        { "name": "flatten",   "duration": "300ms", "description": "3D card flattens to 2D list item" }
+      ],
+      "comment": "State confirmation animation — skippable for bulk actions"
+    },
+    "hashComparison": {
+      "phases": [
+        { "name": "slide-in",   "duration": "400ms", "description": "Two hash bars slide in from left" },
+        { "name": "align",      "duration": "300ms", "description": "Bars slide together" },
+        { "name": "resolve",    "duration": "300ms", "description": "Lock green (match) or spark red/separate (mismatch)" }
+      ],
+      "comment": "Verification page 3D hash comparison widget (§20.4.3)"
+    }
+  },
+  "reducedMotion": {
+    "comment": "When prefers-reduced-motion: reduce is detected, collapse all durations to 0ms and disable 3D animations. Use instant state changes only."
+  }
+}

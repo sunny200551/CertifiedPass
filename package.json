@@ -1,0 +1,39 @@
+{
+  "name": "certifiedpass",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CertifiedPass — AI-powered verifiable credential platform for real-world achievements",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@11.22.0",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean && rimraf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,sol}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css,sol}\"",
+    "db:generate": "pnpm --filter @certifiedpass/api prisma generate",
+    "db:migrate": "pnpm --filter @certifiedpass/api prisma migrate dev",
+    "db:studio": "pnpm --filter @certifiedpass/api prisma studio",
+    "contracts:build": "pnpm --filter @certifiedpass/contracts forge build",
+    "contracts:test": "pnpm --filter @certifiedpass/contracts forge test"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "prettier-plugin-solidity": "^1.4.1",
+    "rimraf": "^6.0.1",
+    "turbo": "^2.1.3",
+    "typescript": "^5.6.2"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "contracts"
+  ]
+}
+

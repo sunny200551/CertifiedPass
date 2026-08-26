@@ -1,0 +1,16 @@
+{
+  "name": "@certifiedpass/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test --gas-report -vvv",
+    "test:coverage": "forge coverage",
+    "lint": "forge fmt --check",
+    "format": "forge fmt",
+    "clean": "forge clean",
+    "deploy:amoy": "forge script script/Deploy.s.sol --rpc-url $RPC_URL --private-key $DEPLOYER_PRIVATE_KEY --broadcast --verify",
+    "verify": "forge verify-contract"
+  },
+  "devDependencies": {}
+}

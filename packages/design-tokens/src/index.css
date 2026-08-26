@@ -1,0 +1,223 @@
+/*
+ * CertifiedPass Design Tokens — CSS Custom Properties
+ *
+ * This file is the single source of truth for all design tokens as CSS
+ * custom properties. Import this in your app's global stylesheet.
+ *
+ * Usage:
+ *   @import url('@certifiedpass/design-tokens/css');
+ *   background: var(--bg-primary);
+ *   color: var(--text-primary);
+ *
+ * Google Fonts are imported here. Inter, Space Grotesk, and JetBrains Mono.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* -------------------------------------------------------------------------
+   * COLORS — Background
+   * ---------------------------------------------------------------------- */
+  --bg-primary:   #05070D;  /* App background */
+  --bg-surface:   #0B0F1A;  /* Cards, panels */
+  --bg-elevated:  #121826;  /* Modals, popovers */
+
+  /* -------------------------------------------------------------------------
+   * COLORS — Border
+   * ---------------------------------------------------------------------- */
+  --border-subtle:      #1E2536;
+  --border-accent-hover: rgba(34, 211, 238, 0.30);
+  --border-cta-secondary: #22D3EE;
+
+  /* -------------------------------------------------------------------------
+   * COLORS — Text
+   * ---------------------------------------------------------------------- */
+  --text-primary:   #F5F7FA;
+  --text-secondary: #9AA4B8;
+  --text-muted:     #4A5568;
+
+  /* -------------------------------------------------------------------------
+   * COLORS — Accent
+   * ---------------------------------------------------------------------- */
+  --accent-cyan:   #22D3EE;   /* Primary — links, active states, verified glow */
+  --accent-blue:   #3B82F6;   /* Secondary — CTA gradient, highlights */
+  --accent-violet: #7C6BFF;   /* AI-related UI only */
+
+  /* -------------------------------------------------------------------------
+   * COLORS — Status
+   * ---------------------------------------------------------------------- */
+  --status-verified: #34D399;  /* VERIFIED */
+  --status-invalid:  #F87171;  /* INVALID */
+  --status-revoked:  #FB923C;  /* REVOKED */
+  --status-pending:  #94A3B8;  /* Draft / pending */
+
+  /* Semantic aliases for status backgrounds (very low opacity) */
+  --status-verified-bg: rgba(52, 211, 153, 0.08);
+  --status-invalid-bg:  rgba(248, 113, 113, 0.08);
+  --status-revoked-bg:  rgba(251, 146, 60, 0.08);
+  --status-pending-bg:  rgba(148, 163, 184, 0.06);
+
+  /* -------------------------------------------------------------------------
+   * COLORS — Gradients
+   * ---------------------------------------------------------------------- */
+  --gradient-cta: linear-gradient(135deg, #22D3EE 0%, #3B82F6 100%);
+  --gradient-hero-glow: radial-gradient(
+    ellipse at 60% 40%,
+    rgba(34, 211, 238, 0.10) 0%,
+    rgba(59, 130, 246, 0.08) 50%,
+    transparent 80%
+  );
+  --gradient-card-glow: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(34, 211, 238, 0.06) 0%,
+    transparent 70%
+  );
+
+  /* -------------------------------------------------------------------------
+   * COLORS — Glass surfaces (floating panels only: nav, modals, QR overlay)
+   * ---------------------------------------------------------------------- */
+  --glass-bg:          rgba(255, 255, 255, 0.04);
+  --glass-bg-hover:    rgba(255, 255, 255, 0.06);
+  --glass-blur:        20px;
+  --glass-border:      rgba(255, 255, 255, 0.08);
+
+  /* -------------------------------------------------------------------------
+   * TYPOGRAPHY — Font families
+   * ---------------------------------------------------------------------- */
+  --font-display: 'Space Grotesk', 'General Sans', system-ui, sans-serif;
+  --font-body:    'Inter', 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+
+  /* -------------------------------------------------------------------------
+   * TYPOGRAPHY — Size scale
+   * ---------------------------------------------------------------------- */
+  --text-hero:    clamp(48px, 6vw, 72px);
+  --text-display: clamp(40px, 4vw, 56px);
+  --text-h2:      clamp(28px, 3vw, 40px);
+  --text-h3:      24px;
+  --text-h4:      20px;
+  --text-body-lg: 18px;
+  --text-body:    16px;
+  --text-body-sm: 14px;
+  --text-label:   12px;
+  --text-micro:   11px;
+
+  /* -------------------------------------------------------------------------
+   * TYPOGRAPHY — Weights
+   * ---------------------------------------------------------------------- */
+  --font-regular:  400;
+  --font-medium:   500;
+  --font-semibold: 600;
+  --font-bold:     700;
+
+  /* -------------------------------------------------------------------------
+   * TYPOGRAPHY — Line heights
+   * ---------------------------------------------------------------------- */
+  --leading-tight:   1.1;
+  --leading-snug:    1.3;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.7;
+
+  /* -------------------------------------------------------------------------
+   * TYPOGRAPHY — Letter spacing
+   * ---------------------------------------------------------------------- */
+  --tracking-tighter: -0.02em;
+  --tracking-tight:   -0.01em;
+  --tracking-normal:   0em;
+  --tracking-label:    0.08em;
+  --tracking-wide:     0.12em;
+
+  /* -------------------------------------------------------------------------
+   * SPACING
+   * ---------------------------------------------------------------------- */
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* -------------------------------------------------------------------------
+   * BORDER RADIUS
+   * ---------------------------------------------------------------------- */
+  --radius-sm:   6px;
+  --radius-md:  10px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* -------------------------------------------------------------------------
+   * SHADOWS
+   * ---------------------------------------------------------------------- */
+  --shadow-cta-glow:       0 0 24px rgba(34, 211, 238, 0.25);
+  --shadow-card-hover:     0 8px 32px rgba(0, 0, 0, 0.40);
+  --shadow-verified-glow:  0 0 16px rgba(52, 211, 153, 0.35);
+  --shadow-focus-default:  0 0 0 2px rgba(34, 211, 238, 0.40);
+  --shadow-focus-ai:       0 0 0 2px rgba(124, 107, 255, 0.50);
+
+  /* -------------------------------------------------------------------------
+   * MOTION — Durations
+   * ---------------------------------------------------------------------- */
+  --duration-instant:  0ms;
+  --duration-fast:    150ms;
+  --duration-normal:  200ms;
+  --duration-moderate:300ms;
+  --duration-slow:    600ms;
+  --duration-seal:   1400ms;
+  --duration-float:  4000ms;
+
+  /* -------------------------------------------------------------------------
+   * MOTION — Easings
+   * ---------------------------------------------------------------------- */
+  --ease-linear:      linear;
+  --ease-out:         cubic-bezier(0.0, 0.0, 0.2, 1.0);
+  --ease-in:          cubic-bezier(0.4, 0.0, 1.0, 1.0);
+  --ease-in-out:      cubic-bezier(0.4, 0.0, 0.2, 1.0);
+  --ease-spring:      cubic-bezier(0.34, 1.56, 0.64, 1.0);
+
+  /* -------------------------------------------------------------------------
+   * Z-INDEX SCALE
+   * ---------------------------------------------------------------------- */
+  --z-base:    0;
+  --z-card:    10;
+  --z-overlay: 100;
+  --z-nav:     200;
+  --z-modal:   300;
+  --z-toast:   400;
+  --z-tooltip: 500;
+}
+
+/* ---------------------------------------------------------------------------
+ * REDUCED MOTION — accessibility-first
+ * When the user prefers reduced motion, collapse all CSS animation durations.
+ * Framer Motion / Three.js animations must also check this in JS:
+ *   window.matchMedia('(prefers-reduced-motion: reduce)').matches
+ * -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast:     0ms;
+    --duration-normal:   0ms;
+    --duration-moderate: 0ms;
+    --duration-slow:     0ms;
+    --duration-seal:     0ms;
+    --duration-float:    0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
