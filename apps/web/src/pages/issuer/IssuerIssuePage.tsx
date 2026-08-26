@@ -6,7 +6,7 @@ import { Button } from "../../components/ui/Button.js";
 import { Badge } from "../../components/ui/Badge.js";
 import { extractCredentialsWithAI, type ExtractedDraft } from "../../lib/ai.js";
 import { DecentralizedRegistry, type DecentralizedCredential } from "../../lib/blockchain.js";
-import { canonicalizeJSON, computeSHA256 } from "../../lib/ipfs.js";
+import { canonicalizeJSON, computeSHA256, pinJSONToIPFS } from "../../lib/ipfs.js";
 import type { CredentialType } from "@certifiedpass/types";
 
 export default function IssuerIssuePage() {
@@ -76,6 +76,7 @@ export default function IssuerIssuePage() {
 
         const canonical = canonicalizeJSON(metadata);
         const hash = await computeSHA256(canonical);
+        const ipfsUri = await pinJSONToIPFS(metadata, draft.title);
         const id = `cp-${credentialType}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 
         const newCred: DecentralizedCredential = {
@@ -92,7 +93,7 @@ export default function IssuerIssuePage() {
           issuedAt: new Date().toISOString(),
           credentialHash: hash,
           txHash: `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`,
-          tokenUri: `ipfs://Qm${Array.from({ length: 44 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`,
+          tokenUri: ipfsUri,
           status: "ACTIVE",
           isVerified: true,
           metadata,
