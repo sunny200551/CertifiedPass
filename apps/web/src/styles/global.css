@@ -1,23 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg-primary: #FBFBFD;
+  --bg-primary: #F8FAFC;
   --bg-surface: #FFFFFF;
-  --bg-elevated: #F5F5F7;
-  --border-subtle: #E2E8F0;
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
-  --accent-cyan: #0EA5E9;
-  --accent-blue: #2563EB;
-  --accent-indigo: #4F46E5;
-  --status-verified: #10B981;
-  --status-invalid: #EF4444;
-  --status-revoked: #F59E0B;
+  --bg-elevated: #F1F5F9;
+  --border-subtle: #CBD5E1;
+  --text-primary: #020617;
+  --text-secondary: #0F172A;
+  --text-muted: #334155;
+  --accent-cyan: #0284C7;
+  --accent-blue: #1D4ED8;
+  --accent-indigo: #4338CA;
+  --status-verified: #059669;
+  --status-invalid: #DC2626;
+  --status-revoked: #D97706;
   --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   --font-body: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
@@ -44,8 +44,13 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: #020617;
+  }
+
+  p {
+    color: #0F172A;
   }
 
   code, pre, kbd {
@@ -53,23 +58,33 @@
   }
 }
 
-/* Apple-style frosted glass effect */
+/* Apple-style frosted glass effect with high contrast border */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
 }
 
 .glass-nav {
-  background: rgba(255, 255, 255, 0.80);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(203, 213, 225, 0.9);
 }
 
-/* Subtle physical pass texture */
-.pass-texture {
-  background-image: radial-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px);
-  background-size: 16px 16px;
+/* Custom crisp scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #94A3B8;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #64748B;
 }

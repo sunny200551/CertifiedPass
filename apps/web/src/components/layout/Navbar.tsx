@@ -20,20 +20,18 @@ export const Navbar: React.FC = () => {
     <header className="sticky top-0 z-40 w-full border-b border-slate-200/90 bg-white/90 backdrop-blur-xl transition-all">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo & Brand */}
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <img
-            src="/CP_logo.png"
-            alt="CertifiedPass Logo"
-            className="h-9 w-9 object-contain rounded-xl shadow-apple-sm transition-transform group-hover:scale-105"
-            onError={(e) => {
-              // Fallback if image path has issue
-              (e.target as HTMLElement).style.display = "none";
-            }}
-          />
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 p-1 shadow-md ring-2 ring-slate-900 transition-transform group-hover:scale-105">
+            <img
+              src="/CP_logo.png"
+              alt="CertifiedPass Logo"
+              className="h-full w-full object-contain"
+            />
+          </div>
           <div className="flex flex-col">
-            <span className="text-base font-bold tracking-tight text-slate-900 flex items-center gap-1.5 font-display">
+            <span className="text-base font-black tracking-tight text-slate-950 flex items-center gap-1.5 font-display">
               CertifiedPass
-              <span className="rounded-full bg-indigo-50 border border-indigo-200/90 px-2 py-0.5 text-[10px] font-bold text-indigo-700">
+              <span className="rounded-full bg-indigo-100 border border-indigo-300 px-2 py-0.5 text-[10px] font-black text-indigo-900">
                 Polygon
               </span>
             </span>
