@@ -166,10 +166,6 @@ pnpm build
 
 ---
 
-## 📄 License
-
-Licensed under the [MIT License](./LICENSE).
-
 ---
 
 <div align="center">
