@@ -5,7 +5,6 @@
   <p><strong>AI-powered verifiable credentials anchored on Polygon Amoy EVM — verifiable by anyone without a wallet.</strong></p>
 
   <p>
-    <a href="https://github.com/sunny200551/CertifiedPass/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License" /></a>
     <a href="https://polygon.technology"><img src="https://img.shields.io/badge/Blockchain-Polygon%20Amoy%20(80002)-8247e5.svg" alt="Polygon Amoy" /></a>
     <a href="https://ai.google.dev"><img src="https://img.shields.io/badge/AI-Gemini%201.5%20Flash-4285f4.svg" alt="Gemini AI" /></a>
     <a href="https://turbo.build"><img src="https://img.shields.io/badge/monorepo-Turborepo%202.0-ef4444.svg" alt="Turborepo" /></a>
