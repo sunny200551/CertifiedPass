@@ -4,8 +4,8 @@
   "private": true,
   "description": "CertifiedPass — AI-powered verifiable credential platform for real-world achievements",
   "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=9.0.0"
+    "node": ">=22.13.0",
+    "pnpm": ">=10.0.0"
   },
   "packageManager": "pnpm@11.22.0",
   "scripts": {
