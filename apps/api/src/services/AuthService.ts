@@ -22,7 +22,7 @@ export class AuthService {
    * Expires after 5 minutes.
    */
   static generateNonce(walletAddress: string) {
-    const checksumAddress = ethers.getAddress(walletAddress);
+    const checksumAddress = ethers.getAddress(walletAddress.toLowerCase());
     const nonce = uuidv4();
     const expiresAt = Date.now() + 5 * 60 * 1000; // 5 mins
 
@@ -50,7 +50,7 @@ export class AuthService {
     signature: string;
     nonce: string;
   }) {
-    const checksumAddress = ethers.getAddress(params.walletAddress);
+    const checksumAddress = ethers.getAddress(params.walletAddress.toLowerCase());
     const key = checksumAddress.toLowerCase();
     const stored = nonceCache.get(key);
 
