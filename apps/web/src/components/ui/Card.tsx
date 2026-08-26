@@ -15,16 +15,16 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   const glowStyles = {
     none: "",
-    cyan: "hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10",
-    purple: "hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10",
-    emerald: "hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-500/10",
-    amber: "hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-500/10",
+    cyan: "hover:border-sky-300 hover:shadow-apple-md",
+    purple: "hover:border-purple-300 hover:shadow-apple-md",
+    emerald: "hover:border-emerald-300 hover:shadow-apple-md",
+    amber: "hover:border-amber-300 hover:shadow-apple-md",
   }[glow];
 
   return (
     <div
-      className={`rounded-xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-md p-6 text-slate-100 transition-all duration-300 ${
-        hover ? "hover:-translate-y-0.5 hover:bg-slate-900/80" : ""
+      className={`rounded-2xl border border-slate-200/90 bg-white/95 backdrop-blur-md p-6 text-slate-900 shadow-apple-sm transition-all duration-300 ${
+        hover ? "hover:-translate-y-0.5 hover:shadow-apple-md hover:border-slate-300" : ""
       } ${glowStyles} ${className}`}
       {...props}
     >

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Award, Shield, PlusCircle, ExternalLink, Share2, Sparkles, LayoutDashboard } from "lucide-react";
+import { Award, Shield, PlusCircle, ExternalLink, Share2, Sparkles, LayoutDashboard, QrCode } from "lucide-react";
 import { Layout } from "../components/layout/Layout.js";
 import { Button } from "../components/ui/Button.js";
 import { Badge } from "../components/ui/Badge.js";
 import { HolographicCard3D } from "../components/credential/HolographicCard3D.js";
+import { CredentialQRModal } from "../components/credential/CredentialQRModal.js";
 import { useAuth } from "../context/AuthContext.js";
 import { api } from "../lib/api.js";
 
@@ -12,6 +13,7 @@ export default function DashboardPage() {
   const { user, isAuthenticated, login } = useAuth();
   const [credentials, setCredentials] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [selectedQR, setSelectedQR] = useState<{ id: string; title: string } | null>(null);
 
   useEffect(() => {
     async function loadHolderCredentials() {
@@ -53,89 +55,99 @@ export default function DashboardPage() {
     <Layout>
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Welcome Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-8 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/90 pb-8 mb-8">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-extrabold text-white sm:text-3xl">Holder Dashboard</h1>
+              <h1 className="text-2xl font-extrabold text-slate-900 sm:text-3xl font-display">Holder Dashboard</h1>
               <Badge variant="active" size="sm">
-                Connected
+                Live Wallet
               </Badge>
             </div>
-            <p className="text-sm text-slate-400 mt-1">
-              Manage your verified achievements, share proof profiles, and review on-chain anchors.
+            <p className="text-sm text-slate-500 mt-1">
+              Manage, view, and share your Polygon Amoy verified credentials.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
-            {user?.username ? (
+            {user?.username && (
               <Link to={`/u/${user.username}`}>
-                <Button variant="secondary" size="sm" className="gap-1.5">
-                  <Share2 className="h-4 w-4" /> View Public Profile
-                </Button>
-              </Link>
-            ) : (
-              <Link to="/profile">
-                <Button variant="secondary" size="sm">
-                  Set Username
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs shadow-apple-sm">
+                  <ExternalLink className="h-3.5 w-3.5" /> View Public Profile
                 </Button>
               </Link>
             )}
             <Link to="/verify">
-              <Button variant="outline" size="sm">
-                Verify New ID
+              <Button variant="primary" size="sm" className="gap-1.5 text-xs shadow-apple-sm">
+                Verify Any Credential
               </Button>
             </Link>
           </div>
         </div>
 
-        {/* Credentials Grid */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Award className="h-5 w-5 text-cyan-400" /> My Verified Credentials ({credentials.length})
-            </h2>
-            <Link to="/credentials" className="text-xs text-cyan-400 hover:underline">
-              View All
-            </Link>
+        {/* Not Authenticated Callout */}
+        {!isAuthenticated && (
+          <div className="rounded-3xl border border-indigo-200/90 bg-indigo-50/50 p-8 shadow-apple-sm text-center max-w-2xl mx-auto my-12 space-y-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-apple-sm">
+              <Shield className="h-6 w-6" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-900 font-display">Connect Wallet to Access Your Credentials</h2>
+            <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+              Sign in with your EVM wallet using Sign-In with Ethereum (SIWE) to load all credentials issued to your wallet address.
+            </p>
+            <div className="pt-2">
+              <Button variant="cyan" size="md" onClick={login}>
+                Sign In (SIWE)
+              </Button>
+            </div>
           </div>
+        )}
 
-          {credentials.length === 0 ? (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-12 text-center">
-              <Award className="h-12 w-12 text-slate-600 mx-auto mb-3" />
-              <h3 className="text-base font-bold text-white">No Credentials Found Yet</h3>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">
-                When hackathon organizers, companies, or open source orgs issue credentials to your wallet address, they will appear here.
-              </p>
+        {/* Credentials Grid */}
+        {isAuthenticated && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-slate-900 font-display">My Digital Achievement Passes</h2>
+              <span className="text-xs text-slate-500 font-medium">{credentials.length} Issued Passes</span>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-              {credentials.map((c) => (
-                <div key={c.id} className="w-full flex flex-col items-center">
-                  <HolographicCard3D
-                    id={c.id}
-                    title={c.metadata?.title || "Achievement"}
-                    holderName={c.metadata?.holderName || user?.displayName || "Holder"}
-                    issuerName={c.issuer?.name || c.metadata?.issuerName || "CertifiedPass Issuer"}
-                    credentialType={c.credentialType}
-                    issuedAt={c.issuedAt || new Date().toISOString()}
-                    credentialHash={c.credentialHash}
-                    isVerified={c.status === "ACTIVE"}
-                    metadata={c.metadata}
-                  />
-                  <div className="mt-3 flex items-center gap-3">
-                    <Link
-                      to={`/c/${c.id}`}
-                      className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
-                    >
-                      Audit Proof <ExternalLink className="h-3.5 w-3.5" />
-                    </Link>
+
+            {credentials.length === 0 ? (
+              <div className="rounded-3xl border border-slate-200/90 bg-white p-12 text-center text-slate-500 shadow-apple-sm">
+                <p>No credentials found for this wallet address yet.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {credentials.map((cred) => (
+                  <div key={cred.id} className="flex flex-col items-center">
+                    <HolographicCard3D
+                      id={cred.id}
+                      title={cred.metadata?.title || "Hackathon Credential"}
+                      holderName={cred.metadata?.holderName || user?.displayName || "Alex Rivera"}
+                      issuerName={cred.issuer?.name || "ETHSF & Polygon Labs"}
+                      credentialType={cred.credentialType}
+                      issuedAt={cred.issuedAt}
+                      credentialHash={cred.credentialHash}
+                      status={cred.status}
+                      isVerified={cred.status === "ACTIVE"}
+                      metadata={cred.metadata}
+                      onShowQR={() => setSelectedQR({ id: cred.id, title: cred.metadata?.title || "Credential" })}
+                    />
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* QR Modal */}
+      {selectedQR && (
+        <CredentialQRModal
+          isOpen={!!selectedQR}
+          onClose={() => setSelectedQR(null)}
+          credentialId={selectedQR.id}
+          title={selectedQR.title}
+        />
+      )}
     </Layout>
   );
 }

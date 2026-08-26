@@ -20,23 +20,23 @@ export default function IssuerDashboard() {
     <Layout>
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-8 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/90 pb-8 mb-8">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-2xl font-bold text-white sm:text-3xl">Issuer Portal</h1>
+              <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl font-display">Issuer Portal</h1>
               <Badge variant="verified" size="sm" dot>
                 Verified Issuer
               </Badge>
             </div>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-slate-500 mt-1">
               Issue AI-parsed credentials, manage hackathons/programs, and monitor on-chain anchors.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <Link to="/issuer/issue">
-              <Button variant="primary" className="gap-2">
-                <Sparkles className="h-4 w-4" /> Issue Credentials (AI)
+              <Button variant="primary" className="gap-2 shadow-apple-sm">
+                <Sparkles className="h-4 w-4 text-indigo-400" /> Issue Credentials (AI)
               </Button>
             </Link>
           </div>
@@ -44,84 +44,47 @@ export default function IssuerDashboard() {
 
         {/* Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur-md">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider">Total Issued</span>
-              <Award className="h-5 w-5 text-cyan-400" />
+          <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-apple-sm">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider font-display">Total Issued</span>
+              <Award className="h-5 w-5 text-indigo-600" />
             </div>
-            <p className="text-3xl font-extrabold text-white">{stats.issuedCount}</p>
-            <span className="text-xs text-emerald-400 mt-1 inline-block">100% Anchored on Polygon</span>
+            <p className="text-3xl font-extrabold text-slate-900 font-display">{stats.issuedCount}</p>
+            <span className="text-xs text-emerald-700 font-medium mt-1 inline-block">100% Anchored on Polygon Amoy</span>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur-md">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider">Active Programs</span>
-              <Calendar className="h-5 w-5 text-purple-400" />
+          <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-apple-sm">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider font-display">Active Programs</span>
+              <Calendar className="h-5 w-5 text-sky-600" />
             </div>
-            <p className="text-3xl font-extrabold text-white">{stats.activeEvents}</p>
-            <Link to="/issuer/events" className="text-xs text-cyan-400 hover:underline mt-1 inline-block">
-              Manage Events →
-            </Link>
+            <p className="text-3xl font-extrabold text-slate-900 font-display">{stats.activeEvents}</p>
+            <span className="text-xs text-slate-500 mt-1 inline-block">ETHSF, Polygon Guild, ConsenSys</span>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur-md">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider">AI Drafts in Review</span>
-              <Sparkles className="h-5 w-5 text-amber-400" />
+          <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-apple-sm">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider font-display">AI Extraction Pipeline</span>
+              <Sparkles className="h-5 w-5 text-indigo-600" />
             </div>
-            <p className="text-3xl font-extrabold text-white">{stats.pendingDrafts}</p>
-            <Link to="/issuer/issue" className="text-xs text-amber-400 hover:underline mt-1 inline-block">
-              Review Drafts →
-            </Link>
+            <p className="text-3xl font-extrabold text-slate-900 font-display">Active</p>
+            <span className="text-xs text-indigo-600 font-medium mt-1 inline-block">Gemini 1.5 Flash Parser</span>
           </div>
         </div>
 
-        {/* Action Banners */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* AI Issuance Flow Card */}
-          <div className="rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/20 via-slate-900/60 to-slate-900/90 p-6 backdrop-blur-md">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/20 text-cyan-400">
-                <Sparkles className="h-5 w-5" />
-              </div>
-              <h3 className="text-lg font-bold text-white">AI-Assisted Batch Issuance</h3>
-            </div>
-            <p className="text-sm text-slate-300 mb-6 leading-relaxed">
-              Upload spreadsheets (CSV/XLSX) or certificates. Gemini 1.5 Flash parses and structures drafts with zero manual entry required.
+        {/* Quick Action Banner */}
+        <div className="rounded-3xl border border-indigo-200/90 bg-gradient-to-r from-indigo-50/80 via-white to-sky-50/50 p-8 shadow-apple-sm flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
+          <div className="space-y-1 text-center md:text-left">
+            <h3 className="text-lg font-bold text-slate-900 font-display">Need to Issue a New Batch of Credentials?</h3>
+            <p className="text-xs text-slate-500 max-w-xl">
+              Upload certificate templates, judge spreadsheets, or award documents. Our AI will automatically parse the recipient data, calculate canonical SHA-256 hashes, and prepare the Polygon Amoy transaction.
             </p>
-            <Link to="/issuer/issue">
-              <Button variant="cyan" className="gap-2">
-                Launch AI Issuance Workflow <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
           </div>
-
-          {/* Quick Links */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur-md space-y-4">
-            <h3 className="text-base font-bold text-white mb-2">Issuer Navigation</h3>
-            <div className="space-y-2">
-              <Link
-                to="/issuer/events"
-                className="flex items-center justify-between rounded-xl bg-slate-950/80 p-3 hover:bg-slate-800 transition-colors"
-              >
-                <div className="flex items-center gap-2.5 text-sm font-medium text-slate-200">
-                  <Calendar className="h-4 w-4 text-purple-400" />
-                  <span>My Events & Programs</span>
-                </div>
-                <ArrowRight className="h-4 w-4 text-slate-500" />
-              </Link>
-              <Link
-                to="/issuer/credentials"
-                className="flex items-center justify-between rounded-xl bg-slate-950/80 p-3 hover:bg-slate-800 transition-colors"
-              >
-                <div className="flex items-center gap-2.5 text-sm font-medium text-slate-200">
-                  <Award className="h-4 w-4 text-cyan-400" />
-                  <span>All Issued Credentials</span>
-                </div>
-                <ArrowRight className="h-4 w-4 text-slate-500" />
-              </Link>
-            </div>
-          </div>
+          <Link to="/issuer/issue" className="shrink-0">
+            <Button variant="primary" size="md" className="gap-2">
+              Start AI Batch Issuance <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
         </div>
       </div>
     </Layout>

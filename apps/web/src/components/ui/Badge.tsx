@@ -31,89 +31,89 @@ export const Badge: React.FC<BadgeProps> = ({
 }) => {
   const variantStyles: Record<BadgeVariant, { bg: string; text: string; border: string; dotColor: string }> = {
     verified: {
-      bg: "bg-emerald-500/10",
-      text: "text-emerald-400",
-      border: "border-emerald-500/30",
-      dotColor: "bg-emerald-400",
+      bg: "bg-emerald-50",
+      text: "text-emerald-700 font-medium",
+      border: "border-emerald-200/90",
+      dotColor: "bg-emerald-500",
     },
     active: {
-      bg: "bg-cyan-500/10",
-      text: "text-cyan-400",
-      border: "border-cyan-500/30",
-      dotColor: "bg-cyan-400",
+      bg: "bg-sky-50",
+      text: "text-sky-700 font-medium",
+      border: "border-sky-200/90",
+      dotColor: "bg-sky-500",
     },
     invalid: {
-      bg: "bg-red-500/10",
-      text: "text-red-400",
-      border: "border-red-500/30",
-      dotColor: "bg-red-400",
+      bg: "bg-red-50",
+      text: "text-red-700 font-medium",
+      border: "border-red-200/90",
+      dotColor: "bg-red-500",
     },
     revoked: {
-      bg: "bg-amber-500/10",
-      text: "text-amber-400",
-      border: "border-amber-500/30",
-      dotColor: "bg-amber-400",
+      bg: "bg-amber-50",
+      text: "text-amber-800 font-medium",
+      border: "border-amber-200/90",
+      dotColor: "bg-amber-500",
     },
     pending: {
-      bg: "bg-slate-500/10",
-      text: "text-slate-400",
-      border: "border-slate-500/30",
+      bg: "bg-slate-100",
+      text: "text-slate-600 font-medium",
+      border: "border-slate-200",
       dotColor: "bg-slate-400",
     },
     hackathon: {
-      bg: "bg-cyan-500/15",
-      text: "text-cyan-300",
-      border: "border-cyan-500/40",
-      dotColor: "bg-cyan-400",
+      bg: "bg-indigo-50",
+      text: "text-indigo-700 font-semibold",
+      border: "border-indigo-200/90",
+      dotColor: "bg-indigo-600",
     },
     internship: {
-      bg: "bg-purple-500/15",
-      text: "text-purple-300",
-      border: "border-purple-500/40",
-      dotColor: "bg-purple-400",
+      bg: "bg-blue-50",
+      text: "text-blue-700 font-semibold",
+      border: "border-blue-200/90",
+      dotColor: "bg-blue-600",
     },
     opensource: {
-      bg: "bg-emerald-500/15",
-      text: "text-emerald-300",
-      border: "border-emerald-500/40",
-      dotColor: "bg-emerald-400",
+      bg: "bg-emerald-50",
+      text: "text-emerald-700 font-semibold",
+      border: "border-emerald-200/90",
+      dotColor: "bg-emerald-600",
     },
     competition: {
-      bg: "bg-amber-500/15",
-      text: "text-amber-300",
-      border: "border-amber-500/40",
-      dotColor: "bg-amber-400",
+      bg: "bg-amber-50",
+      text: "text-amber-800 font-semibold",
+      border: "border-amber-200/90",
+      dotColor: "bg-amber-600",
     },
     workshop: {
-      bg: "bg-blue-500/15",
-      text: "text-blue-300",
-      border: "border-blue-500/40",
-      dotColor: "bg-blue-400",
+      bg: "bg-purple-50",
+      text: "text-purple-700 font-semibold",
+      border: "border-purple-200/90",
+      dotColor: "bg-purple-600",
     },
     event: {
-      bg: "bg-pink-500/15",
-      text: "text-pink-300",
-      border: "border-pink-500/40",
-      dotColor: "bg-pink-400",
+      bg: "bg-teal-50",
+      text: "text-teal-700 font-semibold",
+      border: "border-teal-200/90",
+      dotColor: "bg-teal-600",
     },
     default: {
-      bg: "bg-slate-800",
-      text: "text-slate-300",
-      border: "border-slate-700",
+      bg: "bg-slate-100",
+      text: "text-slate-700",
+      border: "border-slate-200",
       dotColor: "bg-slate-400",
     },
   };
 
   const style = variantStyles[variant] || variantStyles.default;
-  const sizeClass = size === "sm" ? "px-2 py-0.5 text-xs" : "px-2.5 py-1 text-xs font-medium";
+  const sizeClass = size === "sm" ? "px-2 py-0.5 text-[11px]" : "px-2.5 py-1 text-xs";
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border ${style.bg} ${style.text} ${style.border} ${sizeClass} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border ${style.bg} ${style.text} ${style.border} ${sizeClass} ${className} select-none transition-colors`}
     >
       {dot && (
         <span
-          className={`h-1.5 w-1.5 rounded-full ${style.dotColor} animate-pulse`}
+          className={`h-1.5 w-1.5 rounded-full ${style.dotColor} flex-shrink-0`}
         />
       )}
       {children}

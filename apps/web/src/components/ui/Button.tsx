@@ -16,7 +16,7 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const base =
-    "relative inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none";
+    "relative inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98]";
 
   const sizeClasses = {
     sm: "px-3 py-1.5 text-xs gap-1.5",
@@ -26,17 +26,17 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantClasses = {
     primary:
-      "bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-semibold shadow-lg shadow-cyan-500/20 focus:ring-cyan-400",
+      "bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-apple-sm hover:shadow-apple-md focus:ring-slate-900 focus:ring-offset-white",
     cyan:
-      "bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-semibold shadow-md shadow-cyan-400/20 focus:ring-cyan-300",
+      "bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-apple-sm hover:shadow-apple-md focus:ring-indigo-600 focus:ring-offset-white",
     secondary:
-      "bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 focus:ring-slate-500",
+      "bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200/80 focus:ring-slate-400 focus:ring-offset-white",
     outline:
-      "bg-transparent hover:bg-slate-800/60 text-slate-300 border border-slate-700 hover:border-slate-600 focus:ring-cyan-500",
+      "bg-white hover:bg-slate-50 text-slate-700 border border-slate-300/90 shadow-apple-sm focus:ring-indigo-500 focus:ring-offset-white",
     danger:
-      "bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 focus:ring-red-500",
+      "bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 focus:ring-red-500 focus:ring-offset-white",
     ghost:
-      "bg-transparent hover:bg-slate-800/40 text-slate-400 hover:text-slate-200 focus:ring-slate-600",
+      "bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 focus:ring-slate-400 focus:ring-offset-white",
   }[variant];
 
   return (
@@ -66,7 +66,7 @@ export const Button: React.FC<ButtonProps> = ({
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             />
           </svg>
-          Loading...
+          <span>Processing...</span>
         </>
       ) : (
         children
