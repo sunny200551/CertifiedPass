@@ -16,12 +16,12 @@
     "type-check": "turbo run type-check",
     "clean": "turbo run clean && rimraf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,sol}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css,sol}\"",
-    "db:generate": "pnpm --filter @certifiedpass/api prisma generate",
-    "db:migrate": "pnpm --filter @certifiedpass/api prisma migrate dev",
-    "db:studio": "pnpm --filter @certifiedpass/api prisma studio",
-    "contracts:build": "pnpm --filter @certifiedpass/contracts forge build",
-    "contracts:test": "pnpm --filter @certifiedpass/contracts forge test"
+    "db:generate": "pnpm --filter @certifiedpass/api exec prisma generate",
+    "db:migrate": "pnpm --filter @certifiedpass/api exec prisma migrate dev",
+    "db:seed": "pnpm --filter @certifiedpass/api exec prisma db seed",
+    "db:studio": "pnpm --filter @certifiedpass/api exec prisma studio",
+    "contracts:build": "pnpm --filter @certifiedpass/contracts build",
+    "contracts:test": "pnpm --filter @certifiedpass/contracts test"
   },
   "devDependencies": {
     "prettier": "^3.3.3",
