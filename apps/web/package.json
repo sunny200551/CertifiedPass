@@ -16,6 +16,7 @@
     "@certifiedpass/design-tokens": "workspace:*",
     "@certifiedpass/types": "workspace:*",
     "@certifiedpass/utils": "workspace:*",
+    "@google/generative-ai": "^0.21.0",
     "@rainbow-me/rainbowkit": "^2.1.7",
     "@react-three/drei": "^9.109.3",
     "@react-three/fiber": "^8.17.7",

@@ -141,6 +141,9 @@ importers:
       '@certifiedpass/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      '@google/generative-ai':
+        specifier: ^0.21.0
+        version: 0.21.0
       '@rainbow-me/rainbowkit':
         specifier: ^2.1.7
         version: 2.2.11(@tanstack/react-query@5.101.4(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)(viem@2.55.19(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.101.4)(@tanstack/react-query@5.101.4(react@18.3.1))(@types/react@18.3.31)(bufferutil@4.1.0)(debug@4.4.3)(ioredis@5.11.1)(react@18.3.1)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.55.19(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))

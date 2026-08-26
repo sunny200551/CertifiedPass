@@ -6,6 +6,7 @@ import { Button } from "../components/ui/Button.js";
 import { Badge } from "../components/ui/Badge.js";
 import { HolographicCard3D } from "../components/credential/HolographicCard3D.js";
 import { CredentialQRModal } from "../components/credential/CredentialQRModal.js";
+import { DecentralizedRegistry } from "../lib/blockchain.js";
 import { useAuth } from "../context/AuthContext.js";
 import { api } from "../lib/api.js";
 
@@ -16,33 +17,18 @@ export default function DashboardPage() {
   const [selectedQR, setSelectedQR] = useState<{ id: string; title: string } | null>(null);
 
   useEffect(() => {
-    async function loadHolderCredentials() {
-      if (!user?.walletAddress) {
-        setLoading(false);
-        return;
-      }
+    function loadHolderCredentials() {
+      setLoading(true);
       try {
-        const res = await api.get(`/credentials?holderAddress=${user.walletAddress}`);
-        setCredentials(res.data.data.items || []);
-      } catch {
-        // Fallback demo credentials
-        setCredentials([
-          {
-            id: "cp-hackathon-2026-ethsf",
-            credentialType: "hackathon",
-            status: "ACTIVE",
-            issuedAt: new Date().toISOString(),
-            metadata: {
-              title: "1st Place Winner — Global Web3 AI Hackathon",
-              holderName: user.displayName || "Alex Rivera",
-              issuerName: "ETHSF & Polygon Labs",
-              achievement: "1st Place Winner - Infrastructure Track",
-              skills: ["Solidity", "TypeScript", "Three.js", "Zod"],
-            },
-            credentialHash: "4a9d721183c509539fbe54b5df16a7f85dc9eb3e85e507f3531b790d0ef093ac",
-            issuer: { name: "ETHSF & Polygon Labs" },
-          },
-        ]);
+        const holderAddr = user?.walletAddress || "0x71C845137F73612FACb1C1E6e3e1A144e5904F2E";
+        let creds = DecentralizedRegistry.getByHolder(holderAddr);
+        if (creds.length === 0) {
+          creds = DecentralizedRegistry.getAll();
+        }
+        setCredentials(creds);
+      } catch (err) {
+        console.warn("Decentralized credential loader fallback:", err);
+        setCredentials(DecentralizedRegistry.getAll());
       } finally {
         setLoading(false);
       }
