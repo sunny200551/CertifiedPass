@@ -1,241 +1,52 @@
-/**
- * CertifiedPass Web App — Global Styles
- *
- * Imports design tokens as CSS custom properties.
- * Sets up base typography, background, and reset.
- * All component-level styling uses Tailwind utilities backed by these tokens.
- */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-/* Design token custom properties + Google Fonts */
-@import "@certifiedpass/design-tokens/css";
-
-/* Tailwind base, components, utilities */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ---------------------------------------------------------------------------
- * Base reset and typography setup
- * -------------------------------------------------------------------------- */
-@layer base {
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+:root {
+  --bg-primary: #05070D;
+  --bg-surface: #0B0F1A;
+  --bg-elevated: #121826;
+  --border-subtle: #1E2536;
+  --text-primary: #F5F7FA;
+  --text-secondary: #9AA4B8;
+  --text-muted: #4A5568;
+  --accent-cyan: #22D3EE;
+  --accent-blue: #3B82F6;
+  --accent-violet: #7C6BFF;
+  --status-verified: #34D399;
+  --status-invalid: #F87171;
+  --status-revoked: #FB923C;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
 
-  html {
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
   }
 
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
     font-family: var(--font-body);
-    font-size: var(--text-body);
-    line-height: var(--leading-normal);
     min-height: 100vh;
-    /* Prevent horizontal overflow from Three.js canvases */
     overflow-x: hidden;
   }
 
-  /* Headings use the display font */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    font-weight: var(--font-bold);
-    line-height: var(--leading-snug);
-    letter-spacing: var(--tracking-tight);
-    color: var(--text-primary);
+    font-weight: 700;
   }
 
-  /* Monospace elements — always render with copy affordance styling */
-  code, pre, kbd, samp, .mono {
+  code, pre, kbd {
     font-family: var(--font-mono);
-    font-size: 0.9em;
-  }
-
-  /* Links */
-  a {
-    color: var(--accent-cyan);
-    text-decoration: none;
-    transition: color var(--duration-fast) var(--ease-out);
-  }
-
-  a:hover {
-    color: var(--accent-blue);
-  }
-
-  /* Focus visible — accessibility */
-  :focus-visible {
-    outline: 2px solid var(--accent-cyan);
-    outline-offset: 3px;
-    border-radius: 4px;
-  }
-
-  /* Selection */
-  ::selection {
-    background-color: rgba(34, 211, 238, 0.25);
-    color: var(--text-primary);
-  }
-
-  /* Scrollbar styling (WebKit) */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: var(--bg-surface);
-  }
-  ::-webkit-scrollbar-thumb {
-    background: var(--border-subtle);
-    border-radius: var(--radius-full);
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted);
   }
 }
 
-/* ---------------------------------------------------------------------------
- * Component base classes
- * -------------------------------------------------------------------------- */
-@layer components {
-  /* Card — base style for all credential cards and panels */
-  .card {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-xl);
-    transition:
-      border-color var(--duration-normal) var(--ease-out),
-      box-shadow var(--duration-normal) var(--ease-out),
-      transform var(--duration-normal) var(--ease-out);
-  }
-
-  .card:hover {
-    border-color: rgba(34, 211, 238, 0.30);
-    box-shadow: var(--shadow-card-hover);
-    transform: translateY(-5px);
-  }
-
-  /* Glass card — for floating panels (nav, modals, QR overlay) only */
-  .card-glass {
-    background-color: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-xl);
-  }
-
-  /* Primary CTA button */
-  .btn-primary {
-    background: var(--gradient-cta);
-    color: white;
-    font-family: var(--font-display);
-    font-weight: var(--font-semibold);
-    font-size: var(--text-body);
-    padding: 12px 24px;
-    border-radius: var(--radius-md);
-    border: none;
-    cursor: pointer;
-    transition: box-shadow var(--duration-fast) var(--ease-out);
-    box-shadow: none;
-  }
-
-  .btn-primary:hover {
-    box-shadow: var(--shadow-cta-glow);
-  }
-
-  .btn-primary:active {
-    transform: scale(0.98);
-  }
-
-  /* Secondary CTA button */
-  .btn-secondary {
-    background: transparent;
-    color: var(--accent-cyan);
-    font-family: var(--font-display);
-    font-weight: var(--font-semibold);
-    font-size: var(--text-body);
-    padding: 11px 23px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--accent-cyan);
-    cursor: pointer;
-    transition:
-      background-color var(--duration-fast) var(--ease-out),
-      box-shadow var(--duration-fast) var(--ease-out);
-  }
-
-  .btn-secondary:hover {
-    background-color: rgba(34, 211, 238, 0.08);
-    box-shadow: 0 0 16px rgba(34, 211, 238, 0.15);
-  }
-
-  /* Status pill — dot + label, no full-color fill */
-  .status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: var(--text-label);
-    font-weight: var(--font-semibold);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: var(--radius-full);
-    background-color: transparent;
-    border: 1px solid currentColor;
-  }
-
-  .status-pill::before {
-    content: "";
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: currentColor;
-    flex-shrink: 0;
-  }
-
-  .status-verified { color: var(--status-verified); }
-  .status-invalid  { color: var(--status-invalid);  }
-  .status-revoked  { color: var(--status-revoked);  }
-  .status-pending  { color: var(--status-pending);  }
-
-  /* AI field tag — violet, disappears after human edit */
-  .tag-ai {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: var(--text-micro);
-    font-weight: var(--font-semibold);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--accent-violet);
-    background-color: rgba(124, 107, 255, 0.10);
-    border: 1px solid rgba(124, 107, 255, 0.25);
-    border-radius: var(--radius-sm);
-    padding: 2px 6px;
-  }
-
-  /* Hash display — monospace with subtle bg */
-  .hash-display {
-    font-family: var(--font-mono);
-    font-size: var(--text-body-sm);
-    color: var(--text-secondary);
-    background-color: var(--bg-elevated);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-    padding: 6px 10px;
-    word-break: break-all;
-  }
-
-  /* Section container */
-  .section-container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 var(--space-6);
-  }
+/* 3D Perspective Utility */
+.perspective-1000 {
+  perspective: 1000px;
 }
