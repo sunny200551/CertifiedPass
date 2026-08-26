@@ -89,20 +89,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               setIsProfileModalOpen(true);
             }
           }
-        } catch (err) {
-          console.warn("Could not fetch remote wallet profile, using local:", err);
+        } catch {
+          // Graceful fallback if backend is offline or starting
           if (!user || user.walletAddress !== address) {
             const fallbackUser: UserProfile = {
               id: `usr-${address.slice(2, 10)}`,
               walletAddress: address,
               displayName: `${address.slice(0, 6)}...${address.slice(-4)}`,
               username: null,
+              bio: null,
+              avatarUrl: null,
               isAdmin: false,
               issuerId: null,
               isVerifiedIssuer: false,
             };
             setUser(fallbackUser);
             localStorage.setItem("certifiedpass_user", JSON.stringify(fallbackUser));
+            if (!localStorage.getItem(`prompted_${address}`)) {
+              localStorage.setItem(`prompted_${address}`, "true");
+              setIsProfileModalOpen(true);
+            }
           }
         }
       }
