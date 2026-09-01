@@ -17,6 +17,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: ["@rainbow-me/rainbowkit", "wagmi", "viem", "zod", "react-router-dom"],
+  },
   server: {
     port: 5173,
     proxy: {

@@ -27,6 +27,7 @@ import { credentialsRouter } from "./routes/credentials.js";
 import { eventsRouter } from "./routes/events.js";
 import { issuersRouter } from "./routes/issuers.js";
 import { profilesRouter } from "./routes/profiles.js";
+import { polylanceRouter } from "./routes/polylance.js";
 import { globalRateLimiter } from "./middleware/rateLimiter.js";
 import { logger } from "./utils/logger.js";
 
@@ -114,6 +115,7 @@ function createApp(): Application {
   api.use("/credentials", credentialsRouter);
   api.use("/ai",          aiRouter);
   api.use("/profiles",    profilesRouter);
+  api.use("/polylance",   polylanceRouter);
 
   app.use("/api/v1", api);
 

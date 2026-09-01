@@ -34,6 +34,9 @@
     "apps/*",
     "packages/*",
     "contracts"
-  ]
+  ],
+  "overrides": {
+    "qr": "0.5.5"
+  }
 }
 

@@ -120,6 +120,25 @@ export const Footer: React.FC = () => {
                     </div>
                   </Link>
                 </li>
+
+                <li>
+                  <Link to="/verify?partner=polylance" className="flex items-start gap-3 group">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-violet-600 border border-violet-200 group-hover:bg-violet-600 group-hover:text-white transition-all shadow-apple-sm shrink-0">
+                      <Shield className="h-4 w-4" />
+                    </div>
+                    <div className="text-xs">
+                      <span className="flex items-center gap-1.5 font-black text-slate-950 group-hover:text-violet-600 transition-colors">
+                        PolyLance Verifier
+                        <span className="rounded-full bg-violet-100 text-violet-800 px-1.5 py-0.2 text-[9px] font-bold">
+                          Collab
+                        </span>
+                      </span>
+                      <span className="text-[11px] text-slate-900 font-semibold">
+                        Sovereign SBT & Audit Proofs
+                      </span>
+                    </div>
+                  </Link>
+                </li>
               </ul>
             </div>
 

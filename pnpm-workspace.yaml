@@ -3,6 +3,9 @@ packages:
   - "packages/*"
   - "contracts"
 
+overrides:
+  qr: "0.5.5"
+
 allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
