@@ -2,6 +2,7 @@ import React from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { X, Copy, ExternalLink, Check, Smartphone, ShieldCheck, Download } from "lucide-react";
 import { Button } from "../ui/Button.js";
+import { getCertificateUrl } from "../../lib/urls.js";
 
 interface QRModalProps {
   isOpen: boolean;
@@ -20,7 +21,7 @@ export const CredentialQRModal: React.FC<QRModalProps> = ({
 
   if (!isOpen) return null;
 
-  const verifyUrl = `${window.location.origin}/c/${credentialId}`;
+  const verifyUrl = getCertificateUrl(credentialId);
 
   const copyLink = () => {
     navigator.clipboard.writeText(verifyUrl);

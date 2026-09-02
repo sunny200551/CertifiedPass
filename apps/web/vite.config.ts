@@ -4,8 +4,8 @@ import path from "path";
 import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
 
-// https://vitejs.dev/config/
 export default defineConfig({
+  base: process.env.VITE_BASE_PATH || "/CertifiedPass/",
   plugins: [react()],
   css: {
     postcss: {

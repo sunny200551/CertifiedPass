@@ -65,6 +65,7 @@ export function parseCertificateId(input: string | undefined | null): string {
     }
 
     const ignoredKeywords = new Set([
+      "certifiedpass",
       "jobs",
       "job",
       "attestation",

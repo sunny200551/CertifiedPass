@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Copy, Check, ExternalLink, Share2, X, Linkedin, Twitter } from "lucide-react";
 import { Button } from "../ui/Button.js";
+import { getCertificateUrl } from "../../lib/urls.js";
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -25,7 +26,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   if (!isOpen) return null;
 
-  const credentialUrl = `${window.location.origin}/c/${encodeURIComponent(credentialId)}`;
+  const credentialUrl = getCertificateUrl(credentialId);
 
   const copyUrl = () => {
     navigator.clipboard.writeText(credentialUrl);

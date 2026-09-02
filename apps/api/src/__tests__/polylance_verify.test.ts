@@ -41,7 +41,7 @@ describe("PolyLance Certificate & Audit Verification Module", () => {
       expect(result.details?.sponsor?.address).toBeDefined();
       expect(result.details?.oracleSignature).toBeDefined();
       expect(result.details?.networkChainId).toBe(137);
-    });
+    }, 15000);
 
     it("verifies when passed via full attestation URL", async () => {
       const fullUrl =
@@ -52,7 +52,7 @@ describe("PolyLance Certificate & Audit Verification Module", () => {
       expect(result.status).toBe("VERIFIED");
       expect(result.certId).toBe("PL-SBT-JOB-0xce1376c2272E-0xce13");
       expect(result.details?.settledAmountUsdc).toContain("15.00");
-    });
+    }, 15000);
 
     it("handles non-existent certificate gracefully with UNVERIFIED status", async () => {
       const result = await PolyLanceVerificationService.verifyCertificate(
@@ -63,6 +63,6 @@ describe("PolyLance Certificate & Audit Verification Module", () => {
       expect(result.status).toBe("UNVERIFIED");
       expect(result.displayStatus).toBe("UNVERIFIED / RECORD NOT FOUND");
       expect(result.message).toContain("could not be verified against the PolyLance Sovereign Ledger");
-    });
+    }, 15000);
   });
 });

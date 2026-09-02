@@ -3,29 +3,68 @@ import { parsePolyLanceInput } from '../utils/polylanceParser.js';
 
 const prisma = new PrismaClient();
 
+export function formatUsdcAmount(rawAmount: any): string {
+  if (rawAmount === undefined || rawAmount === null || rawAmount === "") return "$0.00 USDC";
+  const str = String(rawAmount).trim();
+  if (str.startsWith("$") && str.toUpperCase().endsWith("USDC")) return str;
+  if (str.startsWith("$")) return `${str} USDC`;
+  const num = parseFloat(str.replace(/[^0-9.-]+/g, ""));
+  if (isNaN(num)) return "$0.00 USDC";
+  return `$${num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`;
+}
+
 function formatParticipantName(
   name: string | null | undefined,
+  auditName: string | null | undefined,
   address: string | null | undefined,
+  metadataName: string | null | undefined,
   defaultRole: string
 ): string {
-  if (!name && !address) return defaultRole;
-  const shortAddr = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "";
   const cleanName = name?.trim();
+  const cleanAuditName = auditName?.trim();
+  const cleanMetaName = metadataName?.trim();
 
+  // 1. If explicit specific name provided in record
   if (
     cleanName &&
     cleanName !== "Verified Developer" &&
     cleanName !== "Escrow Patron" &&
-    cleanName !== "Audited Participant"
+    cleanName !== "Audited Participant" &&
+    cleanName !== ""
   ) {
     return cleanName;
   }
 
-  if (shortAddr) {
+  // 2. If Audit record has a specific displayName
+  if (
+    cleanAuditName &&
+    cleanAuditName !== "Verified Developer" &&
+    cleanAuditName !== "Escrow Patron" &&
+    cleanAuditName !== "Audited Participant" &&
+    cleanAuditName !== ""
+  ) {
+    return cleanAuditName;
+  }
+
+  // 3. If metadata has a specific name
+  if (
+    cleanMetaName &&
+    cleanMetaName !== "Verified Developer" &&
+    cleanMetaName !== "Escrow Patron" &&
+    cleanMetaName !== "Audited Participant" &&
+    cleanMetaName !== ""
+  ) {
+    return cleanMetaName;
+  }
+
+  // 4. Fallback to default role with short address if address is available
+  if (address && address.trim()) {
+    const cleanAddr = address.trim();
+    const shortAddr = cleanAddr.length >= 10 ? `${cleanAddr.slice(0, 6)}...${cleanAddr.slice(-4)}` : cleanAddr;
     return `${defaultRole} (${shortAddr})`;
   }
 
-  return cleanName || defaultRole;
+  return cleanName || cleanAuditName || cleanMetaName || defaultRole;
 }
 
 export interface VerificationResult {
@@ -43,16 +82,21 @@ export async function verifyPolyLanceCredential(inputString: string): Promise<Ve
   const keyLower = key.toLowerCase();
 
   try {
-    // 1. Check CertifiedSBTRecord
+    // 1. Check CertifiedSBTRecord with LEFT JOIN on CertifiedAuditRecord
     const sbtRecords: any[] = await prisma.$queryRawUnsafe(
-      `SELECT * FROM "CertifiedSBTRecord"
-       WHERE "id" = $1 
-          OR "jobId" = $1 
-          OR LOWER("id") = $2
-          OR LOWER("contractAddress") = $2 
-          OR LOWER("sbtTokenId") = $2 
-          OR "ipfsCid" = $1
-          OR "id" ILIKE '%' || $1 || '%'
+      `SELECT s.*,
+              fa."displayName" AS "auditFreelancerName",
+              ca."displayName" AS "auditClientName"
+       FROM "CertifiedSBTRecord" s
+       LEFT JOIN "CertifiedAuditRecord" fa ON LOWER(fa."targetAddress") = LOWER(s."freelancerAddress") AND s."freelancerAddress" != ''
+       LEFT JOIN "CertifiedAuditRecord" ca ON LOWER(ca."targetAddress") = LOWER(s."clientAddress") AND s."clientAddress" != ''
+       WHERE s."id" = $1 
+          OR s."jobId" = $1 
+          OR LOWER(s."id") = $2
+          OR LOWER(s."contractAddress") = $2 
+          OR LOWER(s."sbtTokenId") = $2 
+          OR s."ipfsCid" = $1
+          OR s."id" ILIKE '%' || $1 || '%'
        LIMIT 1;`,
       key,
       keyLower
@@ -60,11 +104,21 @@ export async function verifyPolyLanceCredential(inputString: string): Promise<Ve
 
     if (sbtRecords && sbtRecords.length > 0) {
       const rec = sbtRecords[0];
-      const freelancerDisplayName = formatParticipantName(rec.freelancerName, rec.freelancerAddress, "Freelancer");
-      const clientDisplayName = formatParticipantName(rec.clientName, rec.clientAddress, "Escrow Client");
-      const amountFormatted = rec.settledAmountUsdc !== undefined
-        ? `$${Number(rec.settledAmountUsdc).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`
-        : "$0.00 USDC";
+      const freelancerDisplayName = formatParticipantName(
+        rec.freelancerName,
+        rec.auditFreelancerName,
+        rec.freelancerAddress,
+        rec.metadata?.freelancerName || rec.metadata?.freelancer,
+        "Freelancer"
+      );
+      const clientDisplayName = formatParticipantName(
+        rec.clientName,
+        rec.auditClientName,
+        rec.clientAddress,
+        rec.metadata?.clientName || rec.metadata?.client,
+        "Escrow Client"
+      );
+      const amountFormatted = formatUsdcAmount(rec.settledAmountUsdc);
 
       return {
         verified: rec.status === 'VERIFIED',
@@ -122,12 +176,12 @@ export async function verifyPolyLanceCredential(inputString: string): Promise<Ve
       const rec = auditRecords[0];
       const participantDisplayName = formatParticipantName(
         rec.displayName,
+        null,
         rec.targetAddress,
+        rec.auditData?.profile?.displayName || rec.auditData?.profile?.title,
         `Audited ${rec.roleType || "Participant"}`
       );
-      const volumeFormatted = rec.lifetimeVolumeUsdc !== undefined
-        ? `$${Number(rec.lifetimeVolumeUsdc).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`
-        : "$0.00 USDC";
+      const volumeFormatted = formatUsdcAmount(rec.lifetimeVolumeUsdc);
 
       return {
         verified: rec.status === 'VERIFIED',

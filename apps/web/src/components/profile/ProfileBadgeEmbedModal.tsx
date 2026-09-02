@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Copy, Check, Code, X, Sparkles, ExternalLink } from "lucide-react";
 import { Button } from "../ui/Button.js";
+import { getAppBaseUrl } from "../../lib/urls.js";
 
 interface ProfileBadgeEmbedModalProps {
   isOpen: boolean;
@@ -20,7 +21,7 @@ export const ProfileBadgeEmbedModal: React.FC<ProfileBadgeEmbedModalProps> = ({
 
   if (!isOpen) return null;
 
-  const profileUrl = `${window.location.origin}/u/${encodeURIComponent(username)}`;
+  const profileUrl = `${getAppBaseUrl()}/u/${encodeURIComponent(username)}`;
   const badgeImageUrl = `https://img.shields.io/badge/CertifiedPass-Verified%20Holder-4f46e5?style=for-the-badge&logo=polygon&logoColor=white`;
 
   const markdownSnippet = `[![CertifiedPass Verified Profile](${badgeImageUrl})](${profileUrl})`;

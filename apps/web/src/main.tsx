@@ -66,12 +66,14 @@ const rainbowTheme = lightTheme({
 const rootEl = document.getElementById("root");
 if (!rootEl) throw new Error("Root element #root not found in index.html");
 
+const appBaseName = import.meta.env.BASE_URL || "/";
+
 ReactDOM.createRoot(rootEl).render(
   <React.StrictMode>
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider theme={rainbowTheme}>
-          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <BrowserRouter basename={appBaseName} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <AuthProvider>
               <App />
             </AuthProvider>

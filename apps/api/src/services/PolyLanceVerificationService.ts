@@ -8,29 +8,68 @@ import type {
 import { polylancePool } from "../utils/polylanceDb.js";
 import { logger } from "../utils/logger.js";
 
+export function formatUsdcAmount(rawAmount: any): string {
+  if (rawAmount === undefined || rawAmount === null || rawAmount === "") return "$0.00 USDC";
+  const str = String(rawAmount).trim();
+  if (str.startsWith("$") && str.toUpperCase().endsWith("USDC")) return str;
+  if (str.startsWith("$")) return `${str} USDC`;
+  const num = parseFloat(str.replace(/[^0-9.-]+/g, ""));
+  if (isNaN(num)) return "$0.00 USDC";
+  return `$${num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`;
+}
+
 function formatParticipantName(
   name: string | null | undefined,
+  auditName: string | null | undefined,
   address: string | null | undefined,
+  metadataName: string | null | undefined,
   defaultRole: string
 ): string {
-  if (!name && !address) return defaultRole;
-  const shortAddr = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "";
   const cleanName = name?.trim();
+  const cleanAuditName = auditName?.trim();
+  const cleanMetaName = metadataName?.trim();
 
+  // 1. If explicit specific name provided in record
   if (
     cleanName &&
     cleanName !== "Verified Developer" &&
     cleanName !== "Escrow Patron" &&
-    cleanName !== "Audited Participant"
+    cleanName !== "Audited Participant" &&
+    cleanName !== ""
   ) {
     return cleanName;
   }
 
-  if (shortAddr) {
+  // 2. If Audit record has a specific displayName
+  if (
+    cleanAuditName &&
+    cleanAuditName !== "Verified Developer" &&
+    cleanAuditName !== "Escrow Patron" &&
+    cleanAuditName !== "Audited Participant" &&
+    cleanAuditName !== ""
+  ) {
+    return cleanAuditName;
+  }
+
+  // 3. If metadata has a specific name
+  if (
+    cleanMetaName &&
+    cleanMetaName !== "Verified Developer" &&
+    cleanMetaName !== "Escrow Patron" &&
+    cleanMetaName !== "Audited Participant" &&
+    cleanMetaName !== ""
+  ) {
+    return cleanMetaName;
+  }
+
+  // 4. Fallback to default role with short address if address is available
+  if (address && address.trim()) {
+    const cleanAddr = address.trim();
+    const shortAddr = cleanAddr.length >= 10 ? `${cleanAddr.slice(0, 6)}...${cleanAddr.slice(-4)}` : cleanAddr;
     return `${defaultRole} (${shortAddr})`;
   }
 
-  return cleanName || defaultRole;
+  return cleanName || cleanAuditName || cleanMetaName || defaultRole;
 }
 
 export class PolyLanceVerificationService {
@@ -82,24 +121,29 @@ export class PolyLanceVerificationService {
       const cleanCertId = certId.trim();
       const likePattern = `%${cleanCertId}%`;
 
-      // 1. Query CertifiedSBTRecord with case-insensitivity and multi-field identifier resolution
-      const sbtQuery = await polylancePool.query<CertifiedSBTRecord>(
-        `SELECT * FROM "CertifiedSBTRecord"
-         WHERE LOWER("id") = LOWER($1)
-            OR LOWER("jobId") = LOWER($1)
-            OR LOWER("sbtTokenId") = LOWER($1)
-            OR LOWER("contractAddress") = LOWER($1)
-            OR LOWER("ipfsCid") = LOWER($1)
-            OR LOWER("oracleSignature") = LOWER($1)
-            OR LOWER("freelancerAddress") = LOWER($1)
-            OR LOWER("clientAddress") = LOWER($1)
-            OR "id" ILIKE $2
-            OR "jobId" ILIKE $2
-            OR "contractAddress" ILIKE $2
-            OR "sbtTokenId" ILIKE $2
-            OR "ipfsCid" ILIKE $2
-            OR "freelancerAddress" ILIKE $2
-            OR "clientAddress" ILIKE $2
+      // 1. Query CertifiedSBTRecord with LEFT JOIN on CertifiedAuditRecord for participant resolution
+      const sbtQuery = await polylancePool.query<any>(
+        `SELECT s.*,
+                fa."displayName" AS "auditFreelancerName",
+                ca."displayName" AS "auditClientName"
+         FROM "CertifiedSBTRecord" s
+         LEFT JOIN "CertifiedAuditRecord" fa ON LOWER(fa."targetAddress") = LOWER(s."freelancerAddress") AND s."freelancerAddress" != ''
+         LEFT JOIN "CertifiedAuditRecord" ca ON LOWER(ca."targetAddress") = LOWER(s."clientAddress") AND s."clientAddress" != ''
+         WHERE LOWER(s."id") = LOWER($1)
+            OR LOWER(s."jobId") = LOWER($1)
+            OR LOWER(s."sbtTokenId") = LOWER($1)
+            OR LOWER(s."contractAddress") = LOWER($1)
+            OR LOWER(s."ipfsCid") = LOWER($1)
+            OR LOWER(s."oracleSignature") = LOWER($1)
+            OR LOWER(s."freelancerAddress") = LOWER($1)
+            OR LOWER(s."clientAddress") = LOWER($1)
+            OR s."id" ILIKE $2
+            OR s."jobId" ILIKE $2
+            OR s."contractAddress" ILIKE $2
+            OR s."sbtTokenId" ILIKE $2
+            OR s."ipfsCid" ILIKE $2
+            OR s."freelancerAddress" ILIKE $2
+            OR s."clientAddress" ILIKE $2
          LIMIT 1`,
         [cleanCertId, likePattern]
       );
@@ -128,9 +172,7 @@ export class PolyLanceVerificationService {
           ? "DISPUTED"
           : "UNVERIFIED / RECORD NOT FOUND";
 
-        const amountFormatted = record.settledAmountUsdc !== undefined
-          ? `$${Number(record.settledAmountUsdc).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`
-          : "$0.00 USDC";
+        const amountFormatted = formatUsdcAmount(record.settledAmountUsdc);
 
         const timestampStr = record.completedAt
           ? new Date(record.completedAt).toISOString()
@@ -138,12 +180,16 @@ export class PolyLanceVerificationService {
 
         const freelancerDisplayName = formatParticipantName(
           record.freelancerName,
+          record.auditFreelancerName,
           record.freelancerAddress,
+          record.metadata?.freelancerName || record.metadata?.freelancer,
           "Freelancer"
         );
         const clientDisplayName = formatParticipantName(
           record.clientName,
+          record.auditClientName,
           record.clientAddress,
+          record.metadata?.clientName || record.metadata?.client,
           "Escrow Client"
         );
 
@@ -220,13 +266,13 @@ export class PolyLanceVerificationService {
           ? "REVOKED / INVALIDATED"
           : "UNVERIFIED / RECORD NOT FOUND";
 
-        const volumeFormatted = audit.lifetimeVolumeUsdc !== undefined
-          ? `$${Number(audit.lifetimeVolumeUsdc).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`
-          : "$0.00 USDC";
+        const volumeFormatted = formatUsdcAmount(audit.lifetimeVolumeUsdc);
 
         const participantDisplayName = formatParticipantName(
           audit.displayName,
+          null,
           audit.targetAddress,
+          audit.auditData?.profile?.displayName || audit.auditData?.profile?.title,
           `Audited ${audit.roleType || "Participant"}`
         );
 
@@ -298,11 +344,32 @@ export class PolyLanceVerificationService {
   }> {
     try {
       const sbt = await polylancePool.query(
-        `SELECT "id", "jobId", "jobTitle", "category", "settledAmountUsdc", "freelancerAddress", "freelancerName", "clientAddress", "clientName", "status", "completedAt"
-         FROM "CertifiedSBTRecord"
-         ORDER BY "completedAt" DESC
+        `SELECT s."id", s."jobId", s."jobTitle", s."category", s."settledAmountUsdc",
+                s."freelancerAddress", s."freelancerName",
+                fa."displayName" AS "auditFreelancerName",
+                s."clientAddress", s."clientName",
+                ca."displayName" AS "auditClientName",
+                s."status", s."completedAt"
+         FROM "CertifiedSBTRecord" s
+         LEFT JOIN "CertifiedAuditRecord" fa ON LOWER(fa."targetAddress") = LOWER(s."freelancerAddress") AND s."freelancerAddress" != ''
+         LEFT JOIN "CertifiedAuditRecord" ca ON LOWER(ca."targetAddress") = LOWER(s."clientAddress") AND s."clientAddress" != ''
+         ORDER BY s."completedAt" DESC
          LIMIT 10`
       );
+
+      const mappedSbt = sbt.rows.map((r: any) => ({
+        id: r.id,
+        jobId: r.jobId,
+        jobTitle: r.jobTitle,
+        category: r.category,
+        settledAmountUsdc: formatUsdcAmount(r.settledAmountUsdc),
+        freelancerAddress: r.freelancerAddress,
+        freelancerName: formatParticipantName(r.freelancerName, r.auditFreelancerName, r.freelancerAddress, null, "Freelancer"),
+        clientAddress: r.clientAddress,
+        clientName: formatParticipantName(r.clientName, r.auditClientName, r.clientAddress, null, "Escrow Client"),
+        status: r.status,
+        completedAt: r.completedAt,
+      }));
 
       const audit = await polylancePool.query(
         `SELECT "id", "displayName", "roleType", "trustIndexScore", "lifetimeVolumeUsdc", "targetAddress", "status"
@@ -312,7 +379,7 @@ export class PolyLanceVerificationService {
       );
 
       return {
-        sbtRecords: sbt.rows,
+        sbtRecords: mappedSbt,
         auditRecords: audit.rows,
       };
     } catch {

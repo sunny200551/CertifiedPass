@@ -2,6 +2,7 @@ import React from "react";
 import { ShieldCheck, Award, QrCode, ExternalLink, CheckCircle2, Shield, Calendar, Hash, Sparkles } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Badge } from "../ui/Badge.js";
+import { getCertificateUrl } from "../../lib/urls.js";
 import type { CredentialType } from "@certifiedpass/types";
 
 interface HolographicCardProps {
@@ -72,10 +73,7 @@ export const HolographicCard3D: React.FC<HolographicCardProps> = ({
   const currentCategory = categoryConfig[credentialType?.toLowerCase()] || fallbackCategory;
 
   // Real world public verification URL (can be scanned by any smartphone camera)
-  const publicVerifyUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/c/${id}`
-      : `https://certifiedpass.io/c/${id}`;
+  const publicVerifyUrl = getCertificateUrl(id);
 
   const formattedDate = issuedAt
     ? new Date(issuedAt).toLocaleDateString("en-US", {
