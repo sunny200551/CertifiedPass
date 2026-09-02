@@ -18,6 +18,7 @@ import {
   Linkedin,
   MessageSquare,
 } from "lucide-react";
+import { logoUrl } from "../../lib/urls.js";
 
 export const Footer: React.FC = () => {
   return (
@@ -31,7 +32,7 @@ export const Footer: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <img
-                  src="/CP_logo.png"
+                  src={logoUrl}
                   alt="CertifiedPass Logo"
                   className="h-10 w-auto object-contain"
                 />

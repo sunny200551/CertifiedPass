@@ -34,3 +34,5 @@ export function formatUsdc(amount: any): string {
   if (isNaN(num)) return "$0.00 USDC";
   return `$${num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`;
 }
+
+export const logoUrl = `${import.meta.env.BASE_URL || "/"}CP_logo.png`.replace(/([^:]\/)\/+/g, "$1");

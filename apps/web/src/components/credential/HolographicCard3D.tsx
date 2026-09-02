@@ -1,5 +1,5 @@
 import React from "react";
-import { ShieldCheck, Award, QrCode, ExternalLink, CheckCircle2, Shield, Calendar, Hash, Sparkles } from "lucide-react";
+import { ShieldCheck, Award, QrCode, ExternalLink, CheckCircle2, Shield, Calendar, Hash, Sparkles, DollarSign } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Badge } from "../ui/Badge.js";
 import { getCertificateUrl } from "../../lib/urls.js";
@@ -140,6 +140,19 @@ export const HolographicCard3D: React.FC<HolographicCardProps> = ({
               <span className="font-medium truncate">
                 {metadata.placement ? `🏆 ${metadata.placement} — ` : ""}
                 {metadata.track || metadata.role || metadata.projectName || "Top Performing Project"}
+              </span>
+            </div>
+          )}
+
+          {/* Settled Escrow Value / Transaction Amount */}
+          {(metadata?.settledAmount || metadata?.amount || metadata?.bounty) && (
+            <div className="flex items-center justify-between text-xs bg-emerald-50/90 border border-emerald-300 rounded-xl px-3.5 py-2 text-emerald-950 font-bold shadow-apple-sm">
+              <div className="flex items-center gap-1.5 font-sans">
+                <DollarSign className="h-3.5 w-3.5 text-emerald-600" />
+                <span>Settled Transaction:</span>
+              </div>
+              <span className="font-mono text-emerald-700 font-black text-sm">
+                {metadata?.settledAmount || metadata?.amount || metadata?.bounty}
               </span>
             </div>
           )}

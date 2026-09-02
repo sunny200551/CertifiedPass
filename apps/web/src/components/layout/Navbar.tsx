@@ -4,6 +4,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Award, Search, Menu, X, PlusCircle, LayoutDashboard, User, LogOut, Sparkles } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.js";
 import { Button } from "../ui/Button.js";
+import { logoUrl } from "../../lib/urls.js";
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
@@ -22,7 +23,7 @@ export const Navbar: React.FC = () => {
         {/* Logo & Brand */}
         <Link to="/" className="flex items-center gap-3 group">
           <img
-            src="/CP_logo.png"
+            src={logoUrl}
             alt="CertifiedPass Logo"
             className="h-9 w-auto object-contain transition-transform group-hover:scale-105"
           />
