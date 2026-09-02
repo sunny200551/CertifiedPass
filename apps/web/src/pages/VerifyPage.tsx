@@ -193,12 +193,20 @@ export default function VerifyPage() {
 
   const handleScanSuccess = (parsedId: string, rawText: string) => {
     setInputVal(rawText);
-    if (
-      parsedId.startsWith("PL-SBT-") ||
-      parsedId.startsWith("PL-AUD-") ||
-      rawText.includes("polylance.app") ||
-      activeTab === "polylance"
-    ) {
+    const upper = parsedId.toUpperCase();
+    const rawLower = rawText.toLowerCase();
+    const isPolyLance =
+      upper.startsWith("PL-") ||
+      upper.startsWith("SBT-") ||
+      parsedId.startsWith("0x") ||
+      rawLower.includes("polylance") ||
+      rawLower.includes("jobs/") ||
+      rawLower.includes("attestation") ||
+      rawLower.includes("audit") ||
+      rawLower.includes("onrender.com") ||
+      activeTab === "polylance";
+
+    if (isPolyLance) {
       setActiveTab("polylance");
       verifyPolyLance(parsedId);
     } else {
@@ -212,14 +220,20 @@ export default function VerifyPage() {
     if (!raw) return;
 
     const parsedId = parseCertificateId(raw);
+    const upper = parsedId.toUpperCase();
+    const rawLower = raw.toLowerCase();
+    const isPolyLance =
+      upper.startsWith("PL-") ||
+      upper.startsWith("SBT-") ||
+      parsedId.startsWith("0x") ||
+      rawLower.includes("polylance") ||
+      rawLower.includes("jobs/") ||
+      rawLower.includes("attestation") ||
+      rawLower.includes("audit") ||
+      rawLower.includes("onrender.com") ||
+      activeTab === "polylance";
 
-    // Auto-detect PolyLance URLs or ID formats
-    if (
-      parsedId.startsWith("PL-SBT-") ||
-      parsedId.startsWith("PL-AUD-") ||
-      raw.includes("polylance.app") ||
-      activeTab === "polylance"
-    ) {
+    if (isPolyLance) {
       setActiveTab("polylance");
       verifyPolyLance(parsedId);
     } else {
@@ -432,52 +446,68 @@ export default function VerifyPage() {
                       <span>Talent / Recipient</span>
                     </div>
                     <div className="text-sm font-bold text-slate-900">
-                      {polyResult.details.recipient.name}
+                      {polyResult.details.recipient?.name ||
+                        polyResult.details.freelancerName ||
+                        polyResult.details.freelancer ||
+                        "Verified Freelancer"}
                     </div>
-                    <div className="flex items-center justify-between text-xs font-mono text-slate-600 bg-slate-50 rounded-xl p-2 border border-slate-100">
-                      <span className="truncate max-w-[210px]">
-                        {polyResult.details.recipient.address}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(polyResult.details!.recipient.address, "rec")}
-                        className="text-slate-400 hover:text-slate-600 p-0.5"
-                      >
-                        {copiedKey === "rec" ? (
-                          <Check className="h-3.5 w-3.5 text-emerald-600" />
-                        ) : (
-                          <Copy className="h-3.5 w-3.5" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Sponsor */}
-                  {polyResult.details.sponsor && (
-                    <div className="rounded-2xl border border-slate-200 p-4 bg-white space-y-2">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
-                        <Building2 className="h-4 w-4 text-indigo-600" />
-                        <span>Sponsor / Escrow Client</span>
-                      </div>
-                      <div className="text-sm font-bold text-slate-900">
-                        {polyResult.details.sponsor.name}
-                      </div>
+                    {(polyResult.details.recipient?.address || polyResult.details.freelancerAddress) && (
                       <div className="flex items-center justify-between text-xs font-mono text-slate-600 bg-slate-50 rounded-xl p-2 border border-slate-100">
                         <span className="truncate max-w-[210px]">
-                          {polyResult.details.sponsor.address}
+                          {polyResult.details.recipient?.address || polyResult.details.freelancerAddress}
                         </span>
                         <button
                           type="button"
-                          onClick={() => handleCopy(polyResult.details!.sponsor!.address, "spo")}
+                          onClick={() => {
+                            const addr = polyResult.details?.recipient?.address || polyResult.details?.freelancerAddress;
+                            if (addr) handleCopy(addr, "rec");
+                          }}
                           className="text-slate-400 hover:text-slate-600 p-0.5"
                         >
-                          {copiedKey === "spo" ? (
+                          {copiedKey === "rec" ? (
                             <Check className="h-3.5 w-3.5 text-emerald-600" />
                           ) : (
                             <Copy className="h-3.5 w-3.5" />
                           )}
                         </button>
                       </div>
+                    )}
+                  </div>
+
+                  {/* Sponsor */}
+                  {(polyResult.details.sponsor || polyResult.details.client || polyResult.details.clientAddress) && (
+                    <div className="rounded-2xl border border-slate-200 p-4 bg-white space-y-2">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
+                        <Building2 className="h-4 w-4 text-indigo-600" />
+                        <span>Sponsor / Escrow Client</span>
+                      </div>
+                      <div className="text-sm font-bold text-slate-900">
+                        {polyResult.details.sponsor?.name ||
+                          polyResult.details.clientName ||
+                          polyResult.details.client ||
+                          "Escrow Client"}
+                      </div>
+                      {(polyResult.details.sponsor?.address || polyResult.details.clientAddress) && (
+                        <div className="flex items-center justify-between text-xs font-mono text-slate-600 bg-slate-50 rounded-xl p-2 border border-slate-100">
+                          <span className="truncate max-w-[210px]">
+                            {polyResult.details.sponsor?.address || polyResult.details.clientAddress}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const addr = polyResult.details?.sponsor?.address || polyResult.details?.clientAddress;
+                              if (addr) handleCopy(addr, "spo");
+                            }}
+                            className="text-slate-400 hover:text-slate-600 p-0.5"
+                          >
+                            {copiedKey === "spo" ? (
+                              <Check className="h-3.5 w-3.5 text-emerald-600" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -507,7 +537,7 @@ export default function VerifyPage() {
                         </span>
                         <button
                           type="button"
-                          onClick={() => handleCopy(polyResult.details!.oracleSignature!, "sig2")}
+                          onClick={() => handleCopy(polyResult.details?.oracleSignature || "", "sig2")}
                           className="text-slate-400 hover:text-slate-600 p-0.5"
                         >
                           {copiedKey === "sig2" ? (

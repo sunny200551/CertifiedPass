@@ -8,6 +8,31 @@ import type {
 import { polylancePool } from "../utils/polylanceDb.js";
 import { logger } from "../utils/logger.js";
 
+function formatParticipantName(
+  name: string | null | undefined,
+  address: string | null | undefined,
+  defaultRole: string
+): string {
+  if (!name && !address) return defaultRole;
+  const shortAddr = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "";
+  const cleanName = name?.trim();
+
+  if (
+    cleanName &&
+    cleanName !== "Verified Developer" &&
+    cleanName !== "Escrow Patron" &&
+    cleanName !== "Audited Participant"
+  ) {
+    return cleanName;
+  }
+
+  if (shortAddr) {
+    return `${defaultRole} (${shortAddr})`;
+  }
+
+  return cleanName || defaultRole;
+}
+
 export class PolyLanceVerificationService {
   /**
    * Log verification audit trail asynchronously
@@ -66,8 +91,15 @@ export class PolyLanceVerificationService {
             OR LOWER("contractAddress") = LOWER($1)
             OR LOWER("ipfsCid") = LOWER($1)
             OR LOWER("oracleSignature") = LOWER($1)
+            OR LOWER("freelancerAddress") = LOWER($1)
+            OR LOWER("clientAddress") = LOWER($1)
             OR "id" ILIKE $2
             OR "jobId" ILIKE $2
+            OR "contractAddress" ILIKE $2
+            OR "sbtTokenId" ILIKE $2
+            OR "ipfsCid" ILIKE $2
+            OR "freelancerAddress" ILIKE $2
+            OR "clientAddress" ILIKE $2
          LIMIT 1`,
         [cleanCertId, likePattern]
       );
@@ -104,6 +136,17 @@ export class PolyLanceVerificationService {
           ? new Date(record.completedAt).toISOString()
           : new Date().toISOString();
 
+        const freelancerDisplayName = formatParticipantName(
+          record.freelancerName,
+          record.freelancerAddress,
+          "Freelancer"
+        );
+        const clientDisplayName = formatParticipantName(
+          record.clientName,
+          record.clientAddress,
+          "Escrow Client"
+        );
+
         return {
           verified: isVerified,
           status,
@@ -122,13 +165,20 @@ export class PolyLanceVerificationService {
             role: "Freelancer / Contributor",
             category: record.category || "General",
             settledAmountUsdc: amountFormatted,
+            freelancer: freelancerDisplayName,
+            freelancerName: freelancerDisplayName,
+            freelancerAddress: record.freelancerAddress,
+            freelancerGithub: record.freelancerGithub || null,
+            client: clientDisplayName,
+            clientName: clientDisplayName,
+            clientAddress: record.clientAddress,
             recipient: {
-              name: record.freelancerName || "Verified Developer",
+              name: freelancerDisplayName,
               address: record.freelancerAddress,
               github: record.freelancerGithub || null,
             },
             sponsor: {
-              name: record.clientName || "Escrow Patron",
+              name: clientDisplayName,
               address: record.clientAddress,
             },
             contractAddress: record.contractAddress,
@@ -174,6 +224,12 @@ export class PolyLanceVerificationService {
           ? `$${Number(audit.lifetimeVolumeUsdc).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`
           : "$0.00 USDC";
 
+        const participantDisplayName = formatParticipantName(
+          audit.displayName,
+          audit.targetAddress,
+          `Audited ${audit.roleType || "Participant"}`
+        );
+
         return {
           verified: isVerified,
           status,
@@ -186,14 +242,17 @@ export class PolyLanceVerificationService {
             : "Authentic PolyLance protocol trust index and historical milestone audit verified.",
           details: {
             typeTitle: "Protocol Trust Audit",
-            title: `${audit.displayName || "Participant"} Trust & Performance Audit`,
+            title: `${participantDisplayName} Trust & Performance Audit`,
             role: audit.roleType || "DEVELOPER",
             trustIndexScore: audit.trustIndexScore || "10.0",
             lifetimeVolumeUsdc: volumeFormatted,
             slaSuccessRate: audit.slaSuccessRate || "100%",
             completedMilestonesCount: audit.completedMilestonesCount || 0,
+            freelancer: participantDisplayName,
+            freelancerName: participantDisplayName,
+            freelancerAddress: audit.targetAddress,
             recipient: {
-              name: audit.displayName || "Audited Participant",
+              name: participantDisplayName,
               address: audit.targetAddress,
             },
             oracleSignature: audit.oracleSignature,
@@ -239,14 +298,14 @@ export class PolyLanceVerificationService {
   }> {
     try {
       const sbt = await polylancePool.query(
-        `SELECT "id", "jobId", "jobTitle", "category", "settledAmountUsdc", "freelancerName", "clientName", "status", "completedAt"
+        `SELECT "id", "jobId", "jobTitle", "category", "settledAmountUsdc", "freelancerAddress", "freelancerName", "clientAddress", "clientName", "status", "completedAt"
          FROM "CertifiedSBTRecord"
          ORDER BY "completedAt" DESC
          LIMIT 10`
       );
 
       const audit = await polylancePool.query(
-        `SELECT "id", "displayName", "roleType", "trustIndexScore", "lifetimeVolumeUsdc", "status"
+        `SELECT "id", "displayName", "roleType", "trustIndexScore", "lifetimeVolumeUsdc", "targetAddress", "status"
          FROM "CertifiedAuditRecord"
          ORDER BY "createdAt" DESC
          LIMIT 10`

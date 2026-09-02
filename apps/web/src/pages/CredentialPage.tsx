@@ -39,13 +39,56 @@ export default function CredentialPage() {
             if (res.data?.data && res.data.data.verified) {
               const polyData = res.data.data;
               const details = polyData.details;
+
+              const freelancerAddress =
+                details?.recipient?.address ||
+                details?.freelancerAddress ||
+                "0x0000000000000000000000000000000000000000";
+              const clientAddress =
+                details?.sponsor?.address ||
+                details?.clientAddress ||
+                details?.contractAddress ||
+                "0x0000000000000000000000000000000000000000";
+
+              const rawFreelancer =
+                details?.recipient?.name ||
+                details?.freelancerName ||
+                details?.freelancer;
+              const rawClient =
+                details?.sponsor?.name ||
+                details?.clientName ||
+                details?.client;
+
+              const shortFreelancer =
+                freelancerAddress && freelancerAddress.startsWith("0x") && freelancerAddress.length >= 10
+                  ? `${freelancerAddress.slice(0, 6)}...${freelancerAddress.slice(-4)}`
+                  : "";
+              const shortClient =
+                clientAddress && clientAddress.startsWith("0x") && clientAddress.length >= 10
+                  ? `${clientAddress.slice(0, 6)}...${clientAddress.slice(-4)}`
+                  : "";
+
+              const resolvedHolderName =
+                rawFreelancer && rawFreelancer !== "Verified Developer"
+                  ? rawFreelancer
+                  : shortFreelancer
+                  ? `Freelancer (${shortFreelancer})`
+                  : rawFreelancer || "Verified Freelancer";
+
+              const resolvedIssuerName =
+                rawClient && rawClient !== "Escrow Patron"
+                  ? rawClient
+                  : shortClient
+                  ? `Escrow Client (${shortClient})`
+                  : rawClient || "PolyLance Sovereign Escrow";
+
               const found: DecentralizedCredential = {
                 id: polyData.certId || credentialId,
                 credentialType: "opensource",
-                holderAddress: details?.recipient?.address || "0x0000000000000000000000000000000000000000",
-                holderName: details?.recipient?.name || "Verified Talent",
-                issuerName: details?.sponsor?.name || "PolyLance Sovereign Escrow",
-                issuerAddress: details?.sponsor?.address || details?.contractAddress || "0x0000000000000000000000000000000000000000",
+                holderAddress: freelancerAddress,
+                holderName: resolvedHolderName,
+                issuerName: resolvedIssuerName,
+                issuerAddress: clientAddress,
                 title: details?.title || "PolyLance Soulbound Attestation",
                 achievement: `${details?.typeTitle || "Attestation"} — Settled ${details?.settledAmountUsdc || details?.lifetimeVolumeUsdc || ""}`,
                 eventName: "PolyLance Sovereign Ledger",
@@ -58,8 +101,12 @@ export default function CredentialPage() {
                 isVerified: true,
                 metadata: {
                   title: details?.title,
-                  holderName: details?.recipient?.name,
-                  issuerName: details?.sponsor?.name,
+                  holderName: resolvedHolderName,
+                  issuerName: resolvedIssuerName,
+                  freelancerName: resolvedHolderName,
+                  clientName: resolvedIssuerName,
+                  freelancerAddress,
+                  clientAddress,
                   settledAmount: details?.settledAmountUsdc,
                   oracleSignature: details?.oracleSignature,
                   ipfsCid: details?.ipfsCid,

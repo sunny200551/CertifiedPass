@@ -290,52 +290,72 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
                         <span>Talent / Recipient</span>
                       </div>
                       <div className="text-xs font-semibold text-slate-900">
-                        {result.details.recipient.name}
+                        {result.details.recipient?.name ||
+                          result.details.freelancerName ||
+                          result.details.freelancer ||
+                          "Verified Freelancer"}
                       </div>
-                      <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 bg-slate-50 rounded-lg p-1.5">
-                        <span className="truncate max-w-[170px]">
-                          {result.details.recipient.address}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => handleCopy(result.details!.recipient.address, "recipient")}
-                          className="text-slate-400 hover:text-slate-600 p-0.5"
-                        >
-                          {copiedKey === "recipient" ? (
-                            <Check className="h-3 w-3 text-emerald-600" />
-                          ) : (
-                            <Copy className="h-3 w-3" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Sponsor / Client */}
-                    {result.details.sponsor && (
-                      <div className="rounded-xl border border-slate-200/60 p-3.5 bg-white space-y-1.5">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
-                          <Building2 className="h-3.5 w-3.5 text-indigo-600" />
-                          <span>Sponsor / Escrow Client</span>
-                        </div>
-                        <div className="text-xs font-semibold text-slate-900">
-                          {result.details.sponsor.name}
-                        </div>
+                      {(result.details.recipient?.address || result.details.freelancerAddress) && (
                         <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 bg-slate-50 rounded-lg p-1.5">
                           <span className="truncate max-w-[170px]">
-                            {result.details.sponsor.address}
+                            {result.details.recipient?.address || result.details.freelancerAddress}
                           </span>
                           <button
                             type="button"
-                            onClick={() => handleCopy(result.details!.sponsor!.address, "sponsor")}
+                            onClick={() =>
+                              handleCopy(
+                                result.details?.recipient?.address || result.details?.freelancerAddress || "",
+                                "recipient"
+                              )
+                            }
                             className="text-slate-400 hover:text-slate-600 p-0.5"
                           >
-                            {copiedKey === "sponsor" ? (
+                            {copiedKey === "recipient" ? (
                               <Check className="h-3 w-3 text-emerald-600" />
                             ) : (
                               <Copy className="h-3 w-3" />
                             )}
                           </button>
                         </div>
+                      )}
+                    </div>
+
+                    {/* Sponsor / Client */}
+                    {(result.details.sponsor || result.details.client || result.details.clientAddress) && (
+                      <div className="rounded-xl border border-slate-200/60 p-3.5 bg-white space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
+                          <Building2 className="h-3.5 w-3.5 text-indigo-600" />
+                          <span>Sponsor / Escrow Client</span>
+                        </div>
+                        <div className="text-xs font-semibold text-slate-900">
+                          {result.details.sponsor?.name ||
+                            result.details.clientName ||
+                            result.details.client ||
+                            "Escrow Client"}
+                        </div>
+                        {(result.details.sponsor?.address || result.details.clientAddress) && (
+                          <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 bg-slate-50 rounded-lg p-1.5">
+                            <span className="truncate max-w-[170px]">
+                              {result.details.sponsor?.address || result.details.clientAddress}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleCopy(
+                                  result.details?.sponsor?.address || result.details?.clientAddress || "",
+                                  "sponsor"
+                                )
+                              }
+                              className="text-slate-400 hover:text-slate-600 p-0.5"
+                            >
+                              {copiedKey === "sponsor" ? (
+                                <Check className="h-3 w-3 text-emerald-600" />
+                              ) : (
+                                <Copy className="h-3 w-3" />
+                              )}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

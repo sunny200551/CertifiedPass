@@ -89,6 +89,14 @@ export interface PolyLanceVerificationResult {
       name: string;
       address: string;
     };
+
+    freelancer?: string;
+    freelancerName?: string;
+    freelancerAddress?: string;
+    freelancerGithub?: string | null;
+    client?: string;
+    clientName?: string;
+    clientAddress?: string;
     
     // Cryptographic & Blockchain proofs
     contractAddress?: string;
