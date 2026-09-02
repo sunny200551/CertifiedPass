@@ -106,11 +106,15 @@ export default function CredentialPage() {
                 ? `Freelancer (${shortFreelancer})`
                 : rawFreelancer || "Verified Freelancer";
 
+            const isAudit = polyData.recordType === "PROTOCOL_TRUST_AUDIT" || upperId.startsWith("PL-AUD-");
+
             const resolvedIssuerName =
               rawClient && rawClient !== "Escrow Patron"
                 ? rawClient
                 : shortClient
                 ? `Escrow Client (${shortClient})`
+                : isAudit
+                ? "PolyLance Protocol Oracle"
                 : rawClient || "Steve Client";
 
             const formattedSettledAmount = formatUsdc(
@@ -123,11 +127,15 @@ export default function CredentialPage() {
               holderAddress: freelancerAddress,
               holderName: resolvedHolderName,
               issuerName: resolvedIssuerName,
-              issuerAddress: clientAddress,
-              title: details?.title || "PolyLance Soulbound Attestation",
-              achievement: `${details?.typeTitle || "Attestation"} — Settled ${formattedSettledAmount}`,
+              issuerAddress: isAudit ? "0x0000000000000000000000000000000000000137" : clientAddress,
+              title: details?.title || (isAudit ? "PolyLance Protocol Trust & Performance Audit" : "PolyLance Soulbound Attestation"),
+              achievement: isAudit
+                ? `Trust Score: ${details?.trustIndexScore || "10.0"} / 10 • Lifetime Volume ${formattedSettledAmount}`
+                : `${details?.typeTitle || "Attestation"} — Settled ${formattedSettledAmount}`,
               eventName: "PolyLance Sovereign Ledger",
-              skills: [details?.category || "Web3 Escrow", "Soulbound Token", "Polygon PoS 137"],
+              skills: isAudit
+                ? ["Protocol Trust Audit", "On-Chain Reputation", "Polygon PoS 137"]
+                : [details?.category || "Web3 Escrow", "Soulbound Token", "Polygon PoS 137"],
               issuedAt: details?.timestamp || new Date().toISOString(),
               credentialHash: details?.oracleSignature || "0x42f8366420a092c55660830e8115e9a443900990",
               txHash: details?.contractAddress || "0xeeacc05a99a271dc329875ce73662a923791c654",
@@ -141,11 +149,11 @@ export default function CredentialPage() {
                 freelancerName: resolvedHolderName,
                 clientName: resolvedIssuerName,
                 freelancerAddress,
-                clientAddress,
+                clientAddress: isAudit ? "0x0000000000000000000000000000000000000137" : clientAddress,
                 settledAmount: formattedSettledAmount,
                 oracleSignature: details?.oracleSignature,
                 ipfsCid: details?.ipfsCid,
-                category: details?.category || details?.typeTitle,
+                category: details?.category || details?.typeTitle || (isAudit ? "Protocol Trust Audit" : "Soulbound Attestation"),
                 network: details?.networkName || "Polygon PoS 137",
               },
             };
