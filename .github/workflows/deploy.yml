@@ -51,6 +51,7 @@ jobs:
       - name: Build Web Application
         env:
           VITE_BASE_PATH: "/CertifiedPass/"
+          VITE_API_URL: "https://polylance-fv-1.onrender.com/api/v1"
         run: pnpm build
 
       - name: Setup Pages

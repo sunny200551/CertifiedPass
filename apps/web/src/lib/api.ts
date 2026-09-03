@@ -1,12 +1,23 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env["VITE_API_URL"] ?? "http://localhost:3001/api/v1";
+export const getApiBaseUrl = (): string => {
+  if (import.meta.env["VITE_API_URL"]) {
+    return (import.meta.env["VITE_API_URL"] as string).replace(/\/$/, "");
+  }
+  if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+    return "http://localhost:3001/api/v1";
+  }
+  return "https://polylance-fv-1.onrender.com/api/v1";
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 12000,
 });
 
 // Attach JWT if available
