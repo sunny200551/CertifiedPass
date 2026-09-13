@@ -39,39 +39,39 @@ export const HolographicCard3D: React.FC<HolographicCardProps> = ({
     hackathon: {
       badge: "hackathon",
       accentColor: "var(--accent-blue)",
-      iconBg: "bg-gradient-to-br from-[var(--brand-indigo)] to-[var(--brand-violet)] text-white",
+      iconBg: "bg-[var(--accent-blue-bg)] text-[var(--accent-blue)] border-2 border-[var(--neo-outline)]",
     },
     internship: {
       badge: "internship",
       accentColor: "var(--accent-cyan)",
-      iconBg: "bg-gradient-to-br from-[var(--accent-cyan)] to-[var(--brand-indigo)] text-white",
+      iconBg: "bg-[var(--accent-cyan-bg)] text-[var(--accent-cyan)] border-2 border-[var(--neo-outline)]",
     },
     opensource: {
       badge: "opensource",
       accentColor: "var(--accent-green)",
-      iconBg: "bg-gradient-to-br from-[var(--accent-green)] to-[var(--brand-cyan)] text-white",
+      iconBg: "bg-[var(--accent-green-bg)] text-[var(--accent-green)] border-2 border-[var(--neo-outline)]",
     },
     competition: {
       badge: "competition",
       accentColor: "var(--accent-amber)",
-      iconBg: "bg-gradient-to-br from-[var(--accent-amber)] to-[var(--accent-pink)] text-white",
+      iconBg: "bg-[var(--accent-amber-bg)] text-[var(--accent-amber)] border-2 border-[var(--neo-outline)]",
     },
     workshop: {
       badge: "workshop",
       accentColor: "var(--accent-purple)",
-      iconBg: "bg-gradient-to-br from-[var(--accent-purple)] to-[var(--brand-indigo)] text-white",
+      iconBg: "bg-[var(--accent-purple-bg)] text-[var(--accent-purple)] border-2 border-[var(--neo-outline)]",
     },
     event: {
       badge: "event",
       accentColor: "var(--accent-pink)",
-      iconBg: "bg-gradient-to-br from-[var(--accent-pink)] to-[var(--accent-purple)] text-white",
+      iconBg: "bg-[var(--accent-pink-bg)] text-[var(--accent-pink)] border-2 border-[var(--neo-outline)]",
     },
   };
 
   const fallbackCategory = {
     badge: "default",
-    accentColor: "var(--brand-indigo)",
-    iconBg: "bg-gradient-to-br from-[var(--brand-indigo)] to-[var(--brand-violet)] text-white",
+    accentColor: "var(--brand-from)",
+    iconBg: "bg-[var(--accent-indigo-bg)] text-[var(--brand-from)] border-2 border-[var(--neo-outline)]",
   };
 
   const currentCategory = categoryConfig[credentialType?.toLowerCase()] || fallbackCategory;

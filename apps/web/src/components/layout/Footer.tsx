@@ -82,9 +82,9 @@ export const Footer: React.FC = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-black tracking-tight text-[var(--text-primary)] font-display flex items-center gap-1.5">
+                <span className="text-lg font-black tracking-tight text-[var(--text-primary)] font-display flex items-center gap-2">
                   CertifiedPass
-                  <span className="rounded-full neo-raised-sm bg-[var(--brand-indigo)] text-white px-2 py-0.5 text-[9px] font-black leading-none shadow-sm">
+                  <span className="rounded-full neo-inset-sm bg-[var(--accent-indigo-bg)] text-[var(--brand-from)] border-2 border-[var(--neo-outline)] px-2.5 py-0.5 text-[10px] font-black leading-none">
                     V1.0
                   </span>
                 </span>

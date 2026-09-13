@@ -267,16 +267,10 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
                       <span className="rounded-full neo-raised-sm bg-[var(--accent-purple-bg)] text-[var(--accent-purple)] px-2.5 py-0.5 text-[10px] font-bold">
                         {result.details.typeTitle}
                       </span>
-                      {result.details.settledAmountUsdc && (
-                        <span className="text-xs font-extrabold text-[var(--accent-green)] font-mono bg-[var(--accent-green-bg)] neo-raised-sm px-2 py-0.5 rounded-lg">
-                          {result.details.settledAmountUsdc}
-                        </span>
-                      )}
-                      {result.details.lifetimeVolumeUsdc && (
-                        <span className="text-xs font-extrabold text-[var(--accent-green)] font-mono bg-[var(--accent-green-bg)] neo-raised-sm px-2 py-0.5 rounded-lg">
-                          Vol: {result.details.lifetimeVolumeUsdc}
-                        </span>
-                      )}
+                      <span className="text-xs font-bold text-[var(--accent-purple)] font-mono bg-[var(--accent-purple-bg)] neo-raised-sm px-2.5 py-0.5 rounded-lg flex items-center gap-1">
+                        <Lock className="h-3 w-3" />
+                        Volume Protected
+                      </span>
                     </div>
                     <h4 className="text-base font-bold text-[var(--text-primary)] font-display">
                       {result.details.title}

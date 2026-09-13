@@ -128,28 +128,28 @@ export default function IssuerIssuePage() {
           </div>
 
           {/* Neomorphic Step Indicator Dots */}
-          <div className="flex items-center gap-3 bg-[var(--surface-bg)] neo-inset-sm px-4 py-2 rounded-full">
+          <div className="flex items-center gap-3.5 bg-[var(--surface-bg)] neo-inset-sm border-2 border-[var(--neo-outline)] px-5 py-2.5 rounded-full">
             <span
               className={`transition-all duration-300 rounded-full ${
                 step === "upload"
-                  ? "h-4 w-4 bg-gradient-to-r from-[var(--brand-indigo)] to-[var(--brand-violet)] neo-raised-sm animate-pulse-glow"
-                  : "h-2.5 w-2.5 bg-[var(--brand-indigo)] neo-inset-sm opacity-60"
+                  ? "h-4.5 w-4.5 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-via)] neo-raised-sm animate-pulse-glow"
+                  : "h-3 w-3 bg-[var(--brand-from)] neo-inset-sm opacity-60"
               }`}
             />
             <span
               className={`transition-all duration-300 rounded-full ${
                 step === "review"
-                  ? "h-4 w-4 bg-gradient-to-r from-[var(--brand-indigo)] to-[var(--brand-violet)] neo-raised-sm animate-pulse-glow"
+                  ? "h-4.5 w-4.5 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-via)] neo-raised-sm animate-pulse-glow"
                   : step === "success"
-                  ? "h-2.5 w-2.5 bg-[var(--brand-indigo)] neo-inset-sm opacity-60"
-                  : "h-2.5 w-2.5 bg-[var(--shadow-dark)]/30 neo-inset-sm"
+                  ? "h-3 w-3 bg-[var(--brand-from)] neo-inset-sm opacity-60"
+                  : "h-3 w-3 bg-[var(--shadow-dark)]/30 neo-inset-sm"
               }`}
             />
             <span
               className={`transition-all duration-300 rounded-full ${
                 step === "success"
-                  ? "h-4 w-4 bg-[var(--accent-green)] neo-raised-sm animate-pulse-glow"
-                  : "h-2.5 w-2.5 bg-[var(--shadow-dark)]/30 neo-inset-sm"
+                  ? "h-4.5 w-4.5 bg-[var(--accent-green)] neo-raised-sm animate-pulse-glow"
+                  : "h-3 w-3 bg-[var(--shadow-dark)]/30 neo-inset-sm"
               }`}
             />
           </div>
@@ -163,7 +163,7 @@ export default function IssuerIssuePage() {
               <label className="block text-xs font-black uppercase tracking-wider text-[var(--text-primary)] mb-3 font-display">
                 Select Credential Category
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
                 {(["hackathon", "internship", "opensource", "competition", "workshop", "event"] as CredentialType[]).map((type) => {
                   const isSelected = credentialType === type;
                   return (
@@ -171,13 +171,13 @@ export default function IssuerIssuePage() {
                       key={type}
                       type="button"
                       onClick={() => setCredentialType(type)}
-                      className={`rounded-2xl p-4 text-left transition-all duration-200 ${
+                      className={`rounded-2xl p-5 text-left transition-all duration-200 border-2 ${
                         isSelected
-                          ? "neo-inset bg-[var(--surface-bg)] scale-[0.98] ring-2 ring-[var(--brand-indigo)]"
-                          : "neo-raised bg-[var(--surface-bg)] hover:scale-[1.02]"
+                          ? "neo-inset bg-[var(--surface-bg)] scale-[0.98] border-[var(--brand-from)]"
+                          : "neo-raised bg-[var(--surface-bg)] border-[var(--neo-outline)] hover:scale-[1.02]"
                       }`}
                     >
-                      <Badge variant={type} size="sm" inset={isSelected}>
+                      <Badge variant={type} size="md" inset={isSelected}>
                         {type.toUpperCase()}
                       </Badge>
                     </button>

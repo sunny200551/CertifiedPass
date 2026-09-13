@@ -21,6 +21,12 @@
   --brand-via: #7C3AED;
   --brand-to: #06B6D4;
   
+  --brand-indigo: #4F46E5;
+  --brand-violet: #7C3AED;
+  --brand-cyan: #06B6D4;
+  
+  --accent-indigo: #6366F1;
+  --accent-indigo-bg: rgba(99, 102, 241, 0.10);
   --accent-blue: #6366F1;
   --accent-blue-bg: rgba(99, 102, 241, 0.10);
   --accent-green: #10B981;
@@ -33,6 +39,8 @@
   --accent-pink-bg: rgba(236, 72, 153, 0.10);
   --accent-cyan: #06B6D4;
   --accent-cyan-bg: rgba(6, 182, 212, 0.10);
+  
+  --neo-outline: rgba(30, 34, 51, 0.12);
   
   --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   --font-body: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
@@ -56,6 +64,12 @@
   --brand-via: #8B5CF6;
   --brand-to: #22D3EE;
   
+  --brand-indigo: #818CF8;
+  --brand-violet: #A78BFA;
+  --brand-cyan: #22D3EE;
+  
+  --accent-indigo: #818CF8;
+  --accent-indigo-bg: rgba(129, 140, 248, 0.14);
   --accent-blue: #818CF8;
   --accent-blue-bg: rgba(129, 140, 248, 0.14);
   --accent-green: #34D399;
@@ -68,6 +82,8 @@
   --accent-pink-bg: rgba(244, 114, 182, 0.14);
   --accent-cyan: #22D3EE;
   --accent-cyan-bg: rgba(34, 211, 238, 0.14);
+  
+  --neo-outline: rgba(255, 255, 255, 0.14);
 }
 
 @layer base {
@@ -276,23 +292,28 @@
   box-shadow: inset -2px -2px 6px rgba(255, 255, 255, 0.3), inset 2px 2px 6px rgba(0, 0, 0, 0.4);
 }
 
-/* Icon-Only Circular Button */
+/* Icon-Only Circular Button with 2px Subtle Edge Definition */
 .neo-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 38px;
   height: 38px;
+  flex-shrink: 0;
   border-radius: 9999px;
   background-color: var(--surface-card);
-  color: var(--text-secondary);
+  color: var(--text-primary);
+  border: 2px solid var(--neo-outline);
   box-shadow: -3px -3px 8px var(--shadow-light), 3px 3px 8px var(--shadow-dark);
-  transition: transform 200ms ease, box-shadow 200ms ease, color 200ms ease;
+  transition: transform 200ms ease, box-shadow 200ms ease, color 200ms ease, border-color 200ms ease;
+  overflow: hidden;
+  padding: 0;
 }
 
 .neo-icon-btn:hover {
-  color: var(--text-primary);
+  color: var(--brand-from);
   transform: translateY(-1.5px);
+  border-color: var(--brand-from);
   box-shadow: -5px -5px 12px var(--shadow-light), 5px 5px 12px var(--shadow-dark-deep);
 }
 
@@ -301,12 +322,18 @@
   box-shadow: inset -2px -2px 6px var(--shadow-light), inset 2px 2px 6px var(--shadow-dark);
 }
 
-/* Neomorphic Active Segment Pill */
+/* Neomorphic Active Segment Pill with 2px Subtle Edge Definition */
 .neo-pill-active {
   background-color: var(--surface-bg);
+  border: 2px solid var(--neo-outline);
   box-shadow: inset -3px -3px 8px var(--shadow-light), inset 3px 3px 8px var(--shadow-dark);
   color: var(--brand-from);
   font-weight: 800;
+}
+
+/* 2px Edge Outline Utility */
+.neo-outline-2 {
+  border: 2px solid var(--neo-outline);
 }
 
 /* Error Shake Keyframes */

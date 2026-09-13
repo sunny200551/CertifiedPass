@@ -146,12 +146,13 @@ export const VerificationReportModal: React.FC<VerificationReportModalProps> = (
               </div>
             </div>
 
-            {formattedAmount && (
-              <div className="text-left sm:text-right neo-raised-sm rounded-xl px-3 py-2 bg-[var(--surface-bg)]">
-                <div className="text-[10px] uppercase font-bold text-[var(--text-secondary)]">Settled Escrow</div>
-                <div className="text-base font-extrabold text-[var(--accent-green)] font-mono">{formattedAmount}</div>
+            <div className="text-left sm:text-right neo-raised-sm rounded-xl px-3.5 py-2 bg-[var(--surface-bg)]">
+              <div className="text-[10px] uppercase font-bold text-[var(--text-secondary)]">Settlement Volume</div>
+              <div className="text-xs font-bold text-[var(--accent-purple)] font-mono flex items-center gap-1 sm:justify-end mt-0.5">
+                <Lock className="h-3 w-3" />
+                <span>Volume Protected</span>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Participant Verification Grid */}

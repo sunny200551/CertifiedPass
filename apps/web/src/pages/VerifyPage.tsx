@@ -75,14 +75,14 @@ export default function VerifyPage() {
     },
   ];
 
-  // Default PolyLance Sovereign Attestation records with joined participant names and amounts
+  // Default PolyLance Sovereign Attestation records with joined participant names
   const defaultPolyLanceRecords = [
     {
       id: "PL-SBT-JOB-0xeeacc05a99a2-0xeeac",
       title: "Testing Site — Soulbound Attestation",
       freelancer: "SATHVIK_POLIPATI",
       client: "Steve Client",
-      amount: "$0.00 USDC",
+      amount: "Volume Protected",
       status: "VERIFIED",
     },
     {
@@ -90,7 +90,7 @@ export default function VerifyPage() {
       title: "Judge Test — Full Escrow Settlement",
       freelancer: "Anonymous PolyLancer",
       client: "Steve Client",
-      amount: "$99.96 USDC",
+      amount: "Volume Protected",
       status: "VERIFIED",
     },
     {
@@ -98,7 +98,7 @@ export default function VerifyPage() {
       title: "Testing WebRTC & Web Socket",
       freelancer: "Freelancer (0xc12d...9eda)",
       client: "Sunny Pasumarthi",
-      amount: "$10.00 USDC",
+      amount: "Volume Protected",
       status: "VERIFIED",
     },
     {
@@ -106,7 +106,7 @@ export default function VerifyPage() {
       title: "Client Job Test",
       freelancer: "Sunny Pasumarthi",
       client: "Steve Client",
-      amount: "$5.24 USDC",
+      amount: "Volume Protected",
       status: "VERIFIED",
     },
   ];
@@ -122,7 +122,7 @@ export default function VerifyPage() {
             title: r.jobTitle || "Soulbound Milestone Attestation",
             freelancer: r.freelancerName || "Verified Developer",
             client: r.clientName || "Steve Client",
-            amount: formatUsdc(r.settledAmountUsdc),
+            amount: "Volume Protected",
             status: r.status || "VERIFIED",
           }));
           setLivePolyRecords(mapped);
@@ -282,14 +282,14 @@ export default function VerifyPage() {
           </p>
 
           {/* Neomorphic Segmented Control with Magnetic Sliding Indicator */}
-          <div className="inline-flex items-center p-1.5 rounded-full neo-inset bg-[var(--surface-bg)] relative">
+          <div className="inline-flex items-center p-1.5 rounded-full neo-inset border-2 border-[var(--neo-outline)] bg-[var(--surface-bg)] relative">
             <button
               type="button"
               onClick={() => {
                 setActiveTab("certifiedpass");
                 setPolyResult(null);
               }}
-              className={`relative rounded-full px-5 py-2 text-xs font-bold transition-colors z-10 ${
+              className={`relative rounded-full px-4 sm:px-5 py-2 text-sm font-bold transition-all z-10 active:scale-[0.98] ${
                 activeTab === "certifiedpass"
                   ? "text-[var(--text-primary)]"
                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
@@ -299,7 +299,7 @@ export default function VerifyPage() {
                 <motion.div
                   layoutId="verify-registry-pill"
                   className="absolute inset-0 rounded-full neo-pill-active bg-[var(--surface-bg)] -z-10 shadow-sm"
-                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
                 />
               )}
               CertifiedPass Registry
@@ -312,7 +312,7 @@ export default function VerifyPage() {
                   verifyPolyLance(inputVal.trim());
                 }
               }}
-              className={`relative flex items-center gap-1.5 rounded-full px-5 py-2 text-xs font-bold transition-colors z-10 ${
+              className={`relative flex items-center gap-2 rounded-full px-4 sm:px-5 py-2 text-sm font-bold transition-all z-10 active:scale-[0.98] ${
                 activeTab === "polylance"
                   ? "text-[var(--text-primary)]"
                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
@@ -322,10 +322,10 @@ export default function VerifyPage() {
                 <motion.div
                   layoutId="verify-registry-pill"
                   className="absolute inset-0 rounded-full neo-pill-active bg-[var(--surface-bg)] -z-10 shadow-sm"
-                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
                 />
               )}
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-purple)] animate-pulse-glow" />
+              <span className="h-2 w-2 rounded-full bg-[var(--accent-purple)] animate-pulse-glow" />
               PolyLance Sovereign Ledger
             </button>
           </div>
@@ -465,16 +465,10 @@ export default function VerifyPage() {
                     <span className="rounded-full neo-raised-sm bg-[var(--accent-purple-bg)] text-[var(--accent-purple)] px-3 py-0.5 text-xs font-bold">
                       {polyResult.details.typeTitle}
                     </span>
-                    {polyResult.details.settledAmountUsdc && (
-                      <span className="text-sm font-black text-[var(--accent-green)] font-mono bg-[var(--accent-green-bg)] neo-raised-sm px-3 py-0.5 rounded-lg">
-                        {polyResult.details.settledAmountUsdc}
-                      </span>
-                    )}
-                    {polyResult.details.lifetimeVolumeUsdc && (
-                      <span className="text-sm font-black text-[var(--accent-green)] font-mono bg-[var(--accent-green-bg)] neo-raised-sm px-3 py-0.5 rounded-lg">
-                        Vol: {polyResult.details.lifetimeVolumeUsdc}
-                      </span>
-                    )}
+                    <span className="text-xs font-bold text-[var(--accent-purple)] font-mono bg-[var(--accent-purple-bg)] neo-raised-sm px-2.5 py-0.5 rounded-lg flex items-center gap-1">
+                      <Lock className="h-3 w-3" />
+                      Volume Protected
+                    </span>
                   </div>
                   <h3 className="text-lg font-bold text-[var(--text-primary)] font-display">
                     {polyResult.details.title}
@@ -804,7 +798,10 @@ export default function VerifyPage() {
                     <span className="rounded-full neo-raised-sm bg-[var(--accent-purple-bg)] text-[var(--accent-purple)] px-2.5 py-0.5 text-[10px] font-bold">
                       SBT ATTESTATION
                     </span>
-                    <span className="text-xs font-extrabold text-[var(--accent-green)] font-mono bg-[var(--accent-green-bg)] neo-raised-sm px-2.5 py-0.5 rounded-lg">{sample.amount}</span>
+                    <span className="text-[11px] font-bold text-[var(--accent-purple)] font-mono bg-[var(--accent-purple-bg)] neo-raised-sm px-2 py-0.5 rounded-lg flex items-center gap-1">
+                      <Lock className="h-3 w-3" />
+                      Volume Protected
+                    </span>
                   </div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-purple)] transition-colors line-clamp-2 mb-2 font-display">
                     {sample.title}
