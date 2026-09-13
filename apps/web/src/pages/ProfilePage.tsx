@@ -93,10 +93,10 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <Layout>
-        <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex min-h-[60vh] items-center justify-center text-[var(--text-primary)]">
           <div className="text-center space-y-3">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent mx-auto" />
-            <p className="text-sm font-medium text-slate-500 font-display">Loading Proof Profile...</p>
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--brand-indigo)] border-t-transparent mx-auto" />
+            <p className="text-sm font-bold text-[var(--text-primary)] font-display">Loading Proof Profile...</p>
           </div>
         </div>
       </Layout>
@@ -109,56 +109,56 @@ export default function ProfilePage() {
 
   return (
     <Layout>
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        {/* Profile Header Card */}
-        <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-apple-md mb-12">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 text-[var(--text-primary)]">
+        {/* Profile Header Card (Raised Panel) */}
+        <div className="rounded-[24px] neo-raised bg-[var(--surface-bg)] p-6 sm:p-8 mb-12">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div className="flex items-center gap-5">
-              <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-indigo-50 border border-indigo-100 text-indigo-700 text-2xl font-bold font-display shadow-apple-sm flex-shrink-0">
+              <div className="neo-raised-sm flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[var(--brand-indigo)] to-[var(--brand-violet)] text-white text-2xl font-bold font-display flex-shrink-0">
                 {u?.displayName?.slice(0, 2).toUpperCase() || "AR"}
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] font-display">
                     {u?.displayName || "Alex Rivera"}
                   </h1>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                  <span className="neo-raised-sm inline-flex items-center gap-1 rounded-full bg-[var(--accent-green-bg)] px-3 py-1 text-xs font-bold text-[var(--accent-green)]">
                     <ShieldCheck className="h-3.5 w-3.5" /> Verified Holder
                   </span>
                 </div>
-                <p className="text-xs font-mono text-slate-500 font-medium">@{u?.username || "alex.rivera"}</p>
-                <p className="text-sm text-slate-600 max-w-xl leading-relaxed pt-1">{u?.bio}</p>
+                <p className="text-xs font-mono text-[var(--brand-indigo)] font-bold">@{u?.username || "alex.rivera"}</p>
+                <p className="text-sm text-[var(--text-secondary)] max-w-xl leading-relaxed pt-1">{u?.bio}</p>
               </div>
             </div>
 
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
-              <Button variant="outline" size="sm" onClick={copyProfileLink} className="text-xs gap-1.5 flex-1 sm:flex-none">
-                {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Share2 className="h-3.5 w-3.5" />}
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto">
+              <Button variant="outline" size="sm" onClick={copyProfileLink} className="text-xs gap-1.5 flex-1 sm:flex-none rounded-full">
+                {copied ? <Check className="h-3.5 w-3.5 text-[var(--accent-green)]" /> : <Share2 className="h-3.5 w-3.5" />}
                 {copied ? "Copied" : "Share Profile"}
               </Button>
-              <Button variant="primary" size="sm" onClick={() => setShowEmbed(true)} className="text-xs gap-1.5 flex-1 sm:flex-none">
+              <Button variant="primary" size="sm" onClick={() => setShowEmbed(true)} className="text-xs gap-1.5 flex-1 sm:flex-none rounded-full px-5">
                 <Code className="h-3.5 w-3.5" /> Embed Badge
               </Button>
             </div>
           </div>
 
           {/* Stats Bar */}
-          <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-slate-100 pt-6">
-            <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-center">
-              <div className="text-2xl font-black text-slate-900 font-display">{stats?.totalCredentials || credentials.length}</div>
-              <div className="text-xs text-slate-500 font-medium">Verified Credentials</div>
+          <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-[var(--shadow-dark)]/15 pt-6">
+            <div className="rounded-2xl neo-inset bg-[var(--surface-bg)] p-4 text-center">
+              <div className="text-2xl font-black text-[var(--text-primary)] font-display">{stats?.totalCredentials || credentials.length}</div>
+              <div className="text-xs text-[var(--text-secondary)] font-bold">Verified Credentials</div>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-center">
-              <div className="text-2xl font-black text-indigo-600 font-display">{stats?.hackathons || 1}</div>
-              <div className="text-xs text-slate-500 font-medium">Hackathon Awards</div>
+            <div className="rounded-2xl neo-inset bg-[var(--surface-bg)] p-4 text-center">
+              <div className="text-2xl font-black text-[var(--brand-indigo)] font-display">{stats?.hackathons || 1}</div>
+              <div className="text-xs text-[var(--text-secondary)] font-bold">Hackathon Awards</div>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-center">
-              <div className="text-2xl font-black text-sky-600 font-display">{stats?.internships || 1}</div>
-              <div className="text-xs text-slate-500 font-medium">Internships</div>
+            <div className="rounded-2xl neo-inset bg-[var(--surface-bg)] p-4 text-center">
+              <div className="text-2xl font-black text-[var(--accent-cyan)] font-display">{stats?.internships || 1}</div>
+              <div className="text-xs text-[var(--text-secondary)] font-bold">Internships</div>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-center">
-              <div className="text-2xl font-black text-emerald-600 font-display">{stats?.openSource || 1}</div>
-              <div className="text-xs text-slate-500 font-medium">Open-Source Merges</div>
+            <div className="rounded-2xl neo-inset bg-[var(--surface-bg)] p-4 text-center">
+              <div className="text-2xl font-black text-[var(--accent-green)] font-display">{stats?.openSource || 1}</div>
+              <div className="text-xs text-[var(--text-secondary)] font-bold">Open-Source Merges</div>
             </div>
           </div>
         </div>
@@ -166,13 +166,13 @@ export default function ProfilePage() {
         {/* Credentials Grid */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-slate-900 font-display">Verifiable Achievement Passes</h2>
-            <span className="text-xs text-slate-500">Publicly Auditable on Polygon Amoy</span>
+            <h2 className="text-xl font-bold text-[var(--text-primary)] font-display">Verifiable Achievement Passes</h2>
+            <span className="text-xs text-[var(--text-secondary)] font-bold">Publicly Auditable on Polygon Amoy</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {credentials.map((cred: any) => (
-              <div key={cred.id} className="flex flex-col items-center">
+              <div key={cred.id} className="flex flex-col items-center hover:-translate-y-1 transition-transform">
                 <HolographicCard3D
                   id={cred.id}
                   title={cred.title}

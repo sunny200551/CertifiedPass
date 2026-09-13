@@ -16,27 +16,27 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const base =
-    "relative inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98]";
+    "relative inline-flex items-center justify-center font-medium rounded-2xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-indigo)] disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98]";
 
   const sizeClasses = {
-    sm: "px-3 py-1.5 text-xs gap-1.5",
-    md: "px-4 py-2 text-sm gap-2",
-    lg: "px-6 py-3 text-base gap-2.5",
+    sm: "px-3.5 py-1.5 text-xs gap-1.5",
+    md: "px-5 py-2.5 text-sm gap-2",
+    lg: "px-7 py-3.5 text-base gap-2.5",
   }[size];
 
   const variantClasses = {
     primary:
-      "bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-apple-sm hover:shadow-apple-md focus:ring-slate-900 focus:ring-offset-white",
+      "neo-btn-primary font-bold active:neo-inset",
     cyan:
-      "bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-apple-sm hover:shadow-apple-md focus:ring-indigo-600 focus:ring-offset-white",
+      "neo-btn-primary font-bold active:neo-inset",
     secondary:
-      "bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200/80 focus:ring-slate-400 focus:ring-offset-white",
+      "neo-btn bg-[var(--surface-bg)] text-[var(--text-primary)] hover:text-[var(--brand-indigo)] font-semibold active:neo-inset",
     outline:
-      "bg-white hover:bg-slate-50 text-slate-700 border border-slate-300/90 shadow-apple-sm focus:ring-indigo-500 focus:ring-offset-white",
+      "neo-btn bg-[var(--surface-bg)] text-[var(--text-primary)] font-semibold active:neo-inset",
     danger:
-      "bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 focus:ring-red-500 focus:ring-offset-white",
+      "neo-raised-sm bg-red-500/10 text-red-500 hover:bg-red-500/15 font-semibold active:neo-inset-sm",
     ghost:
-      "bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 focus:ring-slate-400 focus:ring-offset-white",
+      "bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:neo-raised-sm font-medium active:neo-inset-sm",
   }[variant];
 
   return (

@@ -4,23 +4,70 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg-primary: #F8FAFC;
-  --bg-surface: #FFFFFF;
-  --bg-elevated: #F1F5F9;
-  --border-subtle: #CBD5E1;
-  --text-primary: #020617;
-  --text-secondary: #0F172A;
-  --text-muted: #334155;
-  --accent-cyan: #0284C7;
-  --accent-blue: #1D4ED8;
-  --accent-indigo: #4338CA;
-  --status-verified: #059669;
-  --status-invalid: #DC2626;
-  --status-revoked: #D97706;
+:root, [data-theme="light"] {
+  --surface-bg: #EAECF3;
+  --surface-card: #EAECF3;
+  --surface-elevated: #EFF1F8;
+  
+  --shadow-light: rgba(255, 255, 255, 0.95);
+  --shadow-dark: rgba(166, 175, 195, 0.55);
+  --shadow-dark-deep: rgba(150, 160, 180, 0.7);
+  
+  --text-primary: #1E2233;
+  --text-secondary: #5B6070;
+  --text-muted: #7E8497;
+  
+  --brand-from: #4F46E5;
+  --brand-via: #7C3AED;
+  --brand-to: #06B6D4;
+  
+  --accent-blue: #6366F1;
+  --accent-blue-bg: rgba(99, 102, 241, 0.10);
+  --accent-green: #10B981;
+  --accent-green-bg: rgba(16, 185, 129, 0.10);
+  --accent-amber: #F59E0B;
+  --accent-amber-bg: rgba(245, 158, 11, 0.10);
+  --accent-purple: #A855F7;
+  --accent-purple-bg: rgba(168, 85, 247, 0.10);
+  --accent-pink: #EC4899;
+  --accent-pink-bg: rgba(236, 72, 153, 0.10);
+  --accent-cyan: #06B6D4;
+  --accent-cyan-bg: rgba(6, 182, 212, 0.10);
+  
   --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   --font-body: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
+}
+
+[data-theme="dark"], .dark {
+  --surface-bg: #1B1D27;
+  --surface-card: #1B1D27;
+  --surface-elevated: #222532;
+  
+  --shadow-light: rgba(255, 255, 255, 0.045);
+  --shadow-dark: rgba(0, 0, 0, 0.65);
+  --shadow-dark-deep: rgba(0, 0, 0, 0.85);
+  
+  --text-primary: #F1F2F8;
+  --text-secondary: #9CA3B8;
+  --text-muted: #6B7280;
+  
+  --brand-from: #6366F1;
+  --brand-via: #8B5CF6;
+  --brand-to: #22D3EE;
+  
+  --accent-blue: #818CF8;
+  --accent-blue-bg: rgba(129, 140, 248, 0.14);
+  --accent-green: #34D399;
+  --accent-green-bg: rgba(52, 211, 153, 0.14);
+  --accent-amber: #FBBF24;
+  --accent-amber-bg: rgba(251, 191, 36, 0.14);
+  --accent-purple: #C084FC;
+  --accent-purple-bg: rgba(192, 132, 252, 0.14);
+  --accent-pink: #F472B6;
+  --accent-pink-bg: rgba(244, 114, 182, 0.14);
+  --accent-cyan: #22D3EE;
+  --accent-cyan-bg: rgba(34, 211, 238, 0.14);
 }
 
 @layer base {
@@ -32,46 +79,226 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
+    transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
   }
 
   body {
-    background-color: var(--bg-primary);
+    background-color: var(--surface-bg);
     color: var(--text-primary);
     font-family: var(--font-body);
     min-height: 100vh;
     overflow-x: hidden;
+    transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     font-weight: 800;
     letter-spacing: -0.025em;
-    color: #020617;
+    color: var(--text-primary);
   }
 
   p {
-    color: #0F172A;
+    color: var(--text-secondary);
   }
 
   code, pre, kbd {
     font-family: var(--font-mono);
   }
+
+  /* Accessibility focus ring */
+  *:focus-visible {
+    outline: 2px solid var(--brand-from);
+    outline-offset: 2px;
+  }
 }
 
-/* Apple-style frosted glass effect with high contrast border */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(203, 213, 225, 0.9);
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+/* ==========================================================================
+   Neomorphic Shadow System (Soft UI Utilities)
+   ========================================================================== */
+
+/* Raised Elements */
+.neo-raised {
+  background-color: var(--surface-card);
+  box-shadow: -6px -6px 14px var(--shadow-light), 6px 6px 14px var(--shadow-dark);
+  border: none;
+  transition: transform 250ms ease, box-shadow 250ms ease, background-color 300ms ease;
 }
 
-.glass-nav {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(203, 213, 225, 0.9);
+.neo-raised-sm {
+  background-color: var(--surface-card);
+  box-shadow: -3px -3px 8px var(--shadow-light), 3px 3px 8px var(--shadow-dark);
+  border: none;
+  transition: transform 200ms ease, box-shadow 200ms ease, background-color 300ms ease;
+}
+
+.neo-raised-lg {
+  background-color: var(--surface-card);
+  box-shadow: -10px -10px 24px var(--shadow-light), 10px 10px 24px var(--shadow-dark);
+  border: none;
+  transition: transform 300ms ease, box-shadow 300ms ease, background-color 300ms ease;
+}
+
+.neo-floating {
+  background-color: var(--surface-card);
+  box-shadow: -12px -12px 28px var(--shadow-light), 12px 12px 30px var(--shadow-dark-deep);
+  border: none;
+}
+
+/* Inset / Pressed Elements */
+.neo-inset {
+  background-color: var(--surface-bg);
+  box-shadow: inset -4px -4px 10px var(--shadow-light), inset 4px 4px 10px var(--shadow-dark);
+  border: none;
+  transition: box-shadow 250ms ease, background-color 300ms ease;
+}
+
+.neo-inset-sm {
+  background-color: var(--surface-bg);
+  box-shadow: inset -2px -2px 6px var(--shadow-light), inset 2px 2px 6px var(--shadow-dark);
+  border: none;
+  transition: box-shadow 200ms ease, background-color 300ms ease;
+}
+
+/* Interactive Hover Lift */
+.neo-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: -8px -8px 18px var(--shadow-light), 8px 8px 18px var(--shadow-dark-deep);
+}
+
+.neo-hover-lift:active, .neo-press:active {
+  transform: scale(0.98);
+  box-shadow: inset -3px -3px 8px var(--shadow-light), inset 3px 3px 8px var(--shadow-dark);
+}
+
+/* Neomorphic Form Input */
+.neo-input {
+  background-color: var(--surface-bg);
+  color: var(--text-primary);
+  box-shadow: inset -3px -3px 8px var(--shadow-light), inset 3px 3px 8px var(--shadow-dark);
+  border: none;
+  border-radius: 16px;
+  outline: none;
+  transition: box-shadow 200ms ease, color 300ms ease;
+}
+
+.neo-input:focus {
+  box-shadow: inset -4px -4px 10px var(--shadow-light), inset 4px 4px 10px var(--shadow-dark), 0 0 0 2px var(--brand-from);
+}
+
+/* Neomorphic Buttons */
+.neo-btn {
+  background-color: var(--surface-card);
+  color: var(--text-primary);
+  box-shadow: -5px -5px 12px var(--shadow-light), 5px 5px 12px var(--shadow-dark);
+  border: none;
+  border-radius: 9999px;
+  font-weight: 700;
+  transition: transform 200ms ease, box-shadow 200ms ease, background-color 300ms ease;
+  user-select: none;
+}
+
+.neo-btn:hover {
+  transform: translateY(-1.5px);
+  box-shadow: -7px -7px 16px var(--shadow-light), 7px 7px 16px var(--shadow-dark-deep);
+}
+
+.neo-btn:active {
+  transform: scale(0.98);
+  box-shadow: inset -3px -3px 8px var(--shadow-light), inset 3px 3px 8px var(--shadow-dark);
+}
+
+.neo-btn-primary {
+  background: linear-gradient(135deg, var(--brand-from), var(--brand-via), var(--brand-to));
+  color: #FFFFFF;
+  box-shadow: -5px -5px 14px var(--shadow-light), 5px 5px 16px rgba(79, 70, 229, 0.4);
+  border: none;
+  border-radius: 9999px;
+  font-weight: 700;
+  transition: transform 200ms ease, box-shadow 200ms ease, opacity 200ms ease;
+}
+
+.neo-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: -7px -7px 18px var(--shadow-light), 7px 7px 22px rgba(79, 70, 229, 0.55);
+}
+
+.neo-btn-primary:active {
+  transform: scale(0.98);
+  box-shadow: inset -2px -2px 6px rgba(255, 255, 255, 0.3), inset 2px 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Neomorphic Active Segment Pill */
+.neo-pill-active {
+  background-color: var(--surface-bg);
+  box-shadow: inset -3px -3px 8px var(--shadow-light), inset 3px 3px 8px var(--shadow-dark);
+  color: var(--brand-from);
+  font-weight: 800;
+}
+
+/* Animated Gradient Text */
+.gradient-text-animated {
+  background: linear-gradient(120deg, var(--brand-from), var(--brand-via), var(--brand-to), var(--brand-from));
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 6s ease-in-out infinite;
+}
+
+/* Floating Breathing Animation */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-float-gentle {
+  animation: floatGentle 4s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.06);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+/* Mobile Shadow Adjustments */
+@media (max-width: 640px) {
+  .neo-raised {
+    box-shadow: -4px -4px 10px var(--shadow-light), 4px 4px 10px var(--shadow-dark);
+  }
+  .neo-raised-lg {
+    box-shadow: -6px -6px 16px var(--shadow-light), 6px 6px 16px var(--shadow-dark);
+  }
+  .neo-inset {
+    box-shadow: inset -2.5px -2.5px 6px var(--shadow-light), inset 2.5px 2.5px 6px var(--shadow-dark);
+  }
 }
 
 /* Custom crisp scrollbar */
@@ -79,12 +306,12 @@
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: var(--surface-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #94A3B8;
+  background: var(--text-muted);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748B;
+  background: var(--text-secondary);
 }

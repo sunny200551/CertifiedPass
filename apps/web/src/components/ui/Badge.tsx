@@ -20,6 +20,7 @@ interface BadgeProps {
   size?: "sm" | "md";
   className?: string;
   dot?: boolean;
+  inset?: boolean;
 }
 
 export const Badge: React.FC<BadgeProps> = ({
@@ -28,92 +29,86 @@ export const Badge: React.FC<BadgeProps> = ({
   size = "md",
   className = "",
   dot = false,
+  inset = false,
 }) => {
-  const variantStyles: Record<BadgeVariant, { bg: string; text: string; border: string; dotColor: string }> = {
+  const variantStyles: Record<
+    BadgeVariant,
+    { bg: string; text: string; dotColor: string }
+  > = {
     verified: {
-      bg: "bg-emerald-50",
-      text: "text-emerald-700 font-medium",
-      border: "border-emerald-200/90",
-      dotColor: "bg-emerald-500",
+      bg: "bg-[var(--accent-green-bg)]",
+      text: "text-[var(--accent-green)] font-semibold",
+      dotColor: "bg-[var(--accent-green)]",
     },
     active: {
-      bg: "bg-sky-50",
-      text: "text-sky-700 font-medium",
-      border: "border-sky-200/90",
-      dotColor: "bg-sky-500",
+      bg: "bg-[var(--accent-blue-bg)]",
+      text: "text-[var(--accent-blue)] font-semibold",
+      dotColor: "bg-[var(--accent-blue)]",
     },
     invalid: {
-      bg: "bg-red-50",
-      text: "text-red-700 font-medium",
-      border: "border-red-200/90",
+      bg: "bg-red-500/10",
+      text: "text-red-500 font-semibold",
       dotColor: "bg-red-500",
     },
     revoked: {
-      bg: "bg-amber-50",
-      text: "text-amber-800 font-medium",
-      border: "border-amber-200/90",
-      dotColor: "bg-amber-500",
+      bg: "bg-[var(--accent-amber-bg)]",
+      text: "text-[var(--accent-amber)] font-semibold",
+      dotColor: "bg-[var(--accent-amber)]",
     },
     pending: {
-      bg: "bg-slate-100",
-      text: "text-slate-600 font-medium",
-      border: "border-slate-200",
-      dotColor: "bg-slate-400",
+      bg: "bg-[var(--surface-bg)]",
+      text: "text-[var(--text-secondary)] font-semibold",
+      dotColor: "bg-[var(--text-secondary)]",
     },
     hackathon: {
-      bg: "bg-indigo-50",
-      text: "text-indigo-700 font-semibold",
-      border: "border-indigo-200/90",
-      dotColor: "bg-indigo-600",
+      bg: "bg-[var(--accent-blue-bg)]",
+      text: "text-[var(--accent-blue)] font-bold",
+      dotColor: "bg-[var(--accent-blue)]",
     },
     internship: {
-      bg: "bg-blue-50",
-      text: "text-blue-700 font-semibold",
-      border: "border-blue-200/90",
-      dotColor: "bg-blue-600",
+      bg: "bg-[var(--accent-cyan-bg)]",
+      text: "text-[var(--accent-cyan)] font-bold",
+      dotColor: "bg-[var(--accent-cyan)]",
     },
     opensource: {
-      bg: "bg-emerald-50",
-      text: "text-emerald-700 font-semibold",
-      border: "border-emerald-200/90",
-      dotColor: "bg-emerald-600",
+      bg: "bg-[var(--accent-green-bg)]",
+      text: "text-[var(--accent-green)] font-bold",
+      dotColor: "bg-[var(--accent-green)]",
     },
     competition: {
-      bg: "bg-amber-50",
-      text: "text-amber-800 font-semibold",
-      border: "border-amber-200/90",
-      dotColor: "bg-amber-600",
+      bg: "bg-[var(--accent-amber-bg)]",
+      text: "text-[var(--accent-amber)] font-bold",
+      dotColor: "bg-[var(--accent-amber)]",
     },
     workshop: {
-      bg: "bg-purple-50",
-      text: "text-purple-700 font-semibold",
-      border: "border-purple-200/90",
-      dotColor: "bg-purple-600",
+      bg: "bg-[var(--accent-purple-bg)]",
+      text: "text-[var(--accent-purple)] font-bold",
+      dotColor: "bg-[var(--accent-purple)]",
     },
     event: {
-      bg: "bg-teal-50",
-      text: "text-teal-700 font-semibold",
-      border: "border-teal-200/90",
-      dotColor: "bg-teal-600",
+      bg: "bg-[var(--accent-pink-bg)]",
+      text: "text-[var(--accent-pink)] font-bold",
+      dotColor: "bg-[var(--accent-pink)]",
     },
     default: {
-      bg: "bg-slate-100",
-      text: "text-slate-700",
-      border: "border-slate-200",
-      dotColor: "bg-slate-400",
+      bg: "bg-[var(--surface-bg)]",
+      text: "text-[var(--text-primary)] font-medium",
+      dotColor: "bg-[var(--brand-indigo)]",
     },
   };
 
   const style = variantStyles[variant] || variantStyles.default;
-  const sizeClass = size === "sm" ? "px-2 py-0.5 text-[11px]" : "px-2.5 py-1 text-xs";
+  const sizeClass =
+    size === "sm" ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs";
+  const shadowClass = inset ? "neo-inset-sm" : "neo-raised-sm";
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border ${style.bg} ${style.text} ${style.border} ${sizeClass} ${className} select-none transition-colors`}
+      className={`inline-flex items-center gap-1.5 rounded-full ${shadowClass} ${style.bg} ${style.text} ${sizeClass} ${className} select-none transition-all`}
     >
       {dot && (
         <span
-          className={`h-1.5 w-1.5 rounded-full ${style.dotColor} flex-shrink-0`}
+          className={`h-1.5 w-1.5 rounded-full ${style.dotColor} flex-shrink-0 animate-pulse-glow`}
         />
       )}
       {children}

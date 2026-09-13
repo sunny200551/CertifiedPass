@@ -60,27 +60,27 @@ export default function MyProfile() {
 
   return (
     <Layout>
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 text-slate-900">
-        <div className="border-b border-slate-200/90 pb-6 mb-8">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">Edit Proof Profile</h1>
-          <p className="text-sm text-slate-500 mt-1 font-medium">
+      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 text-[var(--text-primary)]">
+        <div className="border-b border-[var(--shadow-dark)]/15 pb-6 mb-8">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] font-display">Edit Proof Profile</h1>
+          <p className="text-sm text-[var(--text-secondary)] mt-1 font-medium">
             Customize how your achievements and credentials appear to public viewers worldwide.
           </p>
         </div>
 
-        <form onSubmit={handleSave} className="space-y-6 rounded-3xl border border-slate-200/90 bg-white p-8 shadow-apple-sm">
+        <form onSubmit={handleSave} className="space-y-6 rounded-[24px] neo-raised bg-[var(--surface-bg)] p-8">
           {success && (
-            <div className="flex items-center gap-2 rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-800 font-semibold">
-              <Check className="h-5 w-5 text-emerald-600" /> Profile successfully saved and synced across devices!
+            <div className="flex items-center gap-2 rounded-2xl neo-inset-sm bg-[var(--accent-green-bg)] p-4 text-sm text-[var(--accent-green)] font-bold">
+              <Check className="h-5 w-5" /> Profile successfully saved and synced across devices!
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2 font-display">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-2 font-display">
               Public Username / Handle (for certifiedpass.io/u/:username)
             </label>
-            <div className="flex rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-100">
-              <span className="inline-flex items-center px-4 text-sm text-slate-500 bg-slate-100/80 border-r border-slate-200 font-mono">
+            <div className="flex rounded-2xl neo-inset bg-[var(--surface-bg)] overflow-hidden">
+              <span className="inline-flex items-center px-4 text-sm text-[var(--text-secondary)] font-mono border-r border-[var(--shadow-dark)]/15">
                 certifiedpass.io/u/
               </span>
               <input
@@ -88,13 +88,13 @@ export default function MyProfile() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="alex.rivera"
-                className="w-full bg-transparent px-4 py-3 text-sm font-medium text-slate-900 focus:outline-none"
+                className="w-full bg-transparent px-4 py-3 text-sm font-medium text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2 font-display">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-2 font-display">
               Display Name
             </label>
             <input
@@ -102,34 +102,26 @@ export default function MyProfile() {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Alex Rivera"
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              className="w-full rounded-2xl neo-inset bg-[var(--surface-bg)] px-4 py-3 text-sm font-medium text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2 font-display">
-              Bio / Specialization
+            <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-2 font-display">
+              Bio & Career Objective
             </label>
             <textarea
-              rows={3}
+              rows={4}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              placeholder="Full-stack Web3 engineer building on Polygon Amoy."
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              placeholder="Share your experience, technical focus, and achievements..."
+              className="w-full rounded-2xl neo-inset bg-[var(--surface-bg)] px-4 py-3 text-sm font-medium text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none resize-none"
             />
           </div>
 
-          <div className="flex items-center gap-2 rounded-2xl bg-slate-50 border border-slate-200 p-3 text-xs">
-            <Shield className="h-4 w-4 text-indigo-600 shrink-0" />
-            <div className="truncate font-mono text-[11px] text-slate-600">
-              <span className="font-semibold text-slate-800">Connected Wallet: </span>
-              {user?.walletAddress || "0x..."}
-            </div>
-          </div>
-
           <div className="pt-2 flex justify-end">
-            <Button variant="primary" type="submit" isLoading={saving} className="gap-2 shadow-apple-sm">
-              <Save className="h-4 w-4" /> Save & Sync Profile
+            <Button variant="primary" type="submit" size="md" isLoading={saving} className="rounded-full px-8 font-bold">
+              Save Profile Changes
             </Button>
           </div>
         </form>

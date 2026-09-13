@@ -43,23 +43,23 @@ export default function MyCredentials() {
 
   return (
     <Layout>
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 text-slate-900">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/90 pb-6 mb-8">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 text-[var(--text-primary)]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--shadow-dark)]/15 pb-6 mb-8">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">My Credentials</h1>
-            <p className="text-sm text-slate-500 mt-1">All verified credentials anchored to your wallet address.</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] font-display">My Credentials</h1>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">All verified credentials anchored to your wallet address.</p>
           </div>
 
-          {/* Category Filter Pills */}
+          {/* Category Filter Pills (Neomorphic) */}
           <div className="flex flex-wrap gap-2">
             {["all", "hackathon", "internship", "opensource", "competition", "workshop"].map((t) => (
               <button
                 key={t}
                 onClick={() => setSelectedType(t)}
-                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition-all ${
+                className={`rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                   selectedType === t
-                    ? "bg-slate-900 text-white shadow-apple-sm"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+                    ? "neo-pill-active text-[var(--brand-indigo)]"
+                    : "neo-raised-sm bg-[var(--surface-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 }`}
               >
                 {t}
@@ -69,9 +69,9 @@ export default function MyCredentials() {
         </div>
 
         {/* Credentials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filtered.map((c) => (
-            <div key={c.id} className="flex flex-col items-center">
+            <div key={c.id} className="flex flex-col items-center hover:-translate-y-1 transition-transform">
               <HolographicCard3D
                 id={c.id}
                 title={c.title}

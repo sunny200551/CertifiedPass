@@ -21,6 +21,7 @@ import { parseCertificateId } from "@certifiedpass/utils";
 import type { PolyLanceVerificationResult } from "@certifiedpass/types";
 import { api } from "../../lib/api.js";
 import { MobileQRScannerModal } from "./MobileQRScannerModal.js";
+import { Button } from "../ui/Button.js";
 
 interface PolyLanceVerifierModalProps {
   isOpen: boolean;
@@ -108,42 +109,45 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
     }
   };
 
+  const handleScanSuccess = (parsedId: string, rawText: string) => {
+    setInputVal(rawText);
+    handleVerify(parsedId);
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl rounded-3xl border border-slate-200/90 bg-white shadow-2xl transition-all overflow-hidden my-8">
-        {/* Header with partner branding */}
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-slate-50/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/60 backdrop-blur-md transition-all">
+      <div className="relative w-full max-w-2xl rounded-[24px] neo-floating bg-[var(--surface-bg)] text-[var(--text-primary)] transition-all overflow-hidden my-6">
+        {/* Header Bar */}
+        <div className="flex items-center justify-between border-b border-[var(--shadow-dark)]/15 px-6 py-4 bg-[var(--surface-bg)]">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-600/10 text-violet-600 border border-violet-200/60 font-mono font-bold text-sm">
-              PL
+            <div className="neo-raised-sm flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent-purple-bg)] text-[var(--accent-purple)] font-bold">
+              <Sparkles className="h-5 w-5 animate-pulse-glow" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-slate-900 font-display">
-                  PolyLance Sovereign Ledger
-                </h3>
-                <span className="rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700 border border-violet-200">
-                  Collab Verifier
+              <h3 className="text-base font-bold text-[var(--text-primary)] font-display flex items-center gap-1.5">
+                <span>PolyLance Sovereign Verifier</span>
+                <span className="rounded-full neo-inset-sm bg-[var(--accent-purple-bg)] text-[var(--accent-purple)] px-2 py-0.5 text-[9px] font-bold">
+                  Collab
                 </span>
-              </div>
-              <p className="text-xs text-slate-500">
-                Independent Audit & Soulbound Milestone Verification
+              </h3>
+              <p className="text-xs text-[var(--text-secondary)]">
+                Audit Soulbound Tokens & multi-sig escrow milestone settlements on Polygon PoS (137)
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+            className="neo-raised-sm rounded-full p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors active:neo-inset-sm"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Body */}
-        <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
-          {/* Input & Scanner box */}
+        {/* Modal Body */}
+        <div className="p-6 sm:p-7 space-y-6">
+          {/* Search Box */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -151,82 +155,80 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
             }}
             className="space-y-3"
           >
-            <div className="flex items-center justify-between">
-              <label className="block text-xs font-semibold text-slate-700">
-                Certificate ID, QR Code Text, or PolyLance Attestation URL
-              </label>
-              <button
-                type="button"
-                onClick={() => setIsScannerOpen(true)}
-                className="md:hidden flex items-center gap-1 text-xs font-bold text-violet-600 hover:text-violet-700 transition-colors"
-              >
-                <Camera className="h-3.5 w-3.5" />
-                Scan with Camera
-              </button>
-            </div>
             <div className="relative flex items-center">
-              <Search className="absolute left-3.5 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3.5 h-4 w-4 text-[var(--text-secondary)]" />
               <input
                 type="text"
-                placeholder="e.g. PL-SBT-JOB-101-0x42F8 or https://polylance.app/#/jobs/..."
+                placeholder="Paste PolyLance Certificate ID, full URL, or SBT hash..."
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 pl-10 pr-24 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-violet-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-100 transition-all font-mono"
+                className="w-full rounded-2xl neo-inset bg-[var(--surface-bg)] pl-10 pr-28 py-3 text-xs sm:text-sm font-mono text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none"
               />
-              <button
-                type="submit"
-                disabled={loading || !inputVal.trim()}
-                className="absolute right-2 rounded-xl bg-violet-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-violet-700 disabled:opacity-50 transition-colors shadow-sm"
-              >
-                {loading ? "Checking..." : "Verify"}
-              </button>
+              <div className="absolute right-1.5 flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setIsScannerOpen(true)}
+                  className="neo-raised-sm rounded-xl p-1.5 text-[var(--brand-indigo)] hover:text-[var(--brand-violet)] transition-all active:neo-inset-sm"
+                  title="Open Camera QR Scanner"
+                >
+                  <Camera className="h-4 w-4" />
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading || !inputVal.trim()}
+                  className="rounded-xl neo-btn-primary px-3.5 py-1.5 text-xs font-bold text-white transition-all disabled:opacity-50"
+                >
+                  {loading ? "..." : "Audit"}
+                </button>
+              </div>
             </div>
 
+            {/* Quick Sample Links */}
             {sampleCerts.length > 0 && (
-              <div className="flex items-center gap-1.5 flex-wrap pt-1 text-xs">
-                <span className="text-slate-400 font-medium">Quick Test:</span>
-                {sampleCerts.slice(0, 2).map((sId) => (
+              <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-[var(--text-secondary)]">
+                <span>Try sample:</span>
+                {sampleCerts.slice(0, 2).map((s) => (
                   <button
-                    key={sId}
+                    key={s}
                     type="button"
                     onClick={() => {
-                      setInputVal(sId);
-                      handleVerify(sId);
+                      setInputVal(s);
+                      handleVerify(s);
                     }}
-                    className="rounded-lg bg-slate-100 hover:bg-slate-200 px-2 py-0.5 font-mono text-[11px] text-slate-600 transition-colors"
+                    className="font-mono font-bold text-[var(--accent-purple)] hover:underline"
                   >
-                    {sId.slice(0, 18)}...
+                    {s.slice(0, 18)}...
                   </button>
                 ))}
               </div>
             )}
           </form>
 
-          {/* Results display */}
+          {/* Verification Result State */}
           {loading && (
-            <div className="flex flex-col items-center justify-center py-12 text-center space-y-3">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-600 border-t-transparent" />
-              <p className="text-xs font-medium text-slate-500 font-mono">
-                Querying PolyLance Sovereign PostgreSQL Audit Ledger...
+            <div className="rounded-2xl neo-inset bg-[var(--surface-bg)] p-8 text-center space-y-2">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--accent-purple)] border-t-transparent mx-auto" />
+              <p className="text-xs font-bold text-[var(--text-primary)]">
+                Querying PolyLance Sovereign Ledger & PostgreSQL state...
               </p>
             </div>
           )}
 
           {!loading && result && (
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm space-y-5">
-              {/* Status Header Badge */}
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div className="rounded-2xl neo-raised bg-[var(--surface-bg)] p-5 space-y-4">
+              {/* Header Status */}
+              <div className="flex items-start justify-between gap-3 border-b border-[var(--shadow-dark)]/15 pb-4">
                 <div className="flex items-center gap-3">
                   {result.status === "VERIFIED" ? (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200">
+                    <div className="neo-raised-sm flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-green-bg)] text-[var(--accent-green)]">
                       <ShieldCheck className="h-6 w-6" />
                     </div>
                   ) : result.status === "REVOKED" ? (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600 border border-rose-200">
+                    <div className="neo-raised-sm flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/10 text-rose-500">
                       <ShieldAlert className="h-6 w-6" />
                     </div>
                   ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 border border-amber-200">
+                    <div className="neo-raised-sm flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-amber-bg)] text-[var(--accent-amber)]">
                       <AlertTriangle className="h-6 w-6" />
                     </div>
                   )}
@@ -234,24 +236,24 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
                   <div>
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-sm font-extrabold uppercase tracking-wide ${
+                        className={`text-sm font-black tracking-wide ${
                           result.status === "VERIFIED"
-                            ? "text-emerald-700"
+                            ? "text-[var(--accent-green)]"
                             : result.status === "REVOKED"
-                            ? "text-rose-700"
-                            : "text-amber-700"
+                            ? "text-rose-500"
+                            : "text-[var(--accent-amber)]"
                         }`}
                       >
                         {result.displayStatus}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 font-mono">
+                    <p className="text-xs text-[var(--text-secondary)] font-mono">
                       ID: {result.certId}
                     </p>
                   </div>
                 </div>
 
-                <span className="text-[11px] text-slate-400 font-mono">
+                <span className="text-[11px] text-[var(--text-secondary)] font-mono">
                   {new Date(result.verifiedAt).toLocaleTimeString()}
                 </span>
               </div>
@@ -260,23 +262,23 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
               {result.status === "VERIFIED" && result.details && (
                 <div className="space-y-4">
                   {/* Title & Type */}
-                  <div className="rounded-xl bg-slate-50/80 p-4 border border-slate-200/60">
+                  <div className="rounded-xl neo-inset bg-[var(--surface-bg)] p-4">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="rounded-full bg-violet-100 text-violet-800 border border-violet-200 px-2.5 py-0.5 text-[10px] font-bold">
+                      <span className="rounded-full neo-raised-sm bg-[var(--accent-purple-bg)] text-[var(--accent-purple)] px-2.5 py-0.5 text-[10px] font-bold">
                         {result.details.typeTitle}
                       </span>
                       {result.details.settledAmountUsdc && (
-                        <span className="text-xs font-extrabold text-emerald-600 font-mono">
+                        <span className="text-xs font-extrabold text-[var(--accent-green)] font-mono bg-[var(--accent-green-bg)] neo-raised-sm px-2 py-0.5 rounded-lg">
                           {result.details.settledAmountUsdc}
                         </span>
                       )}
                       {result.details.lifetimeVolumeUsdc && (
-                        <span className="text-xs font-extrabold text-emerald-600 font-mono">
+                        <span className="text-xs font-extrabold text-[var(--accent-green)] font-mono bg-[var(--accent-green-bg)] neo-raised-sm px-2 py-0.5 rounded-lg">
                           Vol: {result.details.lifetimeVolumeUsdc}
                         </span>
                       )}
                     </div>
-                    <h4 className="text-base font-bold text-slate-900 font-display">
+                    <h4 className="text-base font-bold text-[var(--text-primary)] font-display">
                       {result.details.title}
                     </h4>
                   </div>
@@ -284,19 +286,19 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
                   {/* Two-column Participant Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {/* Recipient / Talent */}
-                    <div className="rounded-xl border border-slate-200/60 p-3.5 bg-white space-y-1.5">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
-                        <User className="h-3.5 w-3.5 text-violet-600" />
+                    <div className="rounded-xl neo-raised p-3.5 bg-[var(--surface-bg)] space-y-1.5">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-secondary)]">
+                        <User className="h-3.5 w-3.5 text-[var(--accent-purple)]" />
                         <span>Talent / Recipient</span>
                       </div>
-                      <div className="text-xs font-semibold text-slate-900">
+                      <div className="text-xs font-semibold text-[var(--text-primary)]">
                         {result.details.recipient?.name ||
                           result.details.freelancerName ||
                           result.details.freelancer ||
                           "Verified Freelancer"}
                       </div>
                       {(result.details.recipient?.address || result.details.freelancerAddress) && (
-                        <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 bg-slate-50 rounded-lg p-1.5">
+                        <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-secondary)] neo-inset-sm rounded-lg p-1.5 bg-[var(--surface-bg)]">
                           <span className="truncate max-w-[170px]">
                             {result.details.recipient?.address || result.details.freelancerAddress}
                           </span>
@@ -308,10 +310,10 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
                                 "recipient"
                               )
                             }
-                            className="text-slate-400 hover:text-slate-600 p-0.5"
+                            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-0.5"
                           >
                             {copiedKey === "recipient" ? (
-                              <Check className="h-3 w-3 text-emerald-600" />
+                              <Check className="h-3 w-3 text-[var(--accent-green)]" />
                             ) : (
                               <Copy className="h-3 w-3" />
                             )}
@@ -322,19 +324,19 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
 
                     {/* Sponsor / Client */}
                     {(result.details.sponsor || result.details.client || result.details.clientAddress) && (
-                      <div className="rounded-xl border border-slate-200/60 p-3.5 bg-white space-y-1.5">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
-                          <Building2 className="h-3.5 w-3.5 text-indigo-600" />
+                      <div className="rounded-xl neo-raised p-3.5 bg-[var(--surface-bg)] space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-secondary)]">
+                          <Building2 className="h-3.5 w-3.5 text-[var(--brand-indigo)]" />
                           <span>Sponsor / Escrow Client</span>
                         </div>
-                        <div className="text-xs font-semibold text-slate-900">
+                        <div className="text-xs font-semibold text-[var(--text-primary)]">
                           {result.details.sponsor?.name ||
                             result.details.clientName ||
                             result.details.client ||
                             "Escrow Client"}
                         </div>
                         {(result.details.sponsor?.address || result.details.clientAddress) && (
-                          <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 bg-slate-50 rounded-lg p-1.5">
+                          <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-secondary)] neo-inset-sm rounded-lg p-1.5 bg-[var(--surface-bg)]">
                             <span className="truncate max-w-[170px]">
                               {result.details.sponsor?.address || result.details.clientAddress}
                             </span>
@@ -346,10 +348,10 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
                                   "sponsor"
                                 )
                               }
-                              className="text-slate-400 hover:text-slate-600 p-0.5"
+                              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-0.5"
                             >
                               {copiedKey === "sponsor" ? (
-                                <Check className="h-3 w-3 text-emerald-600" />
+                                <Check className="h-3 w-3 text-[var(--accent-green)]" />
                               ) : (
                                 <Copy className="h-3 w-3" />
                               )}
@@ -361,83 +363,51 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
                   </div>
 
                   {/* Cryptographic & Ledger Proofs */}
-                  <div className="rounded-xl border border-slate-200/60 bg-slate-50/50 p-3.5 space-y-2 text-xs">
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                      <Lock className="h-3 w-3 text-slate-400" />
+                  <div className="rounded-xl neo-inset bg-[var(--surface-bg)] p-3.5 space-y-2 text-xs">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1">
+                      <Lock className="h-3 w-3 text-[var(--brand-indigo)]" />
                       Cryptographic On-Chain & Storage Proofs
                     </div>
 
                     {result.details.contractAddress && (
-                      <div className="flex items-center justify-between py-1 border-b border-slate-200/40">
-                        <span className="text-slate-500">Smart Contract:</span>
-                        <span className="font-mono text-slate-800 text-[11px]">
+                      <div className="flex items-center justify-between py-1 border-b border-[var(--shadow-dark)]/10">
+                        <span className="text-[var(--text-secondary)]">Smart Contract:</span>
+                        <span className="font-mono text-[var(--text-primary)] text-[11px]">
                           {result.details.contractAddress.slice(0, 10)}...{result.details.contractAddress.slice(-8)} (Polygon 137)
                         </span>
                       </div>
                     )}
 
                     {result.details.oracleSignature && (
-                      <div className="flex items-center justify-between py-1 border-b border-slate-200/40">
-                        <span className="text-slate-500">Oracle Cryptographic Signature:</span>
-                        <div className="flex items-center gap-1">
-                          <span className="font-mono text-slate-800 text-[11px] truncate max-w-[140px]">
-                            {result.details.oracleSignature}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(result.details!.oracleSignature!, "sig")}
-                            className="text-slate-400 hover:text-slate-600 p-0.5"
-                          >
-                            {copiedKey === "sig" ? (
-                              <Check className="h-3 w-3 text-emerald-600" />
-                            ) : (
-                              <Copy className="h-3 w-3" />
-                            )}
-                          </button>
-                        </div>
+                      <div className="flex items-center justify-between py-1 border-b border-[var(--shadow-dark)]/10">
+                        <span className="text-[var(--text-secondary)]">Oracle Signature:</span>
+                        <span className="font-mono text-[var(--text-primary)] text-[11px] truncate max-w-[200px]">
+                          {result.details.oracleSignature}
+                        </span>
                       </div>
                     )}
 
                     {result.details.ipfsCid && (
-                      <div className="flex items-center justify-between py-1 border-b border-slate-200/40">
-                        <span className="text-slate-500">IPFS Proof CID:</span>
+                      <div className="flex items-center justify-between py-1">
+                        <span className="text-[var(--text-secondary)]">IPFS Proof:</span>
                         <a
                           href={`https://ipfs.io/ipfs/${result.details.ipfsCid}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="font-mono text-indigo-600 hover:underline text-[11px] flex items-center gap-1"
+                          className="font-mono text-[var(--brand-indigo)] hover:underline text-[11px] flex items-center gap-1"
                         >
-                          {result.details.ipfsCid}
-                          <ExternalLink className="h-3 w-3" />
+                          {result.details.ipfsCid.slice(0, 16)}... <ExternalLink className="h-3 w-3" />
                         </a>
-                      </div>
-                    )}
-
-                    {result.details.timestamp && (
-                      <div className="flex items-center justify-between py-1">
-                        <span className="text-slate-500">Settlement Timestamp:</span>
-                        <span className="font-mono text-slate-700 text-[11px]">
-                          {new Date(result.details.timestamp).toLocaleString()}
-                        </span>
                       </div>
                     )}
                   </div>
                 </div>
               )}
 
-              {/* Revoked state message */}
-              {result.status === "REVOKED" && (
-                <div className="rounded-xl bg-rose-50 p-4 border border-rose-200 text-xs text-rose-800 space-y-1">
-                  <div className="font-bold">Revocation Notice:</div>
-                  <p>{result.reason || "This record was revoked or invalidated on the PolyLance Sovereign Ledger."}</p>
-                </div>
-              )}
-
-              {/* Unverified state message */}
-              {result.status === "UNVERIFIED" && (
-                <div className="rounded-xl bg-amber-50 p-4 border border-amber-200 text-xs text-amber-800 space-y-1">
-                  <div className="font-bold">Verification Notice:</div>
-                  <p>{result.message || "This certificate identifier could not be verified against the PolyLance Sovereign Ledger."}</p>
+              {/* Unverified / Revoked Message */}
+              {result.status !== "VERIFIED" && (
+                <div className="text-xs text-[var(--text-secondary)] leading-relaxed rounded-xl neo-inset p-3">
+                  {result.message}
                 </div>
               )}
             </div>
@@ -445,30 +415,21 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-slate-100 bg-slate-50/50 px-6 py-3.5 flex items-center justify-between text-xs text-slate-500">
-          <span className="flex items-center gap-1.5">
-            <Globe className="h-3.5 w-3.5 text-slate-400" />
-            Decentralized PolyLance Collab Protocol
+        <div className="border-t border-[var(--shadow-dark)]/15 bg-[var(--surface-bg)] px-6 py-4 flex items-center justify-between text-xs">
+          <span className="text-[var(--text-secondary)] font-mono text-[11px]">
+            Decentralized Verification Protocol (EVM + PostgreSQL)
           </span>
-          <button
-            onClick={onClose}
-            className="rounded-xl border border-slate-200 bg-white px-4 py-1.5 font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
-          >
+          <Button variant="secondary" size="sm" onClick={onClose} className="rounded-full px-5">
             Close
-          </button>
+          </Button>
         </div>
       </div>
 
-      {/* Mobile Camera QR Scanner */}
+      {/* Mobile QR Scanner Modal */}
       <MobileQRScannerModal
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
-        onScanSuccess={(parsedId, rawText) => {
-          setInputVal(rawText);
-          handleVerify(parsedId);
-        }}
-        title="Scan PolyLance Certificate"
-        subtitle="Point your camera at a PolyLance SBT Attestation or MultiSig Audit QR code"
+        onScanSuccess={handleScanSuccess}
       />
     </div>
   );

@@ -15,6 +15,7 @@ import { polygonAmoy } from "wagmi/chains";
 
 import App from "./App.js";
 import { AuthProvider } from "./context/AuthContext.js";
+import { ThemeProvider } from "./context/ThemeContext.js";
 import "./styles/global.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
@@ -50,7 +51,7 @@ const queryClient = new QueryClient({
 });
 
 // ---------------------------------------------------------------------------
-// RainbowKit Apple-style Light Theme
+// RainbowKit Theme
 // ---------------------------------------------------------------------------
 const rainbowTheme = lightTheme({
   accentColor: "#4F46E5",
@@ -70,16 +71,18 @@ const appBaseName = import.meta.env.BASE_URL || "/";
 
 ReactDOM.createRoot(rootEl).render(
   <React.StrictMode>
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={rainbowTheme}>
-          <BrowserRouter basename={appBaseName} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <AuthProvider>
-              <App />
-            </AuthProvider>
-          </BrowserRouter>
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <ThemeProvider>
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider theme={rainbowTheme}>
+            <BrowserRouter basename={appBaseName} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <AuthProvider>
+                <App />
+              </AuthProvider>
+            </BrowserRouter>
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );

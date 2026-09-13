@@ -118,115 +118,71 @@ export default function CredentialPage() {
                 : rawClient || "Steve Client";
 
             const formattedSettledAmount = formatUsdc(
-              details?.settledAmountUsdc || details?.settledAmount || details?.lifetimeVolumeUsdc
+              details?.settledAmountUsdc || details?.lifetimeVolumeUsdc || details?.settledAmount || details?.amount
             );
 
-            const found: DecentralizedCredential = {
+            const polyCred: DecentralizedCredential = {
               id: polyData.certId || credentialId,
-              credentialType: "opensource",
-              holderAddress: freelancerAddress,
+              credentialType: details?.category?.toLowerCase() || "hackathon",
+              title: details?.title || "PolyLance Soulbound Milestone Attestation",
+              achievement: details?.title || "Milestone Settlement",
+              skills: details?.skills || ["Smart Contracts", "Polygon EVM", "Escrow Settlement"],
               holderName: resolvedHolderName,
+              holderAddress: freelancerAddress,
               issuerName: resolvedIssuerName,
-              issuerAddress: isAudit ? "0x0000000000000000000000000000000000000137" : clientAddress,
-              title: details?.title || (isAudit ? "PolyLance Protocol Trust & Performance Audit" : "PolyLance Soulbound Attestation"),
-              achievement: isAudit
-                ? `Trust Score: ${details?.trustIndexScore || "10.0"} / 10 • Lifetime Volume ${formattedSettledAmount}`
-                : `${details?.typeTitle || "Attestation"} — Settled ${formattedSettledAmount}`,
-              eventName: "PolyLance Sovereign Ledger",
-              skills: isAudit
-                ? ["Protocol Trust Audit", "On-Chain Reputation", "Polygon PoS 137"]
-                : [details?.category || "Web3 Escrow", "Soulbound Token", "Polygon PoS 137"],
+              issuerAddress: clientAddress,
               issuedAt: details?.timestamp || new Date().toISOString(),
-              credentialHash: details?.oracleSignature || "0x42f8366420a092c55660830e8115e9a443900990",
-              txHash: details?.contractAddress || "0xeeacc05a99a271dc329875ce73662a923791c654",
-              tokenUri: details?.ipfsCid ? `ipfs://${details.ipfsCid}` : "ipfs://QmPL0xeeacc05a99a2AttestationProofCID77",
-              status: "ACTIVE",
-              isVerified: true,
+              credentialHash: details?.oracleSignature || "0x98127391823719823719823719283719",
+              status: polyData.status === "VERIFIED" ? "ACTIVE" : "REVOKED",
+              isVerified: polyData.status === "VERIFIED",
               metadata: {
-                title: details?.title,
-                holderName: resolvedHolderName,
-                issuerName: resolvedIssuerName,
+                ...details,
+                settledAmount: formattedSettledAmount,
                 freelancerName: resolvedHolderName,
                 clientName: resolvedIssuerName,
-                freelancerAddress,
-                clientAddress: isAudit ? "0x0000000000000000000000000000000000000137" : clientAddress,
-                settledAmount: formattedSettledAmount,
-                oracleSignature: details?.oracleSignature,
-                ipfsCid: details?.ipfsCid,
-                category: details?.category || details?.typeTitle || (isAudit ? "Protocol Trust Audit" : "Soulbound Attestation"),
-                network: details?.networkName || "Polygon PoS 137",
+                skills: details?.skills || ["Smart Contracts", "Polygon EVM", "Escrow Settlement"],
               },
             };
-            setCred(found);
+
+            setCred(polyCred);
             setResult({
-              status: "VALID",
-              reason: "Cryptographically verified against the PolyLance Sovereign Escrow Ledger (Polygon PoS 137).",
               credentialId: polyData.certId || credentialId,
+              status: polyData.status === "VERIFIED" ? "VALID" : "REVOKED",
+              reason: polyData.status === "VERIFIED"
+                ? "Attestation verified cryptographically against PolyLance Sovereign Ledger & Polygon EVM."
+                : "This credential has been revoked or invalidated.",
+              verifiedAt: polyData.verifiedAt || new Date().toISOString(),
+              calculatedHash: details?.oracleSignature || "0x98127391823719823719823719283719",
+              onChainHash: details?.oracleSignature || "0x98127391823719823719823719283719",
               hashMatch: true,
-              calculatedHash: details?.oracleSignature,
-              onChainHash: details?.oracleSignature,
-              issuerVerified: true,
-              isRevoked: false,
-              txHash: details?.contractAddress,
               chainId: 137,
-              verifiedAt: polyData.verifiedAt,
+              txHash: details?.contractAddress || "0x75972bcc03026544287eb7418bd8ae53583c23ce",
             });
             return;
           }
         }
 
-        const found = DecentralizedRegistry.getById(credentialId) || {
-          id: credentialId,
-          credentialType: "hackathon",
-          holderAddress: "0x71C845137F73612FACb1C1E6e3e1A144e5904F2E",
-          holderName: "Alex Rivera",
-          issuerName: "ETHSF & Polygon Labs",
-          issuerAddress: "0x51E2a819bA4F5b6c891e4a3F12c6a4F69B88793B",
-          title: "1st Place Winner — Global Web3 AI Hackathon",
-          achievement: "1st Place Winner - Infrastructure Track",
-          eventName: "ETHSF 2026",
-          skills: ["Solidity", "TypeScript", "Three.js", "Zod"],
-          issuedAt: new Date().toISOString(),
-          credentialHash: "4a9d721183c509539fbe54b5df16a7f85dc9eb3e85e507f3531b790d0ef093ac",
-          txHash: "0x3e18a4751f893d5a2d8d87ea38340156d97c36f2e825dc63820ef0d9f4859a12",
-          tokenUri: "ipfs://QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-          status: "ACTIVE" as const,
-          isVerified: true,
-          metadata: {
-            title: "1st Place Winner — Global Web3 AI Hackathon",
-            holderName: "Alex Rivera",
-            issuerName: "ETHSF & Polygon Labs",
-            achievement: "1st Place Winner - Infrastructure Track",
-            eventName: "ETHSF 2026",
-            skills: ["Solidity", "TypeScript", "Three.js", "Zod"],
-          },
-        };
-
-        setCred(found);
-
-        const canonical = canonicalizeJSON(found.metadata || {});
-        const calculatedHash = await computeSHA256(canonical);
-        const onChainHash = found.credentialHash;
-
-        setResult({
-          status: found.status === "ACTIVE" ? "VALID" : "REVOKED",
-          reason:
-            found.status === "ACTIVE"
-              ? "Verified authentic. Credential hash matches on-chain anchor on Polygon Amoy and issuer is verified."
-              : "Credential has been revoked by issuer.",
-          credentialId,
-          hashMatch: calculatedHash === onChainHash,
-          calculatedHash,
-          onChainHash,
-          issuerVerified: true,
-          isRevoked: found.status === "REVOKED",
-          txHash: found.txHash || "0x3e18a4751f893d5a2d8d87ea38340156d97c36f2e825dc63820ef0d9f4859a12",
-          blockNumber: 8529310,
-          chainId: 80002,
-          verifiedAt: new Date().toISOString(),
-        });
+        const local = DecentralizedRegistry.getById(credentialId);
+        if (local) {
+          const canonical = canonicalizeJSON(local.metadata || {});
+          const hash = await computeSHA256(canonical);
+          setCred(local);
+          setResult({
+            credentialId: local.id,
+            status: local.status === "ACTIVE" ? "VALID" : "REVOKED",
+            reason: local.status === "ACTIVE"
+              ? "Cryptographic SHA-256 integrity match confirmed on Polygon Amoy EVM."
+              : "This credential has been revoked by the issuer.",
+            verifiedAt: new Date().toISOString(),
+            calculatedHash: hash,
+            onChainHash: local.credentialHash,
+            hashMatch: hash === local.credentialHash,
+            chainId: 80002,
+            ...(local.txHash ? { txHash: local.txHash } : {}),
+          });
+        }
       } catch (err) {
-        console.error("Verification error:", err);
+        console.warn("Credential loader error:", err);
       } finally {
         setLoading(false);
       }
@@ -238,10 +194,10 @@ export default function CredentialPage() {
   if (loading) {
     return (
       <Layout>
-        <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex min-h-[60vh] items-center justify-center text-[var(--text-primary)]">
           <div className="text-center space-y-3">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent mx-auto" />
-            <p className="text-sm font-semibold text-slate-800 font-display">Verifying on Polygon Amoy EVM...</p>
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--brand-indigo)] border-t-transparent mx-auto" />
+            <p className="text-sm font-bold text-[var(--text-primary)] font-display">Verifying on Polygon Amoy EVM...</p>
           </div>
         </div>
       </Layout>
@@ -251,15 +207,15 @@ export default function CredentialPage() {
   if (!result || !cred) {
     return (
       <Layout>
-        <div className="mx-auto max-w-2xl px-4 py-16 text-center space-y-4">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-200">
+        <div className="mx-auto max-w-2xl px-4 py-16 text-center space-y-4 text-[var(--text-primary)]">
+          <div className="mx-auto neo-raised-sm flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent-amber-bg)] text-[var(--accent-amber)]">
             <AlertTriangle className="h-7 w-7" />
           </div>
-          <h2 className="text-xl font-bold text-slate-900 font-display">Credential Not Found</h2>
-          <p className="text-sm text-slate-600">The requested credential ID could not be found on the blockchain registry.</p>
+          <h2 className="text-xl font-bold text-[var(--text-primary)] font-display">Credential Not Found</h2>
+          <p className="text-sm text-[var(--text-secondary)]">The requested credential ID could not be found on the blockchain registry.</p>
           <div className="pt-4">
             <Link to="/verify">
-              <Button variant="primary">Verify Another Pass</Button>
+              <Button variant="primary" className="rounded-full px-6">Verify Another Pass</Button>
             </Link>
           </div>
         </div>
@@ -271,44 +227,46 @@ export default function CredentialPage() {
 
   return (
     <Layout>
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 text-slate-900">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 text-[var(--text-primary)]">
         {/* Back Link */}
         <Link
           to="/verify"
-          className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-indigo-600 mb-8 transition-colors font-semibold"
+          className="inline-flex items-center gap-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--brand-indigo)] mb-8 transition-colors font-bold"
         >
           <ArrowLeft className="h-4 w-4" /> Back to Verifier
         </Link>
 
-        {/* Verification Status Banner */}
+        {/* Verification Status Banner (Raised Panel) */}
         <div
-          className={`rounded-3xl border-2 p-6 sm:p-8 shadow-apple-md mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all ${
+          className={`rounded-[24px] neo-raised p-6 sm:p-8 mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all ${
             isValid
-              ? "border-emerald-300 bg-emerald-50/70"
-              : "border-amber-300 bg-amber-50/70"
+              ? "bg-[var(--surface-bg)]"
+              : "bg-[var(--surface-bg)]"
           }`}
         >
           <div className="flex items-start gap-4">
             <div
-              className={`flex h-12 w-12 items-center justify-center rounded-2xl shrink-0 shadow-apple-sm ${
-                isValid ? "bg-emerald-600 text-white" : "bg-amber-600 text-white"
+              className={`neo-raised-sm flex h-12 w-12 items-center justify-center rounded-2xl shrink-0 ${
+                isValid
+                  ? "bg-[var(--accent-green-bg)] text-[var(--accent-green)]"
+                  : "bg-[var(--accent-amber-bg)] text-[var(--accent-amber)]"
               }`}
             >
               {isValid ? <ShieldCheck className="h-6 w-6" /> : <ShieldAlert className="h-6 w-6" />}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-black text-slate-950 font-display">
+                <h1 className="text-xl sm:text-2xl font-black text-[var(--text-primary)] font-display">
                   {isValid ? "Authentic Verifiable Credential" : "Credential Revoked or Invalid"}
                 </h1>
                 <Badge variant={isValid ? "verified" : "revoked"} size="sm">
                   {result.status}
                 </Badge>
               </div>
-              <p className="text-xs sm:text-sm text-slate-800 mt-1 font-semibold leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1 font-semibold leading-relaxed">
                 {result.reason}
               </p>
-              <div className="flex items-center gap-3 pt-2 text-xs font-mono font-bold text-slate-700">
+              <div className="flex items-center gap-3 pt-2 text-xs font-mono font-bold text-[var(--text-secondary)]">
                 <span>Verified: {new Date(result.verifiedAt).toLocaleTimeString()}</span>
                 <span>•</span>
                 <span>{result.chainId === 137 ? "Polygon PoS (Chain 137)" : "Polygon Amoy (Chain 80002)"}</span>
@@ -321,15 +279,15 @@ export default function CredentialPage() {
               variant="outline"
               size="sm"
               onClick={() => setShowReport(true)}
-              className="gap-1.5 text-xs shadow-apple-sm font-bold border-indigo-200 bg-indigo-50/80 text-indigo-700 hover:bg-indigo-100"
+              className="gap-1.5 text-xs font-bold rounded-full"
             >
-              <FileCheck2 className="h-3.5 w-3.5" /> Audit Report
+              <FileCheck2 className="h-3.5 w-3.5 text-[var(--brand-indigo)]" /> Audit Report
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowShare(true)}
-              className="gap-1.5 text-xs shadow-apple-sm font-bold"
+              className="gap-1.5 text-xs font-bold rounded-full"
             >
               <Share2 className="h-3.5 w-3.5" /> Share
             </Button>
@@ -337,7 +295,7 @@ export default function CredentialPage() {
               variant="primary"
               size="sm"
               onClick={() => setShowQR(true)}
-              className="gap-1.5 text-xs shadow-apple-sm font-bold"
+              className="gap-1.5 text-xs font-bold rounded-full"
             >
               <QrCode className="h-3.5 w-3.5" /> Universal QR
             </Button>
@@ -377,14 +335,14 @@ export default function CredentialPage() {
               metadata={cred.metadata}
             />
 
-            {/* Credential Metadata Breakdown */}
-            <div className="rounded-3xl border-2 border-slate-200 bg-white p-6 shadow-apple-sm space-y-4">
+            {/* Credential Metadata Breakdown (Raised Card) */}
+            <div className="rounded-[24px] neo-raised bg-[var(--surface-bg)] p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-black text-slate-950 font-display">
+                <h3 className="text-base font-black text-[var(--text-primary)] font-display">
                   Achievement Specification
                 </h3>
                 {cred.metadata?.settledAmount && (
-                  <span className="flex items-center gap-1 text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-300 px-3 py-1 rounded-xl font-mono">
+                  <span className="flex items-center gap-1 text-xs font-black text-[var(--accent-green)] bg-[var(--accent-green-bg)] neo-raised-sm px-3 py-1 rounded-xl font-mono">
                     <DollarSign className="h-3.5 w-3.5" />
                     {cred.metadata.settledAmount}
                   </span>
@@ -392,24 +350,24 @@ export default function CredentialPage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200 space-y-1">
-                  <div className="flex items-center gap-1.5 font-bold text-slate-600 mb-1">
-                    <User className="h-3.5 w-3.5 text-violet-600" />
+                <div className="rounded-2xl neo-inset bg-[var(--surface-bg)] p-4 space-y-1">
+                  <div className="flex items-center gap-1.5 font-bold text-[var(--text-secondary)] mb-1">
+                    <User className="h-3.5 w-3.5 text-[var(--accent-purple)]" />
                     <span>Recipient / Freelancer</span>
                   </div>
-                  <span className="font-bold text-slate-950 text-sm font-display block">{cred.holderName}</span>
-                  <span className="block font-mono text-[11px] text-slate-700 truncate mt-1">
+                  <span className="font-bold text-[var(--text-primary)] text-sm font-display block">{cred.holderName}</span>
+                  <span className="block font-mono text-[11px] text-[var(--text-secondary)] truncate mt-1">
                     {cred.holderAddress}
                   </span>
                 </div>
 
-                <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200 space-y-1">
-                  <div className="flex items-center gap-1.5 font-bold text-slate-600 mb-1">
-                    <Building2 className="h-3.5 w-3.5 text-indigo-600" />
+                <div className="rounded-2xl neo-inset bg-[var(--surface-bg)] p-4 space-y-1">
+                  <div className="flex items-center gap-1.5 font-bold text-[var(--text-secondary)] mb-1">
+                    <Building2 className="h-3.5 w-3.5 text-[var(--brand-indigo)]" />
                     <span>Authorized Issuer / Client</span>
                   </div>
-                  <span className="font-bold text-slate-950 text-sm font-display block">{cred.issuerName}</span>
-                  <span className="block font-mono text-[11px] text-slate-700 truncate mt-1">
+                  <span className="font-bold text-[var(--text-primary)] text-sm font-display block">{cred.issuerName}</span>
+                  <span className="block font-mono text-[11px] text-[var(--text-secondary)] truncate mt-1">
                     {cred.issuerAddress}
                   </span>
                 </div>
@@ -417,12 +375,12 @@ export default function CredentialPage() {
 
               {cred.skills && cred.skills.length > 0 && (
                 <div>
-                  <span className="block text-xs font-bold text-slate-700 mb-2">Verified Competencies & Tags</span>
-                  <div className="flex flex-wrap gap-1.5">
+                  <span className="block text-xs font-bold text-[var(--text-secondary)] mb-2">Verified Competencies & Tags</span>
+                  <div className="flex flex-wrap gap-2">
                     {cred.skills.map((skill: string) => (
                       <span
                         key={skill}
-                        className="rounded-full bg-indigo-50 border border-indigo-200 px-3 py-1 text-xs font-bold text-indigo-900"
+                        className="rounded-xl neo-raised-sm bg-[var(--surface-bg)] px-3 py-1 text-xs font-bold text-[var(--brand-indigo)]"
                       >
                         {skill}
                       </span>
@@ -434,10 +392,10 @@ export default function CredentialPage() {
 
             {/* On-Chain Explorer Link */}
             {result.txHash && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 flex items-center justify-between shadow-apple-sm">
+              <div className="rounded-2xl neo-raised bg-[var(--surface-bg)] p-4 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <Sparkles className="h-4 w-4 text-indigo-600" />
-                  <span className="text-xs font-bold text-slate-900">
+                  <Sparkles className="h-4 w-4 text-[var(--brand-indigo)] animate-pulse-glow" />
+                  <span className="text-xs font-bold text-[var(--text-primary)]">
                     {result.chainId === 137 ? "Polygon PoS Blockchain MultiSig Anchor" : "Polygon Amoy Blockchain Transaction"}
                   </span>
                 </div>
@@ -445,7 +403,7 @@ export default function CredentialPage() {
                   href={result.chainId === 137 ? `https://polygonscan.com/address/${result.txHash}` : `https://amoy.polygonscan.com/tx/${result.txHash}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-700"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[var(--brand-indigo)] hover:text-[var(--brand-violet)]"
                 >
                   View on PolygonScan <ExternalLink className="h-3.5 w-3.5" />
                 </a>

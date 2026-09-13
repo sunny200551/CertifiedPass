@@ -83,141 +83,103 @@ export const VerificationReportModal: React.FC<VerificationReportModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-3xl rounded-3xl border border-slate-200/90 bg-white shadow-2xl transition-all overflow-hidden my-6 text-slate-900">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/60 backdrop-blur-md transition-all">
+      <div className="relative w-full max-w-3xl rounded-[24px] neo-floating bg-[var(--surface-bg)] text-[var(--text-primary)] transition-all overflow-hidden my-6">
         {/* Header Bar */}
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-slate-50/70 print:hidden">
+        <div className="flex items-center justify-between border-b border-[var(--shadow-dark)]/15 px-6 py-4 bg-[var(--surface-bg)] print:hidden">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-200/60 font-bold">
+            <div className="neo-raised-sm flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent-indigo-bg)] text-[var(--brand-indigo)] font-bold">
               <FileCheck2 className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900 font-display">
+              <h3 className="text-base font-bold text-[var(--text-primary)] font-display">
                 Certified Verification & Audit Report
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-[var(--text-secondary)]">
                 Official Sovereign Attestation & MultiSig Settlement Audit
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePrint}
-              className="gap-1.5 text-xs font-bold"
-            >
-              <Printer className="h-3.5 w-3.5" />
-              <span>Print / Save PDF</span>
-            </Button>
-            <button
-              onClick={onClose}
-              className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="neo-raised-sm rounded-full p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors active:neo-inset-sm"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
         {/* Printable Report Content */}
-        <div ref={reportRef} className="p-6 sm:p-8 space-y-6 max-h-[80vh] overflow-y-auto print:max-h-none print:p-0">
-          {/* Top Banner / Verification Badge */}
+        <div ref={reportRef} className="p-6 sm:p-8 space-y-6">
+          {/* Top Status & Pass Title Banner */}
           <div
-            className={`rounded-2xl border-2 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+            className={`rounded-2xl neo-inset p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
               isVerified
-                ? "border-emerald-200 bg-emerald-50/60 text-emerald-950"
+                ? "bg-[var(--surface-bg)]"
                 : isRevoked
-                ? "border-rose-200 bg-rose-50/60 text-rose-950"
-                : "border-amber-200 bg-amber-50/60 text-amber-950"
+                ? "bg-rose-500/10"
+                : "bg-[var(--accent-amber-bg)]"
             }`}
           >
-            <div className="flex items-center gap-3.5">
-              <div
-                className={`flex h-12 w-12 items-center justify-center rounded-2xl shrink-0 shadow-sm ${
-                  isVerified
-                    ? "bg-emerald-600 text-white"
-                    : isRevoked
-                    ? "bg-rose-600 text-white"
-                    : "bg-amber-600 text-white"
-                }`}
-              >
-                {isVerified ? (
-                  <ShieldCheck className="h-7 w-7" />
-                ) : isRevoked ? (
-                  <ShieldAlert className="h-7 w-7" />
-                ) : (
-                  <AlertTriangle className="h-7 w-7" />
-                )}
-              </div>
-              <div>
-                <div className="text-sm font-black uppercase tracking-wider">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-base font-black tracking-wide ${
+                    isVerified
+                      ? "text-[var(--accent-green)]"
+                      : isRevoked
+                      ? "text-rose-500"
+                      : "text-[var(--accent-amber)]"
+                  }`}
+                >
                   {isVerified
                     ? "🟢 CRYPTOGRAPHICALLY VERIFIED & AUTHENTIC"
                     : isRevoked
-                    ? "🔴 REVOKED / INVALIDATED RECORD"
-                    : "🟡 UNVERIFIED / PENDING"}
-                </div>
-                <div className="text-xs font-mono text-slate-600 mt-0.5">
-                  Registry Identifier: {credentialId}
-                </div>
+                    ? "🔴 REVOKED / INVALIDATED"
+                    : "🟡 UNVERIFIED RECORD"}
+                </span>
+              </div>
+              <h2 className="text-lg font-bold text-[var(--text-primary)] font-display pt-0.5">
+                {title}
+              </h2>
+              <div className="text-xs text-[var(--text-secondary)] font-mono">
+                Attestation ID: {credentialId}
               </div>
             </div>
 
-            <div className="text-left sm:text-right text-xs font-mono text-slate-500 shrink-0">
-              <div>Audit Date: {reportDate}</div>
-              <div className="font-semibold text-indigo-700">CertifiedPass Protocol</div>
-            </div>
-          </div>
-
-          {/* Attestation Title & Settled Amount Summary */}
-          <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="rounded-full bg-violet-100 text-violet-800 border border-violet-200 px-3 py-0.5 text-xs font-bold">
-                {category}
-              </span>
-              <div className="flex items-center gap-1.5 bg-emerald-100/80 text-emerald-900 border border-emerald-300 px-3.5 py-1 rounded-xl">
-                <DollarSign className="h-4 w-4 text-emerald-700" />
-                <span className="text-sm font-black font-mono">{formattedAmount}</span>
+            {formattedAmount && (
+              <div className="text-left sm:text-right neo-raised-sm rounded-xl px-3 py-2 bg-[var(--surface-bg)]">
+                <div className="text-[10px] uppercase font-bold text-[var(--text-secondary)]">Settled Escrow</div>
+                <div className="text-base font-extrabold text-[var(--accent-green)] font-mono">{formattedAmount}</div>
               </div>
-            </div>
-
-            <h2 className="text-xl font-extrabold text-slate-950 font-display">
-              {title}
-            </h2>
-
-            {reason && (
-              <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                {reason}
-              </p>
             )}
           </div>
 
-          {/* Participant Information: Freelancer & Client Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Freelancer Box */}
-            <div className="rounded-2xl border-2 border-slate-200 p-4 bg-white space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
-                  <User className="h-4 w-4 text-violet-600" />
-                  <span>Freelancer / Talent</span>
+          {/* Participant Verification Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            {/* Recipient / Freelancer */}
+            <div className="rounded-2xl neo-raised p-4 bg-[var(--surface-bg)] space-y-2">
+              <div className="flex items-center justify-between font-bold text-[var(--text-secondary)]">
+                <div className="flex items-center gap-1.5">
+                  <User className="h-4 w-4 text-[var(--accent-purple)]" />
+                  <span>Recipient / Freelancer</span>
                 </div>
-                <span className="rounded-full bg-violet-50 text-violet-700 px-2 py-0.5 text-[10px] font-bold border border-violet-200">
-                  Recipient
+                <span className="neo-inset-sm rounded-full bg-[var(--accent-purple-bg)] text-[var(--accent-purple)] px-2 py-0.5 text-[10px]">
+                  Signer A
                 </span>
               </div>
-              <div className="text-sm font-bold text-slate-950">
+              <div className="text-sm font-bold text-[var(--text-primary)] font-display">
                 {freelancerName}
               </div>
               {freelancerAddress && (
-                <div className="flex items-center justify-between text-xs font-mono text-slate-600 bg-slate-50 rounded-xl p-2 border border-slate-100">
-                  <span className="truncate max-w-[210px]">{freelancerAddress}</span>
+                <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-secondary)] neo-inset-sm rounded-xl p-2 bg-[var(--surface-bg)]">
+                  <span className="truncate max-w-[200px]">{freelancerAddress}</span>
                   <button
                     type="button"
                     onClick={() => handleCopy(freelancerAddress, "f_addr")}
-                    className="text-slate-400 hover:text-slate-600 p-0.5 print:hidden"
+                    className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-0.5"
                   >
                     {copiedKey === "f_addr" ? (
-                      <Check className="h-3.5 w-3.5 text-emerald-600" />
+                      <Check className="h-3.5 w-3.5 text-[var(--accent-green)]" />
                     ) : (
                       <Copy className="h-3.5 w-3.5" />
                     )}
@@ -226,30 +188,30 @@ export const VerificationReportModal: React.FC<VerificationReportModalProps> = (
               )}
             </div>
 
-            {/* Escrow Client Box */}
-            <div className="rounded-2xl border-2 border-slate-200 p-4 bg-white space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
-                  <Building2 className="h-4 w-4 text-indigo-600" />
-                  <span>Escrow Client / Sponsor</span>
+            {/* Sponsor / Client */}
+            <div className="rounded-2xl neo-raised p-4 bg-[var(--surface-bg)] space-y-2">
+              <div className="flex items-center justify-between font-bold text-[var(--text-secondary)]">
+                <div className="flex items-center gap-1.5">
+                  <Building2 className="h-4 w-4 text-[var(--brand-indigo)]" />
+                  <span>Authorized Issuer / Escrow Client</span>
                 </div>
-                <span className="rounded-full bg-indigo-50 text-indigo-700 px-2 py-0.5 text-[10px] font-bold border border-indigo-200">
-                  Issuer & Patron
+                <span className="neo-inset-sm rounded-full bg-[var(--accent-indigo-bg)] text-[var(--brand-indigo)] px-2 py-0.5 text-[10px]">
+                  Signer B
                 </span>
               </div>
-              <div className="text-sm font-bold text-slate-950">
+              <div className="text-sm font-bold text-[var(--text-primary)] font-display">
                 {clientName}
               </div>
               {clientAddress && (
-                <div className="flex items-center justify-between text-xs font-mono text-slate-600 bg-slate-50 rounded-xl p-2 border border-slate-100">
-                  <span className="truncate max-w-[210px]">{clientAddress}</span>
+                <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-secondary)] neo-inset-sm rounded-xl p-2 bg-[var(--surface-bg)]">
+                  <span className="truncate max-w-[200px]">{clientAddress}</span>
                   <button
                     type="button"
                     onClick={() => handleCopy(clientAddress, "c_addr")}
-                    className="text-slate-400 hover:text-slate-600 p-0.5 print:hidden"
+                    className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-0.5"
                   >
                     {copiedKey === "c_addr" ? (
-                      <Check className="h-3.5 w-3.5 text-emerald-600" />
+                      <Check className="h-3.5 w-3.5 text-[var(--accent-green)]" />
                     ) : (
                       <Copy className="h-3.5 w-3.5" />
                     )}
@@ -260,41 +222,41 @@ export const VerificationReportModal: React.FC<VerificationReportModalProps> = (
           </div>
 
           {/* Cryptographic Proof Details */}
-          <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 space-y-2.5 text-xs">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5 mb-1">
-              <Lock className="h-3.5 w-3.5 text-slate-500" />
+          <div className="rounded-2xl neo-inset bg-[var(--surface-bg)] p-4 space-y-2.5 text-xs">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5 mb-1">
+              <Lock className="h-3.5 w-3.5 text-[var(--brand-indigo)]" />
               Cryptographic MultiSig & Storage Attestations
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-slate-200/60 gap-1">
-              <span className="text-slate-500 font-medium">Settlement Blockchain Network:</span>
-              <span className="font-mono text-slate-800 font-bold text-[11px]">{network}</span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-[var(--shadow-dark)]/10 gap-1">
+              <span className="text-[var(--text-secondary)] font-medium">Settlement Blockchain Network:</span>
+              <span className="font-mono text-[var(--text-primary)] font-bold text-[11px]">{network}</span>
             </div>
 
             {contractAddress && (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-slate-200/60 gap-1">
-                <span className="text-slate-500 font-medium">Smart Contract (MultiSig Escrow Safe):</span>
-                <span className="font-mono text-slate-800 text-[11px] select-all">{contractAddress}</span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-[var(--shadow-dark)]/10 gap-1">
+                <span className="text-[var(--text-secondary)] font-medium">Smart Contract (MultiSig Escrow Safe):</span>
+                <span className="font-mono text-[var(--text-primary)] text-[11px] select-all">{contractAddress}</span>
               </div>
             )}
 
             {oracleSignature && (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-slate-200/60 gap-1">
-                <span className="text-slate-500 font-medium">Oracle Cryptographic Signature:</span>
-                <span className="font-mono text-slate-800 text-[11px] truncate max-w-[280px] select-all">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-[var(--shadow-dark)]/10 gap-1">
+                <span className="text-[var(--text-secondary)] font-medium">Oracle Cryptographic Signature:</span>
+                <span className="font-mono text-[var(--text-primary)] text-[11px] truncate max-w-[280px] select-all">
                   {oracleSignature}
                 </span>
               </div>
             )}
 
             {ipfsCid && (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-slate-200/60 gap-1">
-                <span className="text-slate-500 font-medium">IPFS Decentralized Proof CID:</span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-[var(--shadow-dark)]/10 gap-1">
+                <span className="text-[var(--text-secondary)] font-medium">IPFS Decentralized Proof CID:</span>
                 <a
                   href={`https://ipfs.io/ipfs/${ipfsCid}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-mono text-indigo-600 hover:underline text-[11px] flex items-center gap-1"
+                  className="font-mono text-[var(--brand-indigo)] hover:underline text-[11px] flex items-center gap-1"
                 >
                   {ipfsCid} <ExternalLink className="h-3 w-3 print:hidden" />
                 </a>
@@ -302,43 +264,43 @@ export const VerificationReportModal: React.FC<VerificationReportModalProps> = (
             )}
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 gap-1">
-              <span className="text-slate-500 font-medium">Settlement Timestamp:</span>
-              <span className="font-mono text-slate-800 text-[11px]">{reportDate}</span>
+              <span className="text-[var(--text-secondary)] font-medium">Settlement Timestamp:</span>
+              <span className="font-mono text-[var(--text-primary)] text-[11px]">{reportDate}</span>
             </div>
           </div>
 
           {/* Live QR Verification Footer */}
-          <div className="rounded-2xl border-2 border-indigo-100 bg-indigo-50/40 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="rounded-2xl neo-raised bg-[var(--surface-bg)] p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="space-y-1 text-center sm:text-left">
-              <div className="text-xs font-bold text-indigo-950 flex items-center justify-center sm:justify-start gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-indigo-600" />
+              <div className="text-xs font-bold text-[var(--brand-indigo)] flex items-center justify-center sm:justify-start gap-1.5">
+                <ShieldCheck className="h-4 w-4 text-[var(--brand-indigo)]" />
                 <span>Live Public Verification</span>
               </div>
-              <p className="text-[11px] text-slate-600 max-w-sm">
+              <p className="text-[11px] text-[var(--text-secondary)] max-w-sm">
                 Scan this QR code with any smartphone camera or navigate to the URL to independently audit this credential on CertifiedPass.
               </p>
-              <div className="text-[11px] font-mono text-indigo-700 break-all select-all font-semibold pt-1">
+              <div className="text-[11px] font-mono text-[var(--brand-indigo)] break-all select-all font-semibold pt-1">
                 {verifyUrl}
               </div>
             </div>
 
-            <div className="p-2.5 bg-white rounded-xl border border-indigo-200 shadow-sm shrink-0">
+            <div className="p-2.5 bg-white rounded-xl neo-raised-sm shrink-0">
               <QRCodeSVG value={verifyUrl} size={90} level="M" />
             </div>
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="border-t border-slate-100 bg-slate-50/70 px-6 py-4 flex items-center justify-between text-xs print:hidden">
-          <span className="text-slate-500 font-mono text-[11px]">
+        <div className="border-t border-[var(--shadow-dark)]/15 bg-[var(--surface-bg)] px-6 py-4 flex items-center justify-between text-xs print:hidden">
+          <span className="text-[var(--text-secondary)] font-mono text-[11px]">
             Security Audit Anchor • CertifiedPass Sovereign Registry
           </span>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handlePrint} className="gap-1.5 font-bold">
+            <Button variant="outline" size="sm" onClick={handlePrint} className="gap-1.5 font-bold rounded-full">
               <Printer className="h-3.5 w-3.5" />
               <span>Print Report</span>
             </Button>
-            <Button variant="primary" size="sm" onClick={onClose} className="font-bold">
+            <Button variant="primary" size="sm" onClick={onClose} className="font-bold rounded-full px-6">
               Done
             </Button>
           </div>
