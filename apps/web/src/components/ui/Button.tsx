@@ -1,7 +1,7 @@
 import React from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "danger" | "ghost" | "cyan";
+  variant?: "primary" | "secondary" | "indigo" | "outline" | "danger" | "ghost" | "cyan";
   size?: "sm" | "md" | "lg";
   isLoading?: boolean;
 }
@@ -16,27 +16,29 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const base =
-    "relative inline-flex items-center justify-center font-medium rounded-2xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-indigo)] disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98]";
+    "relative inline-flex items-center justify-center font-bold rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-indigo)] select-none";
 
   const sizeClasses = {
-    sm: "px-3.5 py-1.5 text-xs gap-1.5",
-    md: "px-5 py-2.5 text-sm gap-2",
-    lg: "px-7 py-3.5 text-base gap-2.5",
+    sm: "px-4 py-1.5 text-xs gap-1.5",
+    md: "px-6 py-2.5 text-sm gap-2",
+    lg: "px-8 py-3.5 text-base gap-2.5",
   }[size];
 
   const variantClasses = {
     primary:
-      "neo-btn-primary font-bold active:neo-inset",
+      "neo-btn-primary",
+    indigo:
+      "neo-btn-indigo",
     cyan:
-      "neo-btn-primary font-bold active:neo-inset",
+      "neo-btn-primary",
     secondary:
-      "neo-btn bg-[var(--surface-bg)] text-[var(--text-primary)] hover:text-[var(--brand-indigo)] font-semibold active:neo-inset",
+      "neo-btn bg-[var(--surface-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:neo-raised font-bold",
     outline:
-      "neo-btn bg-[var(--surface-bg)] text-[var(--text-primary)] font-semibold active:neo-inset",
+      "neo-btn bg-[var(--surface-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold",
     danger:
-      "neo-raised-sm bg-red-500/10 text-red-500 hover:bg-red-500/15 font-semibold active:neo-inset-sm",
+      "neo-raised-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 font-bold active:neo-inset-sm",
     ghost:
-      "bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:neo-raised-sm font-medium active:neo-inset-sm",
+      "bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:neo-raised-sm font-semibold active:neo-inset-sm",
   }[variant];
 
   return (

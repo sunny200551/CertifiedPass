@@ -24,12 +24,17 @@ export default function LandingPage() {
   const [searchId, setSearchId] = useState("");
   const [showQR, setShowQR] = useState(false);
 
+  const [isVerifying, setIsVerifying] = useState(false);
+
   const sampleId = "cp-hackathon-2026-ethsf";
 
   const handleVerifySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchId.trim()) {
-      navigate(`/c/${encodeURIComponent(searchId.trim())}`);
+      setIsVerifying(true);
+      setTimeout(() => {
+        navigate(`/c/${encodeURIComponent(searchId.trim())}`);
+      }, 400);
     }
   };
 
@@ -66,7 +71,7 @@ export default function LandingPage() {
               <div className="pt-2">
                 <form
                   onSubmit={handleVerifySubmit}
-                  className="flex max-w-lg items-center gap-2 neo-inset rounded-2xl p-2 bg-[var(--surface-bg)] transition-all"
+                  className="flex max-w-lg items-center gap-2 neo-inset neo-input-glow rounded-2xl p-2 bg-[var(--surface-bg)] transition-all"
                 >
                   <div className="relative flex-1">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-secondary)]" />
@@ -75,24 +80,33 @@ export default function LandingPage() {
                       placeholder="Paste Credential ID or Hash to verify..."
                       value={searchId}
                       onChange={(e) => setSearchId(e.target.value)}
-                      className="w-full rounded-xl border-0 bg-transparent pl-10 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none"
+                      className="w-full rounded-xl border-0 bg-transparent pl-10 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
                     />
                   </div>
                   <Button
                     variant="primary"
                     type="submit"
                     size="sm"
-                    className="rounded-xl px-5 shadow-none hover:scale-[1.02] active:scale-95"
+                    isLoading={isVerifying}
+                    className="rounded-full px-5 gap-1.5 group"
                   >
-                    Verify
+                    {!isVerifying && (
+                      <>
+                        <span>Verify</span>
+                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                      </>
+                    )}
                   </Button>
                 </form>
 
                 <div className="mt-2.5 flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                   <span>Try demo:</span>
                   <button
-                    onClick={() => navigate(`/c/${sampleId}`)}
-                    className="font-mono text-[var(--brand-indigo)] font-bold hover:underline"
+                    onClick={() => {
+                      setSearchId(sampleId);
+                      navigate(`/c/${sampleId}`);
+                    }}
+                    className="font-mono text-[var(--brand-from)] font-bold hover:underline"
                   >
                     {sampleId}
                   </button>

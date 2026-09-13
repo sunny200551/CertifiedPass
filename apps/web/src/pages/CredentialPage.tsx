@@ -207,15 +207,57 @@ export default function CredentialPage() {
   if (!result || !cred) {
     return (
       <Layout>
-        <div className="mx-auto max-w-2xl px-4 py-16 text-center space-y-4 text-[var(--text-primary)]">
-          <div className="mx-auto neo-raised-sm flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent-amber-bg)] text-[var(--accent-amber)]">
-            <AlertTriangle className="h-7 w-7" />
+        <div className="mx-auto max-w-2xl px-4 py-16 text-center space-y-6 text-[var(--text-primary)]">
+          {/* Animated Error/Alert Icon */}
+          <div className="mx-auto neo-raised flex h-20 w-20 items-center justify-center rounded-3xl bg-rose-500/10 text-rose-500 animate-shake">
+            <ShieldAlert className="h-10 w-10" />
           </div>
-          <h2 className="text-xl font-bold text-[var(--text-primary)] font-display">Credential Not Found</h2>
-          <p className="text-sm text-[var(--text-secondary)]">The requested credential ID could not be found on the blockchain registry.</p>
-          <div className="pt-4">
+
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black text-rose-500 bg-rose-500/10 neo-inset-sm">
+              <span>✕</span>
+              <span>UNVERIFIED ON-CHAIN</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] font-display">
+              Not Verified — No Matching Credential Found
+            </h1>
+            <p className="text-sm text-[var(--text-secondary)] max-w-md mx-auto leading-relaxed">
+              The identifier <code className="px-2 py-0.5 rounded-lg bg-[var(--surface-bg)] neo-inset-sm font-mono text-[var(--text-primary)] font-bold">{credentialId}</code> could not be cryptographically validated on the Polygon Amoy EVM or PolyLance Sovereign Ledger.
+            </p>
+          </div>
+
+          {/* Helper Suggestions */}
+          <div className="rounded-2xl neo-inset p-5 bg-[var(--surface-bg)] text-xs text-left space-y-2 text-[var(--text-secondary)]">
+            <div className="font-bold text-[var(--text-primary)] flex items-center gap-1.5 text-xs">
+              <Sparkles className="h-3.5 w-3.5 text-[var(--brand-from)]" />
+              <span>Suggested Next Steps:</span>
+            </div>
+            <ul className="list-disc list-inside space-y-1 pl-1">
+              <li>Check for typing errors or truncated hashes in your credential ID.</li>
+              <li>Ensure the credential has completed its Polygon block confirmation.</li>
+              <li>
+                Test a sample verified pass:{" "}
+                <Link
+                  to="/c/cp-hackathon-2026-ethsf"
+                  className="font-mono font-bold text-[var(--brand-from)] hover:underline"
+                >
+                  cp-hackathon-2026-ethsf
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
             <Link to="/verify">
-              <Button variant="primary" className="rounded-full px-6">Verify Another Pass</Button>
+              <Button variant="primary" size="md" className="rounded-full px-7 gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                <span>Try Another ID</span>
+              </Button>
+            </Link>
+            <Link to="/">
+              <Button variant="secondary" size="md" className="rounded-full px-7">
+                Return Home
+              </Button>
             </Link>
           </div>
         </div>
@@ -231,33 +273,42 @@ export default function CredentialPage() {
         {/* Back Link */}
         <Link
           to="/verify"
-          className="inline-flex items-center gap-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--brand-indigo)] mb-8 transition-colors font-bold"
+          className="inline-flex items-center gap-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] mb-8 transition-colors font-bold group"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to Verifier
+          <div className="neo-icon-btn h-7 w-7 group-hover:-translate-x-0.5 transition-transform">
+            <ArrowLeft className="h-3.5 w-3.5" />
+          </div>
+          <span>Back to Universal Verifier</span>
         </Link>
 
         {/* Verification Status Banner (Raised Panel) */}
         <div
           className={`rounded-[24px] neo-raised p-6 sm:p-8 mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all ${
             isValid
-              ? "bg-[var(--surface-bg)]"
-              : "bg-[var(--surface-bg)]"
+              ? "bg-[var(--surface-bg)] ring-1 ring-[var(--accent-green)]/20"
+              : "bg-[var(--surface-bg)] ring-1 ring-rose-500/20"
           }`}
         >
           <div className="flex items-start gap-4">
             <div
-              className={`neo-raised-sm flex h-12 w-12 items-center justify-center rounded-2xl shrink-0 ${
+              className={`neo-raised flex h-14 w-14 items-center justify-center rounded-2xl shrink-0 ${
                 isValid
-                  ? "bg-[var(--accent-green-bg)] text-[var(--accent-green)]"
-                  : "bg-[var(--accent-amber-bg)] text-[var(--accent-amber)]"
+                  ? "bg-[var(--accent-green-bg)] text-[var(--accent-green)] animate-pulse-glow"
+                  : "bg-rose-500/10 text-rose-500 animate-shake"
               }`}
             >
-              {isValid ? <ShieldCheck className="h-6 w-6" /> : <ShieldAlert className="h-6 w-6" />}
+              {isValid ? (
+                <svg className="h-8 w-8 animate-checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              ) : (
+                <ShieldAlert className="h-8 w-8" />
+              )}
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2.5">
                 <h1 className="text-xl sm:text-2xl font-black text-[var(--text-primary)] font-display">
-                  {isValid ? "Authentic Verifiable Credential" : "Credential Revoked or Invalid"}
+                  {isValid ? "Verified ✓ — Authentic Credential" : "Not Verified — Revoked or Invalid"}
                 </h1>
                 <Badge variant={isValid ? "verified" : "revoked"} size="sm">
                   {result.status}

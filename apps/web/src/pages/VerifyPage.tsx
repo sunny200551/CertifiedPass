@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   ShieldCheck,
@@ -20,6 +21,7 @@ import {
   FileCheck2,
   DollarSign,
   Camera,
+  RefreshCw,
 } from "lucide-react";
 import { Layout } from "../components/layout/Layout.js";
 import { Button } from "../components/ui/Button.js";
@@ -40,6 +42,7 @@ export default function VerifyPage() {
   const [inputVal, setInputVal] = useState("");
   const [activeTab, setActiveTab] = useState<"certifiedpass" | "polylance">("certifiedpass");
   const [loading, setLoading] = useState(false);
+  const [hasErrorShake, setHasErrorShake] = useState(false);
   const [polyResult, setPolyResult] = useState<PolyLanceVerificationResult | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -168,6 +171,7 @@ export default function VerifyPage() {
     if (!cleanId) return;
 
     setLoading(true);
+    setHasErrorShake(false);
     try {
       const res = await api.get(`/polylance/verify/${encodeURIComponent(cleanId)}`);
       if (res.data?.data && res.data.data.verified) {
@@ -177,6 +181,8 @@ export default function VerifyPage() {
         if (fallback) {
           setPolyResult(fallback);
         } else {
+          setHasErrorShake(true);
+          setTimeout(() => setHasErrorShake(false), 500);
           setPolyResult({
             verified: false,
             status: "UNVERIFIED",
@@ -192,6 +198,8 @@ export default function VerifyPage() {
       if (fallback) {
         setPolyResult(fallback);
       } else {
+        setHasErrorShake(true);
+        setTimeout(() => setHasErrorShake(false), 500);
         setPolyResult({
           verified: false,
           status: "UNVERIFIED",
@@ -262,8 +270,8 @@ export default function VerifyPage() {
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8 text-[var(--text-primary)]">
         {/* Header section */}
         <div className="text-center space-y-4 mb-10">
-          <div className="inline-flex items-center gap-2 rounded-full neo-raised-sm bg-[var(--surface-bg)] px-4 py-1.5 text-xs font-bold text-[var(--brand-indigo)]">
-            <ShieldCheck className="h-4 w-4 text-[var(--brand-indigo)] animate-pulse-glow" />
+          <div className="inline-flex items-center gap-2 rounded-full neo-raised-sm bg-[var(--surface-bg)] px-4 py-1.5 text-xs font-bold text-[var(--brand-from)]">
+            <ShieldCheck className="h-4 w-4 text-[var(--brand-from)] animate-pulse-glow" />
             Public Verification Engine • No Wallet Required
           </div>
           <h1 className="text-3xl font-extrabold text-[var(--text-primary)] sm:text-4xl font-display">
@@ -273,20 +281,27 @@ export default function VerifyPage() {
             Enter the unique Credential ID or scan the QR code from any certificate, resume, or portfolio to audit its cryptographic authenticity against the Polygon blockchain.
           </p>
 
-          {/* Neomorphic Segmented Control */}
-          <div className="inline-flex items-center p-1.5 rounded-full neo-inset bg-[var(--surface-bg)]">
+          {/* Neomorphic Segmented Control with Magnetic Sliding Indicator */}
+          <div className="inline-flex items-center p-1.5 rounded-full neo-inset bg-[var(--surface-bg)] relative">
             <button
               type="button"
               onClick={() => {
                 setActiveTab("certifiedpass");
                 setPolyResult(null);
               }}
-              className={`rounded-full px-5 py-2 text-xs font-bold transition-all duration-200 ${
+              className={`relative rounded-full px-5 py-2 text-xs font-bold transition-colors z-10 ${
                 activeTab === "certifiedpass"
-                  ? "neo-pill-active text-[var(--brand-indigo)]"
+                  ? "text-[var(--text-primary)]"
                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               }`}
             >
+              {activeTab === "certifiedpass" && (
+                <motion.div
+                  layoutId="verify-registry-pill"
+                  className="absolute inset-0 rounded-full neo-pill-active bg-[var(--surface-bg)] -z-10 shadow-sm"
+                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                />
+              )}
               CertifiedPass Registry
             </button>
             <button
@@ -297,12 +312,19 @@ export default function VerifyPage() {
                   verifyPolyLance(inputVal.trim());
                 }
               }}
-              className={`flex items-center gap-1.5 rounded-full px-5 py-2 text-xs font-bold transition-all duration-200 ${
+              className={`relative flex items-center gap-1.5 rounded-full px-5 py-2 text-xs font-bold transition-colors z-10 ${
                 activeTab === "polylance"
-                  ? "neo-pill-active text-[var(--accent-purple)]"
+                  ? "text-[var(--text-primary)]"
                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               }`}
             >
+              {activeTab === "polylance" && (
+                <motion.div
+                  layoutId="verify-registry-pill"
+                  className="absolute inset-0 rounded-full neo-pill-active bg-[var(--surface-bg)] -z-10 shadow-sm"
+                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                />
+              )}
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-purple)] animate-pulse-glow" />
               PolyLance Sovereign Ledger
             </button>
@@ -310,9 +332,9 @@ export default function VerifyPage() {
         </div>
 
         {/* Search & Verification Input Box (Raised Panel + Inset Input) */}
-        <div className="rounded-[24px] neo-raised bg-[var(--surface-bg)] p-6 sm:p-8 mb-10">
+        <div className={`rounded-[24px] neo-raised bg-[var(--surface-bg)] p-6 sm:p-8 mb-10 transition-transform ${hasErrorShake ? "animate-shake ring-2 ring-rose-500/30" : ""}`}>
           <form onSubmit={handleVerify} className="space-y-4">
-            <div className="relative flex items-center">
+            <div className="relative flex items-center neo-input-glow rounded-2xl">
               <Search className="absolute left-4 h-5 w-5 text-[var(--text-secondary)]" />
               <input
                 type="text"
@@ -323,7 +345,7 @@ export default function VerifyPage() {
                 }
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
-                className="w-full rounded-2xl neo-inset bg-[var(--surface-bg)] pl-12 pr-4 md:pr-4 max-md:pr-28 py-3.5 text-base text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none transition-all font-mono text-sm sm:text-base"
+                className="w-full rounded-2xl neo-inset bg-[var(--surface-bg)] pl-12 pr-4 md:pr-4 max-md:pr-28 py-3.5 text-base text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none transition-all font-mono text-sm sm:text-base"
               />
               {/* Mobile-only Camera Scan Button in Input */}
               <button
@@ -332,13 +354,13 @@ export default function VerifyPage() {
                 className="md:hidden absolute right-2.5 flex items-center gap-1 rounded-xl neo-raised-sm bg-[var(--surface-bg)] text-[var(--text-primary)] px-3 py-1.5 text-xs font-bold transition-all active:neo-inset-sm"
                 title="Open Camera QR Scanner"
               >
-                <Camera className="h-4 w-4 text-[var(--brand-indigo)]" />
+                <Camera className="h-4 w-4 text-[var(--brand-from)]" />
                 <span>Scan QR</span>
               </button>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
               <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                <Smartphone className="h-4 w-4 text-[var(--brand-indigo)]" />
+                <Smartphone className="h-4 w-4 text-[var(--brand-from)]" />
                 <span>
                   Tip: Paste any certificate ID, attestation link, or sovereign hash to verify
                   <span className="md:hidden"> (or tap Scan QR on mobile)</span>
@@ -353,17 +375,23 @@ export default function VerifyPage() {
                   onClick={() => setIsScannerOpen(true)}
                   className="md:hidden w-full sm:w-auto gap-1.5 text-xs font-bold"
                 >
-                  <Camera className="h-4 w-4 text-[var(--brand-indigo)]" />
+                  <Camera className="h-4 w-4 text-[var(--brand-from)]" />
                   Scan Camera
                 </Button>
                 <Button
                   variant="primary"
                   type="submit"
                   size="md"
+                  isLoading={loading}
                   disabled={loading || !inputVal.trim()}
-                  className="w-full sm:w-auto px-8 font-bold"
+                  className="w-full sm:w-auto px-8 font-bold gap-2 group"
                 >
-                  {loading ? "Verifying..." : "Verify Now"}
+                  {!loading && (
+                    <>
+                      <span>Verify Now</span>
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
@@ -631,21 +659,89 @@ export default function VerifyPage() {
 
             {/* Revoked State */}
             {polyResult.status === "REVOKED" && (
-              <div className="rounded-2xl neo-inset p-5 bg-[var(--surface-bg)] text-xs text-rose-500 space-y-1">
-                <div className="font-bold text-sm">Revocation & Dispute Status:</div>
-                <p className="leading-relaxed">
-                  {polyResult.reason || "This record was revoked or invalidated on the PolyLance Sovereign Ledger."}
-                </p>
+              <div className="space-y-4">
+                <div className="rounded-2xl neo-inset p-6 bg-[var(--surface-bg)] text-xs text-rose-500 space-y-2 border-l-4 border-rose-500">
+                  <div className="font-black text-sm uppercase tracking-wide flex items-center gap-2">
+                    <ShieldAlert className="h-5 w-5" />
+                    <span>Revocation & Invalidation Record</span>
+                  </div>
+                  <p className="leading-relaxed text-[var(--text-secondary)] font-medium">
+                    {polyResult.reason || "This record was revoked or invalidated on the PolyLance Sovereign Ledger."}
+                  </p>
+                </div>
+                <div className="flex justify-end">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      setPolyResult(null);
+                      setInputVal("");
+                    }}
+                    className="gap-1.5 text-xs"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    <span>Search Again</span>
+                  </Button>
+                </div>
               </div>
             )}
 
-            {/* Unverified State */}
+            {/* Unverified / Not Found State */}
             {polyResult.status === "UNVERIFIED" && (
-              <div className="rounded-2xl neo-inset p-5 bg-[var(--surface-bg)] text-xs text-[var(--accent-amber)] space-y-1">
-                <div className="font-bold text-sm">PolyLance Sovereign Ledger Status:</div>
-                <p className="leading-relaxed">
-                  {polyResult.message || "This certificate identifier could not be verified against the PolyLance Sovereign Ledger."}
-                </p>
+              <div className="space-y-5">
+                <div className="rounded-2xl neo-inset p-6 bg-[var(--surface-bg)] text-xs text-rose-500 space-y-3">
+                  <div className="font-black text-sm uppercase tracking-wide flex items-center gap-2 text-rose-500">
+                    <ShieldAlert className="h-5 w-5 animate-shake" />
+                    <span>Not Verified — No Matching Credential Found</span>
+                  </div>
+                  <p className="leading-relaxed text-[var(--text-secondary)] text-sm font-medium">
+                    {polyResult.message || "This certificate identifier could not be verified against the PolyLance Sovereign Ledger or Polygon EVM."}
+                  </p>
+
+                  <div className="pt-2 border-t border-[var(--shadow-dark)]/15 space-y-2 text-[var(--text-secondary)]">
+                    <div className="font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                      <Sparkles className="h-3.5 w-3.5 text-[var(--brand-from)]" />
+                      <span>Troubleshooting Tips:</span>
+                    </div>
+                    <ul className="list-disc list-inside space-y-1 pl-1">
+                      <li>Double-check that the Credential ID or hash was copied completely.</li>
+                      <li>Try searching without leading/trailing whitespace or special URL characters.</li>
+                      <li>
+                        Test a known live record:{" "}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setInputVal("PL-SBT-JOB-0xeeacc05a99a2-0xeeac");
+                            verifyPolyLance("PL-SBT-JOB-0xeeacc05a99a2-0xeeac");
+                          }}
+                          className="font-mono font-bold text-[var(--brand-from)] hover:underline"
+                        >
+                          PL-SBT-JOB-0xeeacc05a99a2-0xeeac
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                  <span className="text-xs text-[var(--text-muted)] font-mono">
+                    Audit timestamp: {new Date().toLocaleTimeString()}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => {
+                        setPolyResult(null);
+                        setInputVal("");
+                      }}
+                      className="gap-1.5 text-xs rounded-full px-5"
+                    >
+                      <RefreshCw className="h-3.5 w-3.5" />
+                      <span>Try Another ID</span>
+                    </Button>
+                  </div>
+                </div>
               </div>
             )}
           </div>

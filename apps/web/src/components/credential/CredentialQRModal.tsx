@@ -1,5 +1,6 @@
 import React from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { motion } from "framer-motion";
 import { X, Copy, ExternalLink, Check, Smartphone, ShieldCheck, Download } from "lucide-react";
 import { Button } from "../ui/Button.js";
 import { getCertificateUrl } from "../../lib/urls.js";
@@ -31,10 +32,16 @@ export const CredentialQRModal: React.FC<QRModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-md transition-all">
-      <div className="relative w-full max-w-sm rounded-[24px] neo-floating bg-[var(--surface-bg)] p-7 text-[var(--text-primary)]">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.92, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.92, y: 8 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        className="relative w-full max-w-sm rounded-[24px] neo-floating bg-[var(--surface-bg)] p-7 text-[var(--text-primary)]"
+      >
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 neo-raised-sm rounded-full p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors active:neo-inset-sm"
+          className="absolute right-4 top-4 neo-icon-btn h-8 w-8 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
@@ -92,7 +99,7 @@ export const CredentialQRModal: React.FC<QRModalProps> = ({
             </Button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
