@@ -52,6 +52,7 @@ jobs:
         env:
           VITE_BASE_PATH: "/CertifiedPass/"
           VITE_API_URL: "https://polylance-fv-1.onrender.com/api/v1"
+          VITE_WALLETCONNECT_PROJECT_ID: ${{ secrets.VITE_WALLETCONNECT_PROJECT_ID || '21fef48091f12692cad574a6f7753643' }}
         run: pnpm build
 
       - name: Setup Pages

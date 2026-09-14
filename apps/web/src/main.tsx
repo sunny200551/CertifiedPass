@@ -20,11 +20,35 @@ import "./styles/global.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
 // ---------------------------------------------------------------------------
+// WalletConnect / Reown Project Configuration & Rejection Guard
+// ---------------------------------------------------------------------------
+const WALLET_CONNECT_PROJECT_ID =
+  import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "21fef48091f12692cad574a6f7753643";
+
+// Catch unhandled WalletConnect socket rejections when domain is not allowlisted on cloud.reown.com
+if (typeof window !== "undefined") {
+  window.addEventListener("unhandledrejection", (event) => {
+    const reasonStr = String(event.reason?.message || event.reason || "");
+    if (
+      reasonStr.includes("trying to subscribe") ||
+      reasonStr.includes("origin not allowed") ||
+      reasonStr.includes("Unauthorized: origin not allowed") ||
+      reasonStr.includes("pulse.walletconnect.org")
+    ) {
+      event.preventDefault();
+      console.warn(
+        "[WalletConnect Warning] Domain allowlist restriction active on cloud.reown.com. Extension wallets (MetaMask, Coinbase, etc.) will continue to function normally."
+      );
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Wagmi + RainbowKit Configuration with High-Reliability Fallback RPCs
 // ---------------------------------------------------------------------------
 const wagmiConfig = getDefaultConfig({
   appName: "CertifiedPass",
-  projectId: "21fef48091f12692cad574a6f7753643",
+  projectId: WALLET_CONNECT_PROJECT_ID,
   chains: [polygonAmoy],
   transports: {
     [polygonAmoy.id]: fallback([
