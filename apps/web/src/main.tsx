@@ -26,18 +26,49 @@ const WALLET_CONNECT_PROJECT_ID =
   import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "21fef48091f12692cad574a6f7753643";
 
 // Catch unhandled WalletConnect socket rejections when domain is not allowlisted on cloud.reown.com
+// & auto-reload when a new deployment invalidates cached chunk hashes
 if (typeof window !== "undefined") {
+  window.addEventListener("vite:preloadError", (event) => {
+    event.preventDefault();
+    console.warn("[CertifiedPass] Fresh version detected, updating resources...");
+    window.location.reload();
+  });
+
+  window.addEventListener("error", (event) => {
+    const msg = String(event?.message || "");
+    if (
+      msg.includes("Failed to fetch dynamically imported module") ||
+      msg.includes("Importing a module script failed") ||
+      msg.includes("error loading dynamically imported module")
+    ) {
+      event.preventDefault();
+      console.warn("[CertifiedPass] Module chunk outdated after deployment, refreshing...");
+      window.location.reload();
+    }
+  });
+
   window.addEventListener("unhandledrejection", (event) => {
     const reasonStr = String(event.reason?.message || event.reason || "");
+    if (
+      reasonStr.includes("Failed to fetch dynamically imported module") ||
+      reasonStr.includes("Importing a module script failed") ||
+      reasonStr.includes("error loading dynamically imported module")
+    ) {
+      event.preventDefault();
+      window.location.reload();
+      return;
+    }
     if (
       reasonStr.includes("trying to subscribe") ||
       reasonStr.includes("origin not allowed") ||
       reasonStr.includes("Unauthorized: origin not allowed") ||
-      reasonStr.includes("pulse.walletconnect.org")
+      reasonStr.includes("pulse.walletconnect.org") ||
+      reasonStr.includes("Allowlist") ||
+      reasonStr.includes("Cross-Origin-Opener-Policy")
     ) {
       event.preventDefault();
       console.warn(
-        "[WalletConnect Warning] Domain allowlist restriction active on cloud.reown.com. Extension wallets (MetaMask, Coinbase, etc.) will continue to function normally."
+        "[WalletConnect / Reown notice] Domain allowlist restriction active on cloud.reown.com for https://certifiedpass.polylance.codes. Injected wallets (MetaMask, Coinbase, Phantom, etc.) and direct web3 flows work with 100% functionality."
       );
     }
   });
