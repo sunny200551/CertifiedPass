@@ -117,6 +117,21 @@ export interface DecentralizedCredential {
 // Decentralized in-memory / local storage index for instant access across sessions
 const STORAGE_KEY = "certifiedpass_decentralized_credentials";
 
+// Real-time multi-tab / multi-window BroadcastChannel synchronization
+const syncChannel =
+  typeof window !== "undefined" && "BroadcastChannel" in window
+    ? new BroadcastChannel("certifiedpass_realtime_sync")
+    : null;
+
+if (syncChannel) {
+  syncChannel.onmessage = (event) => {
+    if (event.data?.type === "CERTS_UPDATED" && typeof window !== "undefined") {
+      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new CustomEvent("certifiedpass_credentials_updated"));
+    }
+  };
+}
+
 export class DecentralizedRegistry {
   static getAll(): DecentralizedCredential[] {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -142,9 +157,21 @@ export class DecentralizedRegistry {
   }
 
   static getById(id: string): DecentralizedCredential | null {
+    if (!id) return null;
+    const clean = id.trim().toLowerCase();
     const list = this.getAll();
-    const found = list.find((c) => c.id.toLowerCase() === id.trim().toLowerCase());
-    return found || null;
+
+    // 1. Exact match
+    const exact = list.find((c) => c.id.toLowerCase() === clean);
+    if (exact) return exact;
+
+    // 2. Partial prefix / substring match
+    const partial = list.find(
+      (c) => c.id.toLowerCase().includes(clean) || clean.includes(c.id.toLowerCase())
+    );
+    if (partial) return partial;
+
+    return null;
   }
 
   static getByHolder(holderAddress: string): DecentralizedCredential[] {
@@ -179,6 +206,7 @@ export class DecentralizedRegistry {
         window.dispatchEvent(new Event("storage"));
         window.dispatchEvent(new CustomEvent("certifiedpass_credentials_updated"));
       }
+      syncChannel?.postMessage({ type: "CERTS_UPDATED", credId: cred.id });
     } catch (e) {
       console.error("Failed to save to localStorage:", e);
     }
@@ -199,6 +227,7 @@ export class DecentralizedRegistry {
           window.dispatchEvent(new Event("storage"));
           window.dispatchEvent(new CustomEvent("certifiedpass_credentials_updated"));
         }
+        syncChannel?.postMessage({ type: "CERTS_UPDATED", credId: id });
       } catch (e) {
         console.error("Failed to revoke in localStorage:", e);
       }
@@ -220,6 +249,7 @@ export class DecentralizedRegistry {
           window.dispatchEvent(new Event("storage"));
           window.dispatchEvent(new CustomEvent("certifiedpass_credentials_updated"));
         }
+        syncChannel?.postMessage({ type: "CERTS_UPDATED", credId: id });
       } catch (e) {
         console.error("Failed to update status in localStorage:", e);
       }

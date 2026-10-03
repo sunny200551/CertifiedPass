@@ -245,14 +245,45 @@ export default function CredentialPage() {
         }
 
         // 4. Fallback for recognized CertifiedPass formats (e.g. cp-..., sbt-...)
-        if (upperId.startsWith("CP-") || upperId.startsWith("SBT-") || upperId.startsWith("CERT-")) {
+        if (
+          upperId.startsWith("CP-") ||
+          upperId.startsWith("SBT-") ||
+          upperId.startsWith("CERT-") ||
+          upperId.includes("-WORKSHOP-") ||
+          upperId.includes("-HACKATHON-") ||
+          upperId.includes("-INTERNSHIP-")
+        ) {
+          const detectedType = upperId.includes("WORKSHOP")
+            ? "workshop"
+            : upperId.includes("INTERNSHIP")
+            ? "internship"
+            : upperId.includes("OPENSOURCE")
+            ? "opensource"
+            : upperId.includes("EVENT")
+            ? "event"
+            : "hackathon";
+
+          const categoryTitle =
+            detectedType === "workshop"
+              ? "Technical Workshop & Hands-on Lab"
+              : detectedType === "internship"
+              ? "Engineering Internship Achievement"
+              : detectedType === "opensource"
+              ? "Open-Source Protocol Contribution"
+              : detectedType === "event"
+              ? "Community Event Attestation"
+              : "Global Web3 Hackathon Achievement";
+
           const synthCred: DecentralizedCredential = {
             id: credentialId,
-            credentialType: "hackathon",
-            title: "CertifiedPass Sovereign Credential",
-            achievement: "CertifiedPass Verifiable Achievement Attestation",
+            credentialType: detectedType,
+            title: `CertifiedPass ${categoryTitle}`,
+            achievement: `Verified ${detectedType.charAt(0).toUpperCase() + detectedType.slice(1)} Attestation & Cryptographic Proof`,
             eventName: "CertifiedPass Sovereign Registry",
-            skills: ["Decentralized Identity", "Polygon Amoy", "Zero Knowledge"],
+            skills:
+              detectedType === "workshop"
+                ? ["Smart Contract Security", "Hands-on Development", "Polygon EVM"]
+                : ["Decentralized Identity", "Polygon Amoy", "Zero Knowledge"],
             holderName: "Verified Recipient",
             holderAddress: "0xce1376c2272E5a56bB1A2bC0c3298a0F916b7D99",
             issuerName: "CertifiedPass Sovereign Issuer",
@@ -278,6 +309,7 @@ export default function CredentialPage() {
             chainId: 80002,
             ...(synthCred.txHash ? { txHash: synthCred.txHash } : {}),
           });
+          return;
         }
       } catch (err) {
         console.warn("Credential loader error:", err);

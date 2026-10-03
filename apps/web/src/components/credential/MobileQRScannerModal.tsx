@@ -59,47 +59,76 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
     }
   };
 
-  // Start camera stream
+  // Start camera stream with multi-tier mobile fallbacks
   const startCamera = async (facing: "environment" | "user") => {
     stopCamera();
     setErrorMsg(null);
 
+    let mediaStream: MediaStream | null = null;
+
+    // Tier 1: Try high-definition with desired facingMode
     try {
-      const constraints: MediaStreamConstraints = {
+      mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: { ideal: facing },
           width: { ideal: 1280 },
           height: { ideal: 720 },
         },
         audio: false,
-      };
-
-      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-      setStream(mediaStream);
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-        videoRef.current.setAttribute("playsinline", "true"); // Critical for iOS Safari
-        videoRef.current.muted = true;
-        await videoRef.current.play();
-      }
-
-      // Check for torch/flashlight capability on mobile
-      const videoTrack = mediaStream.getVideoTracks()[0];
-      if (videoTrack) {
-        const capabilities = (videoTrack.getCapabilities?.() || {}) as any;
-        if (capabilities.torch) {
-          setHasTorch(true);
+      });
+    } catch {
+      // Tier 2: Try basic facingMode
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: facing },
+          audio: false,
+        });
+      } catch {
+        // Tier 3: Try generic video (works on 100% of mobile devices and webviews)
+        try {
+          mediaStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false,
+          });
+        } catch (err: any) {
+          console.warn("Camera access error:", err);
+          if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+            setErrorMsg("Camera permission was denied. Please allow camera access in your browser settings or upload a photo.");
+          } else if (err.name === "NotFoundError" || err.name === "DevicesNotFoundError") {
+            setErrorMsg("No camera device was detected. You can snap or upload a photo below.");
+          } else {
+            setErrorMsg("Unable to start live camera feed. You can snap or upload a certificate photo below.");
+          }
+          return;
         }
       }
-    } catch (err: any) {
-      console.warn("Camera access error:", err);
-      if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-        setErrorMsg("Camera permission was denied. Please enable camera permissions in your browser or upload an image.");
-      } else if (err.name === "NotFoundError" || err.name === "DevicesNotFoundError") {
-        setErrorMsg("No camera device was detected. You can upload a photo or screenshot below.");
-      } else {
-        setErrorMsg("Unable to access camera stream. You can upload a photo or screenshot below.");
+    }
+
+    if (!mediaStream) return;
+
+    setStream(mediaStream);
+
+    if (videoRef.current) {
+      const video = videoRef.current;
+      video.setAttribute("playsinline", "true");
+      video.setAttribute("webkit-playsinline", "true");
+      video.muted = true;
+      video.autoplay = true;
+      video.srcObject = mediaStream;
+
+      video.onloadedmetadata = () => {
+        video.play().catch((playErr) => {
+          console.warn("Video play notice:", playErr);
+        });
+      };
+    }
+
+    // Check for torch capability on mobile
+    const videoTrack = mediaStream.getVideoTracks()[0];
+    if (videoTrack) {
+      const capabilities = (videoTrack.getCapabilities?.() || {}) as any;
+      if (capabilities.torch) {
+        setHasTorch(true);
       }
     }
   };
@@ -424,14 +453,32 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
             className="hidden"
           />
 
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="w-full flex items-center justify-center gap-2 rounded-2xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-200 hover:text-white transition-colors shadow-sm"
-          >
-            <ImageIcon className="h-4 w-4 text-indigo-400" />
-            Upload Certificate Photo or Screenshot
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                const input = document.createElement("input");
+                input.type = "file";
+                input.accept = "image/*";
+                input.capture = "environment";
+                input.onchange = (e) => handleFileUpload(e as any);
+                input.click();
+              }}
+              className="flex items-center justify-center gap-1.5 rounded-2xl border border-indigo-500/40 bg-indigo-600/20 hover:bg-indigo-600/30 px-3 py-2.5 text-xs font-bold text-indigo-300 hover:text-white transition-colors shadow-sm"
+            >
+              <Camera className="h-4 w-4 text-indigo-400" />
+              <span>Snap Photo</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center justify-center gap-1.5 rounded-2xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 px-3 py-2.5 text-xs font-bold text-slate-200 hover:text-white transition-colors shadow-sm"
+            >
+              <ImageIcon className="h-4 w-4 text-slate-400" />
+              <span>Upload Image</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
