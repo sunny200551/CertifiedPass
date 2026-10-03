@@ -301,6 +301,8 @@ export class PolyLanceVerificationService {
       });
     }
 
+    // 3. Fallback: Query live PolyLance backend REST API
+    try {
       const apiUrl = process.env["POLYLANCE_API_URL"] || "https://polylance-fv-1-45wy.onrender.com";
       const response = await fetch(
         `${apiUrl}/api/certifiedpass/verify/${encodeURIComponent(cleanCertId)}`,
