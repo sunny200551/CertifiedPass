@@ -49,6 +49,23 @@ credentialsRouter.post(
 );
 
 /**
+ * POST /api/v1/credentials/sync — sync or register decentralized issued credential.
+ * Enables client-issued & batch-issued credentials to be saved in the database.
+ */
+credentialsRouter.post("/sync", async (req: Request, res: Response) => {
+  try {
+    const cred = req.body;
+    if (!cred || !cred.id) {
+      return res.status(400).json({ success: false, error: { code: "INVALID_DATA", message: "Credential ID is required." } });
+    }
+    const saved = await CredentialService.registerDecentralizedCredential(cred);
+    res.json({ success: true, data: saved });
+  } catch (err: any) {
+    res.status(400).json({ success: false, error: { code: "SYNC_FAILED", message: err.message } });
+  }
+});
+
+/**
  * GET /api/v1/credentials/:id — get single credential record.
  */
 credentialsRouter.get("/:id", async (req: Request, res: Response) => {

@@ -18,6 +18,7 @@ import { Badge } from "../../components/ui/Badge.js";
 import { extractCredentialsWithAI, type ExtractedDraft } from "../../lib/ai.js";
 import { DecentralizedRegistry, type DecentralizedCredential } from "../../lib/blockchain.js";
 import { canonicalizeJSON, computeSHA256, pinJSONToIPFS } from "../../lib/ipfs.js";
+import { api } from "../../lib/api.js";
 import { useAuth } from "../../context/AuthContext.js";
 import { useAccount } from "wagmi";
 import type { CredentialType } from "@certifiedpass/types";
@@ -134,6 +135,10 @@ export default function IssuerIssuePage() {
         };
 
         DecentralizedRegistry.save(newCred);
+        // Persist to server database so credential is universally verifiable across any device/browser
+        api.post("/credentials/sync", newCred).catch((err) => {
+          console.warn("Server sync notification:", err);
+        });
       }
       setLastIssuedCertId(latestId || 'PL-SBT-JOB-0xce1376c2272E-0xce13');
       setStep("success");

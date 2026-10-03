@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, FileSpreadsheet, CheckCircle2, AlertTriangle, Play, Download, Trash2, X } from 'lucide-react';
 import { DecentralizedRegistry, type DecentralizedCredential } from '../../lib/blockchain.js';
+import { api } from '../../lib/api.js';
 
 export interface BatchItem {
   id: string;
@@ -165,6 +166,9 @@ export const BatchIssuanceEngine: React.FC<BatchIssuanceEngineProps> = ({
         isVerified: true,
       };
       DecentralizedRegistry.save(newCred);
+      api.post('/credentials/sync', newCred).catch((err) => {
+        console.warn('Batch server sync notice:', err);
+      });
     }
 
     setProcessing(false);

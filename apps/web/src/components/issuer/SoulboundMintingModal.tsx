@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, CheckCircle2, ExternalLink, X } from 'lucide-react';
 import { DecentralizedRegistry, type DecentralizedCredential } from '../../lib/blockchain.js';
+import { api } from '../../lib/api.js';
 
 interface SoulboundMintingModalProps {
   isOpen: boolean;
@@ -74,6 +75,9 @@ export const SoulboundMintingModal: React.FC<SoulboundMintingModalProps> = ({
       isVerified: true,
     };
     DecentralizedRegistry.save(newCred);
+    api.post('/credentials/sync', newCred).catch((err) => {
+      console.warn('Soulbound server sync notice:', err);
+    });
 
     setStep('complete');
     setIsMinting(false);

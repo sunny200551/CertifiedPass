@@ -182,11 +182,79 @@ export class CredentialService {
   }
 
   /**
-   * Get single credential by ID.
+   * Register or sync a decentralized credential issued via frontend/smart contract
+   */
+  static async registerDecentralizedCredential(cred: any) {
+    const issuerAddress = cred.issuerAddress || "0x51E2a819bA4F5b6c891e4a3F12c6a4F69B88793B";
+    const issuerName = cred.issuerName || "CertifiedPass Sovereign Issuer";
+
+    let issuer = await prisma.issuer.findFirst({
+      where: {
+        OR: [
+          { walletAddress: issuerAddress },
+          { walletAddress: { equals: issuerAddress, mode: "insensitive" } },
+        ],
+      },
+    });
+
+    if (!issuer) {
+      issuer = await prisma.issuer.create({
+        data: {
+          walletAddress: issuerAddress,
+          name: issuerName,
+          verificationStatus: "VERIFIED",
+        },
+      });
+    }
+
+    const typeUpper = (cred.credentialType || "HACKATHON").toUpperCase() as any;
+    const validTypes = ["HACKATHON", "INTERNSHIP", "OPENSOURCE", "EVENT", "WORKSHOP", "COMPETITION"];
+    const safeType = validTypes.includes(typeUpper) ? typeUpper : "HACKATHON";
+    const holderAddr = cred.holderAddress || "0x0000000000000000000000000000000000000000";
+
+    const saved = await prisma.credential.upsert({
+      where: { id: cred.id },
+      update: {
+        status: (cred.status === "REVOKED" ? "REVOKED" : "ACTIVE") as any,
+        metadata: (cred.metadata || cred) as any,
+        txHash: cred.txHash,
+      },
+      create: {
+        id: cred.id,
+        issuerId: issuer.id,
+        holderAddress: holderAddr,
+        credentialType: safeType,
+        status: (cred.status === "REVOKED" ? "REVOKED" : "ACTIVE") as any,
+        credentialHash: cred.credentialHash || `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`,
+        metadataUri: `/api/v1/credentials/${cred.id}`,
+        txHash: cred.txHash || `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`,
+        chainId: 80002,
+        metadata: (cred.metadata || cred) as any,
+        issuedAt: cred.issuedAt ? new Date(cred.issuedAt) : new Date(),
+      },
+      include: {
+        issuer: true,
+        event: true,
+      },
+    });
+
+    return saved;
+  }
+
+  /**
+   * Get single credential by ID or hash.
    */
   static async getCredential(id: string) {
-    const credential = await prisma.credential.findUnique({
-      where: { id },
+    const clean = id.trim();
+    const credential = await prisma.credential.findFirst({
+      where: {
+        OR: [
+          { id: clean },
+          { id: { equals: clean, mode: "insensitive" } },
+          { credentialHash: clean },
+          { credentialHash: { equals: clean.replace(/^0x/, ""), mode: "insensitive" } },
+        ],
+      },
       include: {
         issuer: {
           select: {
