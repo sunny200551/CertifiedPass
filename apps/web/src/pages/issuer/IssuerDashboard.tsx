@@ -26,6 +26,7 @@ import {
   GraduationCap,
   Globe2
 } from "lucide-react";
+import { useAccount } from "wagmi";
 import { Layout } from "../../components/layout/Layout.js";
 import { Button } from "../../components/ui/Button.js";
 import { Badge } from "../../components/ui/Badge.js";
@@ -47,6 +48,9 @@ import { ActionFeedbackModal, type FeedbackModalState } from "../../components/u
 
 export default function IssuerDashboard() {
   const { user } = useAuth();
+  const { address } = useAccount();
+  const activeIssuerAddress = user?.walletAddress || address;
+
   const [issuedList, setIssuedList] = useState<DecentralizedCredential[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrgFilter, setSelectedOrgFilter] = useState<string>("ALL");
@@ -66,74 +70,21 @@ export default function IssuerDashboard() {
   const loadIssuedCredentials = () => {
     const fromRegistry = DecentralizedRegistry.getAll();
     
-    // If empty in initial session, seed with genuine verifiable credentials for the issuer's organization
-    if (fromRegistry.length === 0) {
-      const initialSeed: DecentralizedCredential[] = [
-        {
-          id: "PL-SBT-JOB-0xce1376c2272E-0xce13",
-          credentialType: "internship",
-          holderName: "Pasumarthi Sunny",
-          holderAddress: "0xce1376c2272E5a56f64249a5Ffc5D2a56994781A",
-          issuerName: "APSCHE & PolyLance Guild",
-          issuerAddress: "0x51E2a819bA4F5b6c891e4a3F12c6a4F69B88793B",
-          title: "APSCHE Professional Internship Credential",
-          achievement: "Completed Certified Industry Internship with Distinction",
-          eventName: "APSCHE Winter Cohort",
-          skills: ["React", "TypeScript", "Solidity", "Smart Contract Security"],
-          issuedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-          credentialHash: "0x89abf721c5691029384758392019284759283749583729102938475619283746",
-          txHash: "0x9812739182739182739182739182739182739182739182739182739182739182",
-          tokenUri: "ipfs://QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-          status: "ACTIVE",
-          isVerified: true,
-        },
-        {
-          id: "PL-SBT-JOB-0xeeacc05a99a2-0xeeac",
-          credentialType: "hackathon",
-          holderName: "Verified Web3 Engineer",
-          holderAddress: "0xeeacc05a99a224a0d9124483ca893b8214fa3559",
-          issuerName: "Polygon Labs & ETHGlobal",
-          issuerAddress: "0x34A60E21a8a25c6858e72A1B14394eE9F90aA2A3",
-          title: "Sovereign Soulbound Milestone Attestation",
-          achievement: "Decentralized Escrow Contract & Security Audit Settlement",
-          eventName: "Polygon Sovereign Summit",
-          skills: ["Foundry", "Slither", "EVM Security", "EIP-712"],
-          issuedAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-          credentialHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-          txHash: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-          tokenUri: "ipfs://QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
-          status: "ACTIVE",
-          isVerified: true,
-        },
-        {
-          id: "cp-opensource-2026-core",
-          credentialType: "opensource",
-          holderName: "Core Protocol Contributor",
-          holderAddress: "0x71C83d5a420DDea695d739c94B8B9B74b34A8c4D",
-          issuerName: "CertifiedPass Foundation",
-          issuerAddress: "0x192739B78C56A490196Ac588D4b50f75727F47e6",
-          title: "Verifiable Credential Core Architecture Attestation",
-          achievement: "Authored W3C Verifiable Credentials v2.0 Standard Module",
-          eventName: "CertifiedPass DAO",
-          skills: ["Rust", "W3C VC", "Zero-Knowledge Proofs", "Polygon Amoy"],
-          issuedAt: new Date(Date.now() - 86400000 * 9).toISOString(),
-          credentialHash: "0x4567890123abcdef4567890123abcdef4567890123abcdef4567890123abcdef",
-          txHash: "0x7890123456abcdef7890123456abcdef7890123456abcdef7890123456abcdef",
-          tokenUri: "ipfs://QmZtmD2qtQg97DnUXLHxDRxdi5epnMMjN4aV1nmnniqipT",
-          status: "ACTIVE",
-          isVerified: true,
-        }
-      ];
-      initialSeed.forEach(c => DecentralizedRegistry.save(c));
-      setIssuedList(initialSeed);
+    // Privacy & Security: Only show credentials issued by this issuer's address
+    if (activeIssuerAddress) {
+      const myIssued = fromRegistry.filter(
+        (c) => c.issuerAddress?.toLowerCase() === activeIssuerAddress.toLowerCase()
+      );
+      setIssuedList(myIssued);
     } else {
+      // If not yet connected to a specific wallet, show the decentralized registry records
       setIssuedList(fromRegistry);
     }
   };
 
   useEffect(() => {
     loadIssuedCredentials();
-  }, []);
+  }, [activeIssuerAddress]);
 
   const showSuccessFeedback = (title: string, message: string, details?: string) => {
     setFeedbackModal({
@@ -615,14 +566,16 @@ export default function IssuerDashboard() {
                           </td>
 
                           {/* Status */}
-                          <td className="p-4">
+                          <td className="p-4 whitespace-nowrap min-w-[140px]">
                             {isRevoked ? (
-                              <span className="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase border border-rose-500/20">
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase border border-rose-500/25 whitespace-nowrap shadow-sm">
+                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                                 REVOKED
                               </span>
                             ) : (
-                              <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase border border-emerald-500/20">
-                                ACTIVE & VALID
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase border border-emerald-500/25 whitespace-nowrap shadow-sm">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                ACTIVE &amp; VALID
                               </span>
                             )}
                           </td>
@@ -799,6 +752,7 @@ export default function IssuerDashboard() {
         onClose={() => setActiveModal(null)}
         certId={activeCertForAction}
         recipientName={activeRecipientForAction}
+        credentialTitle={issuedList.find(c => c.id === activeCertForAction)?.title || "Verifiable Sovereign Credential"}
       />
 
       <IssuerAnalyticsModal
