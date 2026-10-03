@@ -145,7 +145,7 @@ export const Footer: React.FC = () => {
                     <div>
                       <span className="flex items-center gap-1.5 text-[13px] font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-purple)] transition-colors leading-tight">
                         PolyLance Escrow Audit
-                        <span className="rounded-full neo-raised-sm bg-[var(--accent-purple)] text-white px-1.5 py-0.5 text-[8.5px] font-black leading-none">
+                        <span className="rounded-full bg-purple-700 text-white px-2 py-0.5 text-[9px] font-black uppercase tracking-wider shadow-sm">
                           Collab
                         </span>
                       </span>

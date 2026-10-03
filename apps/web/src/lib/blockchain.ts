@@ -121,66 +121,21 @@ export class DecentralizedRegistry {
   static getAll(): DecentralizedCredential[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      // Seed default verifiable credentials on Amoy
-      const defaultList: DecentralizedCredential[] = [
-        {
-          id: "cp-hackathon-2026-ethsf",
-          credentialType: "hackathon",
-          holderAddress: "0x71C845137F73612FACb1C1E6e3e1A144e5904F2E",
-          holderName: "Alex Rivera",
-          issuerName: "ETHSF & Polygon Labs",
-          issuerAddress: "0x51E2a819bA4F5b6c891e4a3F12c6a4F69B88793B",
-          title: "1st Place Winner — Global Web3 AI Hackathon",
-          achievement: "1st Place Winner - Infrastructure Track",
-          eventName: "ETHSF 2026",
-          skills: ["Solidity", "TypeScript", "Three.js", "Zod"],
-          issuedAt: "2026-08-20T00:00:00.000Z",
-          credentialHash: "4a9d721183c509539fbe54b5df16a7f85dc9eb3e85e507f3531b790d0ef093ac",
-          txHash: "0x3f4a9b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a",
-          tokenUri: "ipfs://QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-          status: "ACTIVE",
-          isVerified: true,
-          metadata: {
-            title: "1st Place Winner — Global Web3 AI Hackathon",
-            holderName: "Alex Rivera",
-            issuerName: "ETHSF & Polygon Labs",
-            achievement: "1st Place Winner - Infrastructure Track",
-            eventName: "ETHSF 2026",
-            skills: ["Solidity", "TypeScript", "Three.js", "Zod"],
-          },
-        },
-        {
-          id: "cp-internship-2026-consensys",
-          credentialType: "internship",
-          holderAddress: "0x71C845137F73612FACb1C1E6e3e1A144e5904F2E",
-          holderName: "Alex Rivera",
-          issuerName: "ConsenSys",
-          issuerAddress: "0x91a2B3c4D5e6F7a8B9c0D1e2F3a4B5c6D7e8F9a0",
-          title: "Smart Contract Engineering Intern",
-          achievement: "Completed 12-week Smart Contract Security & EVM Core Audit Cohort",
-          eventName: "ConsenSys Summer 2026",
-          skills: ["Foundry", "EVM", "Smart Contract Auditing", "ERC-4337"],
-          issuedAt: "2026-07-31T00:00:00.000Z",
-          credentialHash: "b8c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3",
-          txHash: "0x8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b",
-          tokenUri: "ipfs://QmZtmD2qtW3wknFiJnKLwHCnL72vedxjQkDDP1mXWo6abc",
-          status: "ACTIVE",
-          isVerified: true,
-          metadata: {
-            title: "Smart Contract Engineering Intern",
-            holderName: "Alex Rivera",
-            issuerName: "ConsenSys",
-            role: "Smart Contract Intern",
-            companyName: "ConsenSys",
-            skills: ["Foundry", "EVM", "Auditing"],
-          },
-        },
-      ];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultList));
-      return defaultList;
+      return [];
     }
     try {
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      // Clean out any legacy demo records
+      if (Array.isArray(parsed)) {
+        return parsed.filter(
+          (c: any) =>
+            c &&
+            c.holderName !== "Alex Rivera" &&
+            c.id !== "cp-hackathon-2026-ethsf" &&
+            c.id !== "cp-internship-2026-consensys"
+        );
+      }
+      return [];
     } catch {
       return [];
     }

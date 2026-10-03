@@ -27,6 +27,7 @@ export const BatchIssuanceEngine: React.FC<BatchIssuanceEngineProps> = ({
   const [items, setItems] = useState<BatchItem[]>([]);
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [parseError, setParseError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -95,7 +96,7 @@ export const BatchIssuanceEngine: React.FC<BatchIssuanceEngineProps> = ({
           setItems(rows);
         }
       } catch (err) {
-        alert('Failed to parse uploaded file. Please verify CSV/JSON formatting.');
+        setParseError('Failed to parse uploaded file. Please verify CSV/JSON formatting.');
       }
     };
     reader.readAsText(file);
@@ -115,7 +116,7 @@ export const BatchIssuanceEngine: React.FC<BatchIssuanceEngineProps> = ({
   const handleStartBatchMint = async () => {
     const validItems = items.filter(i => i.status === 'valid');
     if (validItems.length === 0) {
-      alert('No valid items found to mint.');
+      setParseError('No valid items found to mint.');
       return;
     }
 
@@ -163,6 +164,13 @@ export const BatchIssuanceEngine: React.FC<BatchIssuanceEngineProps> = ({
 
         {/* Content */}
         <div className="p-6 flex-1 overflow-y-auto space-y-6">
+          {parseError && (
+            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center justify-between">
+              <span>{parseError}</span>
+              <button onClick={() => setParseError(null)} className="text-slate-400 hover:text-white text-xs ml-2">Dismiss</button>
+            </div>
+          )}
+
           {items.length === 0 ? (
             <div className="border-2 border-dashed border-slate-700 rounded-2xl p-10 text-center hover:border-purple-500/50 transition bg-slate-950/40">
               <Upload className="w-12 h-12 text-slate-500 mx-auto mb-4 animate-bounce" />

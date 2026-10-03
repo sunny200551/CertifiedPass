@@ -30,6 +30,9 @@ import { RevocationLifecycleModal } from "../../components/issuer/RevocationLife
 import { AutomatedDeliverySuite } from "../../components/issuer/AutomatedDeliverySuite.js";
 import { IssuerAnalyticsModal } from "../../components/issuer/IssuerAnalyticsModal.js";
 
+// Action feedback modal
+import { ActionFeedbackModal, type FeedbackModalState } from "../../components/ui/ActionFeedbackModal.js";
+
 export default function IssuerDashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState({
@@ -42,6 +45,21 @@ export default function IssuerDashboard() {
   // Modal control states
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [activeCertForAction, setActiveCertForAction] = useState<string>('PL-SBT-JOB-0xce1376c2272E-0xce13');
+  const [feedbackModal, setFeedbackModal] = useState<FeedbackModalState>({
+    isOpen: false,
+    title: '',
+    message: '',
+  });
+
+  const showSuccessFeedback = (title: string, message: string, details?: string) => {
+    setFeedbackModal({
+      isOpen: true,
+      type: "success",
+      title,
+      message,
+      details
+    });
+  };
 
   const featureCards = [
     {
@@ -265,7 +283,11 @@ export default function IssuerDashboard() {
         onClose={() => setActiveModal(null)}
         onExtracted={(extractedDrafts) => {
           setActiveModal(null);
-          alert(`Imported ${extractedDrafts.length} extracted candidates into issuance pipeline.`);
+          showSuccessFeedback(
+            "AI Extraction Successful",
+            `Extracted and queued ${extractedDrafts.length} candidate credential records for verification and issuance.`,
+            `Recipient: ${extractedDrafts[0]?.holderName} (${extractedDrafts[0]?.title})`
+          );
         }}
       />
 
@@ -273,8 +295,12 @@ export default function IssuerDashboard() {
         isOpen={activeModal === "batch_issue"}
         onClose={() => setActiveModal(null)}
         onBatchComplete={(items) => {
-          alert(`Batch issuance completed for ${items.length} credentials!`);
           setActiveModal(null);
+          showSuccessFeedback(
+            "Batch Issuance Complete",
+            `Successfully processed and minted ${items.length} verifiable credentials on Polygon PoS.`,
+            `Gas consumed: ~${(items.length * 0.0042).toFixed(4)} POL`
+          );
         }}
       />
 
@@ -282,8 +308,11 @@ export default function IssuerDashboard() {
         isOpen={activeModal === "schema_designer"}
         onClose={() => setActiveModal(null)}
         onSaveSchema={(schema) => {
-          alert(`Saved schema "${schema.schemaName}" with ${schema.customFields.length} custom attributes.`);
           setActiveModal(null);
+          showSuccessFeedback(
+            "Schema & 3D Badge Saved",
+            `Configured "${schema.schemaName}" with ${schema.customFields.length} custom attributes and ${schema.foilStyle.toUpperCase()} holographic foil finish.`
+          );
         }}
       />
 
@@ -291,8 +320,12 @@ export default function IssuerDashboard() {
         isOpen={activeModal === "sbt_mint"}
         onClose={() => setActiveModal(null)}
         onMintSuccess={(tx) => {
-          alert(`ERC-5192 Soulbound Token successfully minted!\nTx Hash: ${tx}`);
           setActiveModal(null);
+          showSuccessFeedback(
+            "ERC-5192 Soulbound Token Minted",
+            "The non-transferable achievement pass is permanently locked and anchored on-chain.",
+            `Transaction: ${tx}`
+          );
         }}
       />
 
@@ -300,8 +333,11 @@ export default function IssuerDashboard() {
         isOpen={activeModal === "multisig"}
         onClose={() => setActiveModal(null)}
         onWorkflowComplete={(signers, threshold) => {
-          alert(`Multi-sig quorum met (${signers.filter(s => s.signed).length}/${threshold})!`);
           setActiveModal(null);
+          showSuccessFeedback(
+            "Multi-Sig Threshold Reached",
+            `Gathered ${signers.filter(s => s.signed).length} of ${threshold} required cryptographic signatures from authorized entities.`
+          );
         }}
       />
 
@@ -310,8 +346,12 @@ export default function IssuerDashboard() {
         onClose={() => setActiveModal(null)}
         certId={activeCertForAction}
         onActionComplete={(action, reason) => {
-          alert(`Credential successfully updated to: ${action.toUpperCase()} (${reason})`);
           setActiveModal(null);
+          showSuccessFeedback(
+            "Credential Status Updated",
+            `The on-chain status for ${activeCertForAction} was updated to ${action.toUpperCase()}.`,
+            `Audit reason: ${reason}`
+          );
         }}
       />
 
@@ -324,6 +364,12 @@ export default function IssuerDashboard() {
       <IssuerAnalyticsModal
         isOpen={activeModal === "analytics"}
         onClose={() => setActiveModal(null)}
+      />
+
+      {/* Branded CertifiedPass Feedback Modal */}
+      <ActionFeedbackModal
+        modalState={feedbackModal}
+        onClose={() => setFeedbackModal(prev => ({ ...prev, isOpen: false }))}
       />
     </Layout>
   );

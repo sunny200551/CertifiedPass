@@ -28,14 +28,16 @@ export const MultiSigCoSigningWorkflow: React.FC<MultiSigCoSigningWorkflowProps>
   const [threshold, setThreshold] = useState<number>(2);
   const [newSignerName, setNewSignerName] = useState('');
   const [newSignerAddr, setNewSignerAddr] = useState('');
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
   const handleAddSigner = () => {
     if (!newSignerAddr.startsWith('0x') || newSignerAddr.length !== 42) {
-      alert('Please provide a valid 42-character Ethereum address.');
+      setValidationError('Please provide a valid 42-character Ethereum address (0x...).');
       return;
     }
+    setValidationError(null);
 
     setSigners([
       ...signers,
@@ -169,6 +171,11 @@ export const MultiSigCoSigningWorkflow: React.FC<MultiSigCoSigningWorkflowProps>
             <div className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
               <Plus className="w-3.5 h-3.5 text-cyan-400" /> Add Additional Co-Signing Entity
             </div>
+            {validationError && (
+              <div className="p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-lg text-rose-400 text-xs">
+                {validationError}
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <input
                 type="text"

@@ -179,7 +179,7 @@ export const AutomatedDeliverySuite: React.FC<AutomatedDeliverySuiteProps> = ({
                 <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-between">
                   <span className="text-xs font-mono text-amber-300">CertifiedPass_Pass_{certId.slice(0, 10)}.pkpass</span>
                   <button
-                    onClick={() => alert('Downloaded Apple Wallet Pass Bundle (.pkpass)')}
+                    onClick={() => setDispatched('Apple Wallet Pass Generated')}
                     className="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-lg text-xs font-bold hover:bg-amber-500/30 transition"
                   >
                     Download Pass

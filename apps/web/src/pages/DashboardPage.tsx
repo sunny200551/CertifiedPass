@@ -21,15 +21,14 @@ export default function DashboardPage() {
     function loadHolderCredentials() {
       setLoading(true);
       try {
-        const holderAddr = user?.walletAddress || "0x71C845137F73612FACb1C1E6e3e1A144e5904F2E";
-        let creds = DecentralizedRegistry.getByHolder(holderAddr);
-        if (creds.length === 0) {
-          creds = DecentralizedRegistry.getAll();
+        if (user?.walletAddress) {
+          const creds = DecentralizedRegistry.getByHolder(user.walletAddress);
+          setCredentials(creds);
+        } else {
+          setCredentials(DecentralizedRegistry.getAll());
         }
-        setCredentials(creds);
       } catch (err) {
-        console.warn("Decentralized credential loader fallback:", err);
-        setCredentials(DecentralizedRegistry.getAll());
+        setCredentials([]);
       } finally {
         setLoading(false);
       }

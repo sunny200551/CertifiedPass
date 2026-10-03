@@ -6,40 +6,21 @@ import { HolographicCard3D } from "../components/credential/HolographicCard3D.js
 import { CredentialQRModal } from "../components/credential/CredentialQRModal.js";
 import { Badge } from "../components/ui/Badge.js";
 import { useAuth } from "../context/AuthContext.js";
+import { DecentralizedRegistry, type DecentralizedCredential } from "../lib/blockchain.js";
 
 export default function MyCredentials() {
   const { user } = useAuth();
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedQR, setSelectedQR] = useState<{ id: string; title: string } | null>(null);
 
-  const credentials = [
-    {
-      id: "cp-hackathon-2026-ethsf",
-      credentialType: "hackathon",
-      title: "1st Place Winner — Global Web3 AI Hackathon",
-      issuedAt: "2026-08-20",
-      issuer: { name: "ETHSF & Polygon Labs" },
-      metadata: { placement: "1st Place Winner", track: "Infrastructure Track", skills: ["Solidity", "TypeScript", "Three.js"] },
-    },
-    {
-      id: "cp-internship-2026-consensys",
-      credentialType: "internship",
-      title: "Smart Contract Engineering Intern",
-      issuedAt: "2026-07-31",
-      issuer: { name: "ConsenSys" },
-      metadata: { companyName: "ConsenSys", role: "Smart Contract Intern", skills: ["Foundry", "EVM", "Auditing"] },
-    },
-    {
-      id: "cp-opensource-2026-ethers",
-      credentialType: "opensource",
-      title: "Core Contributor — Ethers.js v6",
-      issuedAt: "2026-06-15",
-      issuer: { name: "Ethers Org" },
-      metadata: { organizationName: "Ethers", repositoryName: "ethers.js", skills: ["TypeScript", "Cryptography"] },
-    },
-  ];
+  const allCreds = React.useMemo(() => {
+    if (user?.walletAddress) {
+      return DecentralizedRegistry.getByHolder(user.walletAddress);
+    }
+    return DecentralizedRegistry.getAll();
+  }, [user]);
 
-  const filtered = selectedType === "all" ? credentials : credentials.filter((c) => c.credentialType === selectedType);
+  const filtered = selectedType === "all" ? allCreds : allCreds.filter((c) => c.credentialType === selectedType);
 
   return (
     <Layout>
@@ -69,24 +50,31 @@ export default function MyCredentials() {
         </div>
 
         {/* Credentials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtered.map((c) => (
-            <div key={c.id} className="flex flex-col items-center hover:-translate-y-1 transition-transform">
-              <HolographicCard3D
-                id={c.id}
-                title={c.title}
-                holderName={user?.displayName || "Alex Rivera"}
-                issuerName={c.issuer.name}
-                credentialType={c.credentialType}
-                issuedAt={c.issuedAt}
-                status="ACTIVE"
-                isVerified={true}
-                metadata={c.metadata}
-                onShowQR={() => setSelectedQR({ id: c.id, title: c.title })}
-              />
-            </div>
-          ))}
-        </div>
+        {filtered.length === 0 ? (
+          <div className="rounded-[24px] neo-inset bg-[var(--surface-bg)] p-12 text-center text-[var(--text-secondary)]">
+            <p className="font-semibold text-sm">No verifiable credentials found in this category.</p>
+            <p className="text-xs text-slate-400 mt-1">Credentials issued to your wallet on Polygon will appear here in real-time.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filtered.map((c) => (
+              <div key={c.id} className="flex flex-col items-center hover:-translate-y-1 transition-transform">
+                <HolographicCard3D
+                  id={c.id}
+                  title={c.title}
+                  holderName={c.holderName || user?.displayName || "Verified Recipient"}
+                  issuerName={c.issuerName || "CertifiedPass Registry"}
+                  credentialType={c.credentialType}
+                  issuedAt={c.issuedAt}
+                  status={c.status}
+                  isVerified={c.isVerified}
+                  metadata={c.metadata}
+                  onShowQR={() => setSelectedQR({ id: c.id, title: c.title })}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* QR Modal */}

@@ -28,6 +28,9 @@ import { MultiSigCoSigningWorkflow } from "../../components/issuer/MultiSigCoSig
 import { AutomatedDeliverySuite } from "../../components/issuer/AutomatedDeliverySuite.js";
 import { SoulboundMintingModal } from "../../components/issuer/SoulboundMintingModal.js";
 
+// Action feedback modal
+import { ActionFeedbackModal, type FeedbackModalState } from "../../components/ui/ActionFeedbackModal.js";
+
 export default function IssuerIssuePage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<"upload" | "review" | "success">("upload");
@@ -39,32 +42,14 @@ export default function IssuerIssuePage() {
   // Feature modals state
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [lastIssuedCertId, setLastIssuedCertId] = useState<string>('');
+  const [feedbackModal, setFeedbackModal] = useState<FeedbackModalState>({
+    isOpen: false,
+    title: '',
+    message: '',
+  });
 
-  // Drafts state
-  const [drafts, setDrafts] = useState<ExtractedDraft[]>([
-    {
-      draftId: "draft-1",
-      holderName: "Alex Rivera",
-      holderAddress: "0x71C845137F73612FACb1C1E6e3e1A144e5904F2E",
-      title: "1st Place Winner — Global Web3 AI Hackathon",
-      achievement: "1st Place Winner - Infrastructure Track",
-      eventName: "ETHSF 2026",
-      skills: "Solidity, TypeScript, Three.js, Zod",
-      aiGenerated: true,
-      approved: true,
-    },
-    {
-      draftId: "draft-2",
-      holderName: "Elena Rostova",
-      holderAddress: "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
-      title: "2nd Place Winner — Global Web3 AI Hackathon",
-      achievement: "2nd Place - Zero-Knowledge Track",
-      eventName: "ETHSF 2026",
-      skills: "Rust, Circom, SnarkJS, Cairo",
-      aiGenerated: true,
-      approved: true,
-    },
-  ]);
+  // Drafts state - starts empty until uploaded or extracted
+  const [drafts, setDrafts] = useState<ExtractedDraft[]>([]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -457,7 +442,7 @@ export default function IssuerIssuePage() {
             holderAddress: d.holderAddress,
             title: d.title,
             achievement: d.achievement,
-            eventName: "PolyLance Network",
+            eventName: d.eventName || "CertifiedPass Global",
             skills: d.skills,
             aiGenerated: true,
             approved: true
@@ -471,25 +456,55 @@ export default function IssuerIssuePage() {
         isOpen={activeModal === "batch_issue"}
         onClose={() => setActiveModal(null)}
         onBatchComplete={(items) => {
-          alert(`Batch minted ${items.length} credentials!`);
           setActiveModal(null);
+          setFeedbackModal({
+            isOpen: true,
+            type: "success",
+            title: "Batch Issuance Complete",
+            message: `Successfully minted ${items.length} credentials on Polygon PoS.`,
+            details: `Gas consumed: ~${(items.length * 0.0042).toFixed(4)} POL`
+          });
         }}
       />
 
       <BadgeSchemaDesigner
         isOpen={activeModal === "schema_designer"}
         onClose={() => setActiveModal(null)}
+        onSaveSchema={(schema) => {
+          setActiveModal(null);
+          setFeedbackModal({
+            isOpen: true,
+            type: "success",
+            title: "Schema & 3D Badge Saved",
+            message: `Custom schema "${schema.schemaName}" has been configured for subsequent issuances.`
+          });
+        }}
       />
 
       <MultiSigCoSigningWorkflow
         isOpen={activeModal === "multisig"}
         onClose={() => setActiveModal(null)}
+        onWorkflowComplete={(signers, threshold) => {
+          setActiveModal(null);
+          setFeedbackModal({
+            isOpen: true,
+            type: "success",
+            title: "Multi-Sig Signatures Confirmed",
+            message: `Quorum reached with ${signers.filter(s => s.signed).length} of ${threshold} signatures.`
+          });
+        }}
       />
 
       <AutomatedDeliverySuite
         isOpen={activeModal === "delivery"}
         onClose={() => setActiveModal(null)}
         certId={lastIssuedCertId || 'PL-SBT-JOB-0xce1376c2272E-0xce13'}
+      />
+
+      {/* Branded Feedback Modal */}
+      <ActionFeedbackModal
+        modalState={feedbackModal}
+        onClose={() => setFeedbackModal(prev => ({ ...prev, isOpen: false }))}
       />
     </Layout>
   );
