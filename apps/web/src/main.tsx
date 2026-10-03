@@ -28,6 +28,30 @@ const WALLET_CONNECT_PROJECT_ID =
 // Catch unhandled WalletConnect socket rejections when domain is not allowlisted on cloud.reown.com
 // & auto-reload when a new deployment invalidates cached chunk hashes
 if (typeof window !== "undefined") {
+  // Gracefully intercept pulse.walletconnect.org analytics telemetry to prevent 403 network noise
+  const originalFetch = window.fetch;
+  window.fetch = async function (input: RequestInfo | URL, init?: RequestInit) {
+    const urlStr = typeof input === "string" ? input : input instanceof URL ? input.href : (input as Request)?.url || "";
+    if (urlStr && urlStr.includes("pulse.walletconnect.org")) {
+      return new Response(JSON.stringify({ status: "ok" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return originalFetch.apply(this, [input as any, init]);
+  };
+
+  if (navigator.sendBeacon) {
+    const originalSendBeacon = navigator.sendBeacon.bind(navigator);
+    navigator.sendBeacon = function (url: string | URL, data?: BodyInit | null) {
+      const urlStr = String(url);
+      if (urlStr.includes("pulse.walletconnect.org")) {
+        return true;
+      }
+      return originalSendBeacon(url, data);
+    };
+  }
+
   window.addEventListener("vite:preloadError", (event) => {
     event.preventDefault();
     console.warn("[CertifiedPass] Fresh version detected, updating resources...");

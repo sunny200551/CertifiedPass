@@ -371,23 +371,18 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Legal / Policy Links */}
-          <div className="flex items-center gap-5 text-[11px] font-bold text-[var(--text-secondary)]">
-            <Link to="/verify" className="hover:text-[var(--brand-indigo)] transition-colors">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-5 text-[11px] font-bold text-[var(--text-secondary)]">
+            <Link to="/docs" className="hover:text-[var(--brand-indigo)] transition-colors">
+              Docs
+            </Link>
+            <Link to="/contact" className="hover:text-[var(--brand-indigo)] transition-colors">
+              Contact Us
+            </Link>
+            <Link to="/privacy" className="hover:text-[var(--brand-indigo)] transition-colors">
               Privacy Policy
             </Link>
-            <Link to="/verify" className="hover:text-[var(--brand-indigo)] transition-colors">
-              Terms of Service
-            </Link>
-            <a
-              href="https://amoy.polygonscan.com"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-[var(--brand-indigo)] transition-colors"
-            >
-              Docs
-            </a>
-            <Link to="/verify" className="hover:text-[var(--brand-indigo)] transition-colors">
-              Contact
+            <Link to="/terms" className="hover:text-[var(--brand-indigo)] transition-colors">
+              Terms & Conditions
             </Link>
           </div>
         </div>

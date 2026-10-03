@@ -17,6 +17,10 @@ const VerifyPage       = lazy(() => import("./pages/VerifyPage.js"));
 const CredentialPage   = lazy(() => import("./pages/CredentialPage.js"));
 const ProfilePage      = lazy(() => import("./pages/ProfilePage.js"));
 const IssuerPublicPage = lazy(() => import("./pages/IssuerPublicPage.js"));
+const PrivacyPage      = lazy(() => import("./pages/PrivacyPage.js"));
+const TermsPage        = lazy(() => import("./pages/TermsPage.js"));
+const DocsPage         = lazy(() => import("./pages/DocsPage.js"));
+const ContactPage      = lazy(() => import("./pages/ContactPage.js"));
 
 // Authenticated holder pages
 const DashboardPage    = lazy(() => import("./pages/DashboardPage.js"));
@@ -60,6 +64,10 @@ export default function App() {
         <Route path="/c/:credentialId"    element={<CredentialPage />} />
         <Route path="/u/:username"        element={<ProfilePage />} />
         <Route path="/issuers/:id"        element={<IssuerPublicPage />} />
+        <Route path="/privacy"            element={<PrivacyPage />} />
+        <Route path="/terms"              element={<TermsPage />} />
+        <Route path="/docs"               element={<DocsPage />} />
+        <Route path="/contact"            element={<ContactPage />} />
 
         {/* Holder routes */}
         <Route path="/dashboard"          element={<DashboardPage />} />

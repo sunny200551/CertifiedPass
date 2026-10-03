@@ -14,6 +14,7 @@ import {
   Sun,
   Moon,
   ChevronDown,
+  BookOpen,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext.js";
@@ -32,6 +33,7 @@ export const Navbar: React.FC = () => {
     { path: "/verify", label: "Verify", icon: Search, prefix: "/c" },
     { path: "/dashboard", label: "Holder Portal", icon: LayoutDashboard, prefix: "/credentials" },
     { path: "/issuer", label: "Issuer Portal", icon: Award },
+    { path: "/docs", label: "Docs", icon: BookOpen },
   ];
 
   const isNavActive = (item: (typeof navItems)[0]) => {
