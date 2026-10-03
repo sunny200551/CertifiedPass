@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, FileSpreadsheet, CheckCircle2, AlertTriangle, Play, Download, Trash2 } from 'lucide-react';
+import { Upload, FileSpreadsheet, CheckCircle2, AlertTriangle, Play, Download, Trash2, X } from 'lucide-react';
 
 export interface BatchItem {
   id: string;
@@ -95,7 +95,7 @@ export const BatchIssuanceEngine: React.FC<BatchIssuanceEngineProps> = ({
           }
           setItems(rows);
         }
-      } catch (err) {
+      } catch {
         setParseError('Failed to parse uploaded file. Please verify CSV/JSON formatting.');
       }
     };
@@ -139,54 +139,56 @@ export const BatchIssuanceEngine: React.FC<BatchIssuanceEngineProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-fadeIn">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-md overflow-y-auto">
+      <div className="bg-[var(--surface-bg)] border-2 border-[var(--neo-outline)] rounded-[24px] w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden neo-raised text-[var(--text-primary)] my-auto animate-fadeIn">
         {/* Header */}
-        <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="p-6 border-b border-[var(--neo-outline)]/40 flex items-center justify-between bg-[var(--surface-bg)]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-2xl neo-raised-sm bg-[var(--surface-bg)] text-purple-500 flex items-center justify-center font-bold">
               <FileSpreadsheet className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                Bulk & Batch Issuance Engine
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              <h2 className="text-xl font-black text-[var(--text-primary)] flex items-center gap-2 font-display">
+                <span>Bulk & Batch Issuance Engine</span>
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 font-mono font-bold">
                   ERC-5192 Multi-Mint
                 </span>
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[var(--text-secondary)] font-medium">
                 Upload CSV/JSON spreadsheets to batch mint up to 1,000 sovereign soulbound credentials in a single pipeline.
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white text-lg px-2">✕</button>
+          <button onClick={onClose} className="rounded-full p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--accent-indigo-bg)] transition">
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Content */}
         <div className="p-6 flex-1 overflow-y-auto space-y-6">
           {parseError && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center justify-between">
+            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-600 dark:text-rose-400 text-xs flex items-center justify-between font-bold">
               <span>{parseError}</span>
-              <button onClick={() => setParseError(null)} className="text-slate-400 hover:text-white text-xs ml-2">Dismiss</button>
+              <button onClick={() => setParseError(null)} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs ml-2">Dismiss</button>
             </div>
           )}
 
           {items.length === 0 ? (
-            <div className="border-2 border-dashed border-slate-700 rounded-2xl p-10 text-center hover:border-purple-500/50 transition bg-slate-950/40">
-              <Upload className="w-12 h-12 text-slate-500 mx-auto mb-4 animate-bounce" />
-              <h3 className="text-base font-semibold text-white mb-1">Upload CSV or JSON Batch Manifest</h3>
-              <p className="text-xs text-slate-400 max-w-md mx-auto mb-6">
-                Columns supported: <code className="text-purple-400">recipientName</code>, <code className="text-purple-400">recipientAddress</code>, <code className="text-purple-400">credentialTitle</code>, <code className="text-purple-400">category</code>, <code className="text-purple-400">skills</code>
+            <div className="border-2 border-dashed border-[var(--neo-outline)] rounded-2xl p-10 text-center hover:border-purple-500/50 transition neo-inset bg-[var(--surface-bg)]">
+              <Upload className="w-12 h-12 text-purple-500 mx-auto mb-4 animate-bounce" />
+              <h3 className="text-base font-black text-[var(--text-primary)] mb-1 font-display">Upload CSV or JSON Batch Manifest</h3>
+              <p className="text-xs text-[var(--text-secondary)] max-w-md mx-auto mb-6 font-medium">
+                Columns supported: <code className="text-purple-600 dark:text-purple-400 font-bold">recipientName</code>, <code className="text-purple-600 dark:text-purple-400 font-bold">recipientAddress</code>, <code className="text-purple-600 dark:text-purple-400 font-bold">credentialTitle</code>, <code className="text-purple-600 dark:text-purple-400 font-bold">category</code>, <code className="text-purple-600 dark:text-purple-400 font-bold">skills</code>
               </p>
 
-              <div className="flex items-center justify-center gap-4">
-                <label className="cursor-pointer px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium text-sm rounded-xl shadow-lg transition">
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <label className="cursor-pointer px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs rounded-full shadow-lg transition">
                   Browse Files
                   <input type="file" accept=".csv,.json" onChange={handleFileUpload} className="hidden" />
                 </label>
                 <button
                   onClick={handleDownloadSample}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-sm rounded-xl border border-slate-700 flex items-center gap-2 transition"
+                  className="px-4 py-2.5 rounded-full border-2 border-[var(--neo-outline)] neo-raised bg-[var(--surface-bg)] text-[var(--text-primary)] font-bold text-xs flex items-center gap-2 transition"
                 >
                   <Download className="w-4 h-4" /> Download Sample CSV
                 </button>
@@ -195,25 +197,25 @@ export const BatchIssuanceEngine: React.FC<BatchIssuanceEngineProps> = ({
           ) : (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4 text-xs font-semibold">
-                  <span className="text-emerald-400 flex items-center gap-1">
+                <div className="flex items-center gap-4 text-xs font-black">
+                  <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                     <CheckCircle2 className="w-4 h-4" /> Valid: {items.filter(i => i.status === 'valid' || i.status === 'minted').length}
                   </span>
-                  <span className="text-rose-400 flex items-center gap-1">
+                  <span className="text-rose-600 dark:text-rose-400 flex items-center gap-1">
                     <AlertTriangle className="w-4 h-4" /> Invalid: {items.filter(i => i.status === 'invalid').length}
                   </span>
-                  <span className="text-purple-400">Total: {items.length}</span>
+                  <span className="text-purple-600 dark:text-purple-400">Total: {items.length}</span>
                 </div>
 
                 <div className="flex gap-2">
                   <button
                     onClick={() => setItems([])}
                     disabled={processing}
-                    className="px-3 py-1.5 text-xs text-rose-400 hover:bg-rose-500/10 rounded-lg flex items-center gap-1 border border-rose-500/20"
+                    className="px-3 py-1.5 text-xs text-rose-500 hover:bg-rose-500/10 rounded-lg flex items-center gap-1 border border-rose-500/20 font-bold"
                   >
                     <Trash2 className="w-3.5 h-3.5" /> Clear All
                   </button>
-                  <label className="cursor-pointer px-3 py-1.5 text-xs text-purple-300 bg-purple-950/40 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg flex items-center gap-1">
+                  <label className="cursor-pointer px-3 py-1.5 text-xs text-purple-600 dark:text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 rounded-lg flex items-center gap-1 font-bold">
                     <Upload className="w-3.5 h-3.5" /> Replace File
                     <input type="file" accept=".csv,.json" onChange={handleFileUpload} className="hidden" />
                   </label>
@@ -222,21 +224,21 @@ export const BatchIssuanceEngine: React.FC<BatchIssuanceEngineProps> = ({
 
               {/* Progress bar if processing */}
               {processing && (
-                <div className="bg-slate-950 p-4 rounded-xl border border-purple-500/30 space-y-2">
-                  <div className="flex justify-between text-xs text-slate-300 font-mono">
+                <div className="p-4 rounded-xl neo-inset bg-[var(--surface-bg)] border border-purple-500/30 space-y-2">
+                  <div className="flex justify-between text-xs text-[var(--text-primary)] font-mono font-bold">
                     <span>Batch Minting Engine Active...</span>
                     <span>{progress}%</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-[var(--surface-bg)] rounded-full overflow-hidden neo-inset">
                     <div className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-300" style={{ width: `${progress}%` }} />
                   </div>
                 </div>
               )}
 
               {/* Table */}
-              <div className="border border-slate-800 rounded-xl overflow-hidden max-h-80 overflow-y-auto">
+              <div className="border-2 border-[var(--neo-outline)] rounded-xl overflow-hidden max-h-80 overflow-y-auto neo-raised bg-[var(--surface-bg)]">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-950 text-slate-400 sticky top-0 border-b border-slate-800">
+                  <thead className="bg-[var(--surface-bg)] text-[var(--text-secondary)] sticky top-0 border-b-2 border-[var(--neo-outline)] font-black uppercase text-[10px]">
                     <tr>
                       <th className="p-3">Status</th>
                       <th className="p-3">Recipient</th>
@@ -245,30 +247,30 @@ export const BatchIssuanceEngine: React.FC<BatchIssuanceEngineProps> = ({
                       <th className="p-3">Skills</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 bg-slate-900/40">
+                  <tbody className="divide-y divide-[var(--neo-outline)]/40">
                     {items.map((item) => (
-                      <tr key={item.id} className="hover:bg-slate-800/30">
+                      <tr key={item.id} className="hover:bg-[var(--accent-indigo-bg)] transition">
                         <td className="p-3">
                           {item.status === 'minted' ? (
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">MINTED</span>
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black border border-emerald-500/20">MINTED</span>
                           ) : item.status === 'valid' ? (
-                            <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-bold">READY</span>
+                            <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-black border border-blue-500/20">READY</span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-bold" title={item.error}>
+                            <span className="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-black border border-rose-500/20" title={item.error}>
                               ERROR
                             </span>
                           )}
                         </td>
-                        <td className="p-3 font-medium text-white">{item.recipientName}</td>
-                        <td className="p-3 font-mono text-slate-400 truncate max-w-[140px]">{item.recipientAddress || '—'}</td>
-                        <td className="p-3 text-slate-200">{item.credentialTitle}</td>
+                        <td className="p-3 font-bold text-[var(--text-primary)]">{item.recipientName}</td>
+                        <td className="p-3 font-mono text-[var(--text-secondary)] font-semibold truncate max-w-[140px]">{item.recipientAddress || '—'}</td>
+                        <td className="p-3 text-[var(--text-primary)] font-medium">{item.credentialTitle}</td>
                         <td className="p-3">
                           <div className="flex flex-wrap gap-1">
                             {item.skills.slice(0, 2).map((s, idx) => (
-                              <span key={idx} className="bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded text-[10px]">{s}</span>
+                              <span key={idx} className="bg-[var(--surface-bg)] border border-[var(--neo-outline)] text-[var(--text-primary)] px-1.5 py-0.5 rounded text-[10px] font-bold">{s}</span>
                             ))}
                             {item.skills.length > 2 && (
-                              <span className="text-slate-500 text-[10px]">+{item.skills.length - 2}</span>
+                              <span className="text-[var(--text-secondary)] text-[10px] font-bold">+{item.skills.length - 2}</span>
                             )}
                           </div>
                         </td>
@@ -282,18 +284,18 @@ export const BatchIssuanceEngine: React.FC<BatchIssuanceEngineProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-800 flex justify-between items-center bg-slate-950/60">
-          <p className="text-xs text-slate-400">
-            Smart contract gas estimation: <span className="font-mono text-purple-300">~0.0042 POL / mint</span>
+        <div className="p-6 border-t border-[var(--neo-outline)]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[var(--surface-bg)]">
+          <p className="text-xs text-[var(--text-secondary)] font-medium">
+            Smart contract gas estimation: <span className="font-mono font-bold text-purple-600 dark:text-purple-400">~0.0042 POL / mint</span>
           </p>
-          <div className="flex gap-3">
-            <button onClick={onClose} className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+          <div className="flex gap-3 justify-end">
+            <button onClick={onClose} className="px-4 py-2 rounded-xl text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
               Cancel
             </button>
             <button
               onClick={handleStartBatchMint}
               disabled={processing || items.filter(i => i.status === 'valid').length === 0}
-              className="px-6 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-purple-900/30 transition"
+              className="px-6 py-2.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-purple-900/30 transition"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
               {processing ? 'Processing Batch...' : `Mint ${items.filter(i => i.status === 'valid').length} Credentials`}

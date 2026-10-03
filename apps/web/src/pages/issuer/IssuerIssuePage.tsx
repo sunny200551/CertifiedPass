@@ -193,22 +193,45 @@ export default function IssuerIssuePage() {
                 Select Credential Category
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
-                {(["hackathon", "internship", "opensource", "competition", "workshop", "event"] as CredentialType[]).map((type) => {
-                  const isSelected = credentialType === type;
+                {[
+                  { type: "hackathon" as CredentialType, label: "Hackathon", desc: "Milestones & Hack Awards", accent: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/30" },
+                  { type: "internship" as CredentialType, label: "Internship", desc: "Work & Industry Experience", accent: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/30" },
+                  { type: "opensource" as CredentialType, label: "Open Source", desc: "Code & Contributions", accent: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/30" },
+                  { type: "competition" as CredentialType, label: "Competition", desc: "Tournament & Rank", accent: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/30" },
+                  { type: "workshop" as CredentialType, label: "Workshop", desc: "Bootcamp & Training", accent: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/30" },
+                  { type: "event" as CredentialType, label: "Event", desc: "Summit & Conference", accent: "text-pink-600 dark:text-pink-400 bg-pink-500/10 border-pink-500/30" },
+                ].map((cat) => {
+                  const isSelected = credentialType === cat.type;
                   return (
                     <button
-                      key={type}
+                      key={cat.type}
                       type="button"
-                      onClick={() => setCredentialType(type)}
-                      className={`rounded-2xl p-5 text-left transition-all duration-200 border-2 ${
+                      onClick={() => setCredentialType(cat.type)}
+                      className={`relative rounded-2xl p-4 sm:p-5 text-left transition-all duration-200 border-2 flex flex-col justify-between ${
                         isSelected
-                          ? "neo-inset bg-[var(--surface-bg)] scale-[0.98] border-[var(--brand-from)]"
-                          : "neo-raised bg-[var(--surface-bg)] border-[var(--neo-outline)] hover:scale-[1.02]"
+                          ? "neo-inset bg-[var(--surface-bg)] border-indigo-500 ring-2 ring-indigo-500/30 shadow-inner scale-[0.98]"
+                          : "neo-raised bg-[var(--surface-bg)] border-[var(--neo-outline)] hover:border-indigo-400/50 hover:scale-[1.02]"
                       }`}
                     >
-                      <Badge variant={type} size="md" inset={isSelected}>
-                        {type.toUpperCase()}
-                      </Badge>
+                      <div className="flex items-center justify-between w-full mb-3">
+                        <span className={`text-[11px] font-black uppercase px-2.5 py-1 rounded-xl border ${cat.accent} tracking-wider font-display`}>
+                          {cat.label}
+                        </span>
+                        {isSelected ? (
+                          <span className="flex items-center gap-1 text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-indigo-600 text-white shadow-sm tracking-wider">
+                            ✓ Selected
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold text-[var(--text-secondary)] font-mono uppercase tracking-wider">
+                            Select
+                          </span>
+                        )}
+                      </div>
+                      <div>
+                        <span className="text-xs text-[var(--text-secondary)] font-medium leading-tight block">
+                          {cat.desc}
+                        </span>
+                      </div>
                     </button>
                   );
                 })}
@@ -271,8 +294,11 @@ export default function IssuerIssuePage() {
           <div className="space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-extrabold text-[var(--text-primary)] font-display">
-                  Review & Approve Candidate Drafts ({drafts.length})
+                <h2 className="text-xl font-extrabold text-[var(--text-primary)] font-display flex items-center gap-2">
+                  <span>Review & Approve Candidate Drafts</span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-indigo-600 text-white font-black text-xs shadow-sm">
+                    {drafts.length}
+                  </span>
                 </h2>
                 <p className="text-xs text-[var(--text-secondary)] mt-0.5 font-medium">
                   Fields parsed and structured. Edit any field or add custom attributes before on-chain anchoring.
@@ -297,14 +323,14 @@ export default function IssuerIssuePage() {
               {drafts.map((d, index) => (
                 <div
                   key={d.draftId}
-                  className="rounded-[24px] neo-raised bg-[var(--surface-bg)] p-6 space-y-4"
+                  className="rounded-[24px] neo-raised bg-[var(--surface-bg)] p-6 space-y-4 border-2 border-[var(--neo-outline)]"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="neo-raised-sm flex h-6 w-6 items-center justify-center rounded-full bg-[var(--brand-indigo)] text-xs font-bold text-white">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-white text-xs font-black shadow-sm">
                         {index + 1}
                       </span>
-                      <span className="text-xs font-black uppercase tracking-wider text-[var(--brand-indigo)] neo-inset-sm bg-[var(--accent-indigo-bg)] px-3 py-1 rounded-full">
+                      <span className="text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20 font-display">
                         {d.aiGenerated ? 'AI Extracted' : 'Manual Entry'}
                       </span>
                     </div>
@@ -320,15 +346,15 @@ export default function IssuerIssuePage() {
                             )
                           );
                         }}
-                        className="rounded neo-inset text-[var(--brand-indigo)] h-4 w-4"
+                        className="rounded h-4 w-4 text-indigo-600 focus:ring-indigo-500 cursor-pointer accent-indigo-600"
                       />
-                      Approve for Blockchain Issuance
+                      <span>Approve for Blockchain Issuance</span>
                     </label>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Holder Name</label>
+                      <label className="block text-xs font-black uppercase tracking-wider text-[var(--text-primary)] mb-1.5">Holder Name</label>
                       <input
                         type="text"
                         value={d.holderName}
@@ -339,12 +365,12 @@ export default function IssuerIssuePage() {
                             )
                           );
                         }}
-                        className="w-full rounded-xl neo-inset bg-[var(--surface-bg)] px-3.5 py-2 text-xs font-bold text-[var(--text-primary)] focus:outline-none"
+                        className="w-full rounded-xl neo-inset bg-[var(--surface-bg)] px-3.5 py-2.5 text-xs font-bold text-[var(--text-primary)] border border-[var(--neo-outline)]/60 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Recipient EVM Address</label>
+                      <label className="block text-xs font-black uppercase tracking-wider text-[var(--text-primary)] mb-1.5">Recipient EVM Address</label>
                       <input
                         type="text"
                         value={d.holderAddress}
@@ -355,12 +381,12 @@ export default function IssuerIssuePage() {
                             )
                           );
                         }}
-                        className="w-full rounded-xl neo-inset bg-[var(--surface-bg)] px-3.5 py-2 text-xs font-mono font-bold text-[var(--text-primary)] focus:outline-none"
+                        className="w-full rounded-xl neo-inset bg-[var(--surface-bg)] px-3.5 py-2.5 text-xs font-mono font-bold text-[var(--text-primary)] border border-[var(--neo-outline)]/60 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Credential Title</label>
+                      <label className="block text-xs font-black uppercase tracking-wider text-[var(--text-primary)] mb-1.5">Credential Title</label>
                       <input
                         type="text"
                         value={d.title}
@@ -371,12 +397,12 @@ export default function IssuerIssuePage() {
                             )
                           );
                         }}
-                        className="w-full rounded-xl neo-inset bg-[var(--surface-bg)] px-3.5 py-2 text-xs font-bold text-[var(--text-primary)] focus:outline-none"
+                        className="w-full rounded-xl neo-inset bg-[var(--surface-bg)] px-3.5 py-2.5 text-xs font-bold text-[var(--text-primary)] border border-[var(--neo-outline)]/60 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Achievement Detail</label>
+                      <label className="block text-xs font-black uppercase tracking-wider text-[var(--text-primary)] mb-1.5">Achievement Detail</label>
                       <input
                         type="text"
                         value={d.achievement}
@@ -387,7 +413,7 @@ export default function IssuerIssuePage() {
                             )
                           );
                         }}
-                        className="w-full rounded-xl neo-inset bg-[var(--surface-bg)] px-3.5 py-2 text-xs font-bold text-[var(--text-primary)] focus:outline-none"
+                        className="w-full rounded-xl neo-inset bg-[var(--surface-bg)] px-3.5 py-2.5 text-xs font-bold text-[var(--text-primary)] border border-[var(--neo-outline)]/60 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                       />
                     </div>
                   </div>

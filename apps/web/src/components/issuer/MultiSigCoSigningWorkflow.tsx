@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, CheckCircle2, Clock, Plus, Trash2, Shield, Key } from 'lucide-react';
+import { Users, CheckCircle2, Clock, Plus, Trash2, Key, X } from 'lucide-react';
 
 export interface CoSigner {
   id: string;
@@ -64,83 +64,96 @@ export const MultiSigCoSigningWorkflow: React.FC<MultiSigCoSigningWorkflowProps>
   const isThresholdMet = signedCount >= threshold;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-3xl flex flex-col shadow-2xl overflow-hidden animate-fadeIn">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-md overflow-y-auto">
+      <div className="bg-[var(--surface-bg)] border-2 border-[var(--neo-outline)] rounded-[24px] w-full max-w-3xl flex flex-col shadow-2xl overflow-hidden neo-raised text-[var(--text-primary)] my-auto animate-fadeIn">
         {/* Header */}
-        <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="p-6 border-b border-[var(--neo-outline)]/40 flex items-center justify-between bg-[var(--surface-bg)]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-2xl neo-raised-sm bg-[var(--surface-bg)] text-cyan-500 flex items-center justify-center font-bold">
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                Multi-Sig & Co-Signing Protocol
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              <h2 className="text-xl font-black text-[var(--text-primary)] flex items-center gap-2 font-display">
+                <span>Multi-Sig & Co-Signing Protocol</span>
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 font-mono font-bold">
                   M-of-N Threshold
                 </span>
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[var(--text-secondary)] font-medium">
                 Require multiple cryptographic signatures before soulbound credentials can be authorized or released.
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white text-lg px-2">✕</button>
+          <button onClick={onClose} className="rounded-full p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--accent-indigo-bg)] transition">
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Body */}
         <div className="p-6 space-y-6 overflow-y-auto max-h-[70vh]">
           {/* Threshold Status Banner */}
-          <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+          <div className="p-4 rounded-xl neo-inset bg-[var(--surface-bg)] border border-[var(--neo-outline)]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold ${
-                isThresholdMet ? 'bg-emerald-500/20 text-emerald-400' : 'bg-cyan-500/20 text-cyan-400'
+                isThresholdMet ? 'bg-emerald-500/20 text-emerald-500' : 'bg-cyan-500/20 text-cyan-500'
               }`}>
                 <Key className="w-4 h-4" />
               </div>
               <div>
-                <div className="text-xs font-bold text-white">Quorum Threshold Status</div>
-                <div className="text-[11px] text-slate-400">
+                <div className="text-xs font-black text-[var(--text-primary)] uppercase tracking-wider font-display">Quorum Threshold Status</div>
+                <div className="text-[11px] text-[var(--text-secondary)] font-medium">
                   {signedCount} of {threshold} required signatures gathered ({signers.length} total signers)
                 </div>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <label className="text-xs text-slate-400">Required Quorum:</label>
-              <select
-                value={threshold}
-                onChange={(e) => setThreshold(Number(e.target.value))}
-                className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none"
-              >
-                {signers.map((_, idx) => (
-                  <option key={idx + 1} value={idx + 1}>{idx + 1} of {signers.length}</option>
-                ))}
-              </select>
+              <label className="text-xs font-black uppercase tracking-wider text-[var(--text-primary)]">Quorum:</label>
+              <div className="flex items-center gap-1">
+                {signers.map((_, idx) => {
+                  const val = idx + 1;
+                  const isSel = threshold === val;
+                  return (
+                    <button
+                      key={val}
+                      type="button"
+                      onClick={() => setThreshold(val)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-black transition ${
+                        isSel
+                          ? 'bg-cyan-600 text-white shadow-sm'
+                          : 'neo-raised bg-[var(--surface-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      {val}/{signers.length}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
           {/* Signers List */}
           <div className="space-y-3">
-            <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Configured Co-Signers</div>
+            <div className="text-xs font-black uppercase tracking-wider text-[var(--text-primary)] font-display">Configured Co-Signers</div>
             {signers.map((signer) => (
               <div
                 key={signer.id}
-                className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between hover:border-slate-700 transition"
+                className="p-3.5 rounded-xl neo-raised bg-[var(--surface-bg)] border border-[var(--neo-outline)]/60 flex items-center justify-between hover:border-cyan-500/50 transition"
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs ${
-                    signer.signed ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'
+                    signer.signed ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'
                   }`}>
                     {signer.signed ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
                   </div>
                   <div>
-                    <div className="text-xs font-semibold text-white flex items-center gap-2">
+                    <div className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                       {signer.name}
                       {signer.signed && (
-                        <span className="text-[10px] text-emerald-400 font-mono">Signed at {signer.signedAt}</span>
+                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">Signed at {signer.signedAt}</span>
                       )}
                     </div>
-                    <div className="text-[11px] font-mono text-slate-400">{signer.address}</div>
+                    <div className="text-[11px] font-mono text-[var(--text-secondary)]">{signer.address}</div>
                   </div>
                 </div>
 
@@ -148,17 +161,17 @@ export const MultiSigCoSigningWorkflow: React.FC<MultiSigCoSigningWorkflowProps>
                   {!signer.signed && (
                     <button
                       onClick={() => handleSimulateSign(signer.id)}
-                      className="px-3 py-1 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/30 rounded-lg text-xs font-medium transition"
+                      className="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold rounded-lg transition"
                     >
-                      Sign As Participant
+                      Sign Now
                     </button>
                   )}
-                  {signers.length > 1 && (
+                  {signers.length > 2 && (
                     <button
                       onClick={() => handleRemoveSigner(signer.id)}
-                      className="text-slate-500 hover:text-rose-400 p-1.5 rounded-lg"
+                      className="text-[var(--text-secondary)] hover:text-rose-500 p-1"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   )}
                 </div>
@@ -166,60 +179,60 @@ export const MultiSigCoSigningWorkflow: React.FC<MultiSigCoSigningWorkflowProps>
             ))}
           </div>
 
-          {/* Add Co-Signer Form */}
-          <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-            <div className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-              <Plus className="w-3.5 h-3.5 text-cyan-400" /> Add Additional Co-Signing Entity
+          {/* Add New Co-Signer */}
+          <div className="p-4 rounded-xl neo-inset bg-[var(--surface-bg)] border border-[var(--neo-outline)]/60 space-y-3">
+            <div className="text-xs font-black uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-1 font-display">
+              <Plus className="w-3.5 h-3.5 text-cyan-500" /> Add Co-Signer Address
             </div>
             {validationError && (
-              <div className="p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-lg text-rose-400 text-xs">
-                {validationError}
-              </div>
+              <p className="text-xs text-rose-500 font-bold">{validationError}</p>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <input
                 type="text"
+                placeholder="Signer Role / Name (e.g. Dean, DAO Officer)"
                 value={newSignerName}
                 onChange={(e) => setNewSignerName(e.target.value)}
-                placeholder="Entity Name (e.g., Security Lead)"
-                className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                className="rounded-xl neo-inset bg-[var(--surface-bg)] px-3 py-2 text-xs text-[var(--text-primary)] font-bold border border-[var(--neo-outline)]/60 focus:outline-none focus:border-cyan-500"
               />
               <input
                 type="text"
+                placeholder="Ethereum 0x Address (42 chars)"
                 value={newSignerAddr}
                 onChange={(e) => setNewSignerAddr(e.target.value)}
-                placeholder="Ethereum 0x Address (0x...)"
-                className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-cyan-500"
+                className="rounded-xl neo-inset bg-[var(--surface-bg)] px-3 py-2 text-xs font-mono text-[var(--text-primary)] font-bold border border-[var(--neo-outline)]/60 focus:outline-none focus:border-cyan-500"
               />
             </div>
             <button
               onClick={handleAddSigner}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded-lg text-xs font-semibold transition"
+              className="w-full py-2 bg-[var(--surface-bg)] hover:bg-[var(--accent-indigo-bg)] border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 font-black text-xs rounded-xl flex items-center justify-center gap-1.5 transition neo-raised-sm"
             >
-              Add Co-Signer to Quorum
+              <Plus className="w-3.5 h-3.5" /> Append Signer to Quorum
             </button>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-800 flex justify-between items-center bg-slate-950/60">
-          <div className="text-xs text-slate-400 flex items-center gap-1.5">
-            <Shield className="w-4 h-4 text-cyan-400" />
-            EIP-712 Typed Structured Multi-Signatures
-          </div>
-          <div className="flex gap-3">
-            <button onClick={onClose} className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
-              Cancel
+        <div className="p-6 border-t border-[var(--neo-outline)]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[var(--surface-bg)]">
+          <p className="text-xs text-[var(--text-secondary)] font-medium">
+            Threshold: <span className="text-cyan-600 dark:text-cyan-400 font-mono font-bold">{threshold} of {signers.length} signatures required</span>
+          </p>
+          <div className="flex gap-3 justify-end">
+            <button onClick={onClose} className="px-4 py-2 rounded-xl text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
+              Close
             </button>
             <button
               onClick={() => {
-                if (onWorkflowComplete) onWorkflowComplete(signers, threshold);
+                if (onWorkflowComplete) {
+                  onWorkflowComplete(signers, threshold);
+                }
                 onClose();
               }}
               disabled={!isThresholdMet}
-              className="px-6 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-cyan-900/30 transition"
+              className="px-6 py-2.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-cyan-900/30 transition"
             >
-              {isThresholdMet ? 'Execute Authorized Issuance' : `Awaiting Signatures (${signedCount}/${threshold})`}
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              {isThresholdMet ? 'Quorum Met & Ready' : `Waiting for ${threshold - signedCount} Signatures`}
             </button>
           </div>
         </div>

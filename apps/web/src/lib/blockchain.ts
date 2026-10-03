@@ -154,6 +154,17 @@ export class DecentralizedRegistry {
     );
   }
 
+  static getByIssuer(issuerAddressOrName?: string): DecentralizedCredential[] {
+    const list = this.getAll();
+    if (!issuerAddressOrName) return list;
+    const clean = issuerAddressOrName.trim().toLowerCase();
+    return list.filter(
+      (c) =>
+        c.issuerAddress.toLowerCase() === clean ||
+        c.issuerName.toLowerCase().includes(clean)
+    );
+  }
+
   static save(cred: DecentralizedCredential) {
     const list = this.getAll();
     const idx = list.findIndex((c) => c.id.toLowerCase() === cred.id.toLowerCase());
@@ -169,9 +180,26 @@ export class DecentralizedRegistry {
     const list = this.getAll();
     const idx = list.findIndex((c) => c.id.toLowerCase() === id.toLowerCase());
     if (idx >= 0 && list[idx]) {
-      list[idx].status = "REVOKED";
-      list[idx].isVerified = false;
+      list[idx] = {
+        ...list[idx],
+        status: "REVOKED",
+        isVerified: false,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    }
+  }
+
+  static updateStatus(id: string, status: "ACTIVE" | "REVOKED") {
+    const list = this.getAll();
+    const idx = list.findIndex((c) => c.id.toLowerCase() === id.toLowerCase());
+    if (idx >= 0 && list[idx]) {
+      list[idx] = {
+        ...list[idx],
+        status,
+        isVerified: status === "ACTIVE",
+      };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
     }
   }
 }
+

@@ -20,7 +20,7 @@ export default function MyCredentials() {
     return DecentralizedRegistry.getAll();
   }, [user]);
 
-  const filtered = selectedType === "all" ? allCreds : allCreds.filter((c) => c.credentialType === selectedType);
+  const filtered = selectedType === "all" ? allCreds : allCreds.filter((c: DecentralizedCredential) => c.credentialType === selectedType);
 
   return (
     <Layout>
@@ -57,7 +57,7 @@ export default function MyCredentials() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filtered.map((c) => (
+            {filtered.map((c: DecentralizedCredential) => (
               <div key={c.id} className="flex flex-col items-center hover:-translate-y-1 transition-transform">
                 <HolographicCard3D
                   id={c.id}

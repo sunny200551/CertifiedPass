@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Palette, Sparkles, Plus, Trash2, Layers, Check } from 'lucide-react';
+import { Palette, Sparkles, Plus, Trash2, Layers, Check, X, Shield, Hexagon, CreditCard, Award } from 'lucide-react';
 
 export interface CustomField {
   id: string;
@@ -69,6 +69,21 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
     obsidian: 'from-slate-900 via-purple-950 to-slate-900'
   };
 
+  const shapes = [
+    { id: 'card', label: 'Standard 3D Card', icon: CreditCard },
+    { id: 'hexagon', label: 'EVM Hexagon', icon: Hexagon },
+    { id: 'shield', label: 'Verifiable Shield', icon: Shield },
+    { id: 'seal', label: 'Crypto Seal', icon: Award },
+  ] as const;
+
+  const glowOptions = [
+    { id: 'low', label: 'Subtle (20%)' },
+    { id: 'medium', label: 'Balanced (50%)' },
+    { id: 'high', label: 'Intense Prism (100%)' },
+  ] as const;
+
+  const fieldTypes = ['string', 'number', 'date', 'boolean', 'url'] as const;
+
   const handleSave = () => {
     if (onSaveSchema) {
       onSaveSchema({
@@ -83,27 +98,32 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-fadeIn">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-md overflow-y-auto">
+      <div className="bg-[var(--surface-bg)] border-2 border-[var(--neo-outline)] rounded-[24px] w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden neo-raised text-[var(--text-primary)] my-auto animate-fadeIn">
         {/* Header */}
-        <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="p-6 border-b border-[var(--neo-outline)]/40 flex items-center justify-between bg-[var(--surface-bg)]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-2xl neo-raised-sm bg-[var(--surface-bg)] text-pink-500 flex items-center justify-center font-bold">
               <Palette className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                Custom 3D Badge & Schema Designer
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
+              <h2 className="text-xl font-black text-[var(--text-primary)] flex items-center gap-2 font-display">
+                <span>Custom 3D Badge & Schema Designer</span>
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20 font-mono font-bold">
                   Visual Studio
                 </span>
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[var(--text-secondary)] font-medium">
                 Design custom dynamic holographic shaders, metadata schemas, and custom verification attributes.
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white text-lg px-2">✕</button>
+          <button
+            onClick={onClose}
+            className="rounded-full p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--accent-indigo-bg)] transition"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Studio Body */}
@@ -111,75 +131,104 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
           {/* Controls Column (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Credential Schema Title</label>
+              <label className="block text-xs font-black uppercase tracking-wider text-[var(--text-primary)] mb-1.5 font-display">
+                Credential Schema Title
+              </label>
               <input
                 type="text"
                 value={schemaName}
                 onChange={(e) => setSchemaName(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-pink-500"
+                className="w-full rounded-xl neo-inset bg-[var(--surface-bg)] px-3.5 py-2.5 text-xs font-bold text-[var(--text-primary)] border border-[var(--neo-outline)]/60 focus:outline-none focus:border-pink-500"
               />
             </div>
 
             {/* Foil Effect Choice */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-2">Holographic 3D Foil Finish</label>
+              <label className="block text-xs font-black uppercase tracking-wider text-[var(--text-primary)] mb-2 font-display">
+                Holographic 3D Foil Finish
+              </label>
               <div className="grid grid-cols-5 gap-2">
                 {(['cosmic', 'gold', 'silver', 'emerald', 'obsidian'] as const).map((foil) => (
                   <button
                     key={foil}
                     onClick={() => setFoilStyle(foil)}
-                    className={`p-2.5 rounded-xl border flex flex-col items-center gap-1.5 transition text-xs capitalize ${
+                    className={`p-2.5 rounded-xl border-2 flex flex-col items-center gap-1.5 transition text-xs capitalize ${
                       foilStyle === foil
-                        ? 'border-pink-500 bg-pink-500/10 text-white shadow-lg shadow-pink-500/10'
-                        : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700'
+                        ? 'border-pink-500 neo-inset bg-[var(--surface-bg)] text-pink-600 dark:text-pink-400 font-bold scale-[0.98]'
+                        : 'border-[var(--neo-outline)] neo-raised bg-[var(--surface-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     <div className={`w-6 h-6 rounded-full bg-gradient-to-tr ${foilGradients[foil]} shadow-sm`} />
-                    <span className="text-[10px] font-medium">{foil}</span>
+                    <span className="text-[10px] font-bold">{foil}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Glow Intensity & Shape */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Badge Shape</label>
-                <select
-                  value={badgeShape}
-                  onChange={(e: any) => setBadgeShape(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500"
-                >
-                  <option value="card">Standard 3D Card</option>
-                  <option value="hexagon">EVM Hexagon Token</option>
-                  <option value="shield">Verifiable Shield</option>
-                  <option value="seal">Cryptographic Seal</option>
-                </select>
+            {/* Shape Custom CertifiedPass Options */}
+            <div>
+              <label className="block text-xs font-black uppercase tracking-wider text-[var(--text-primary)] mb-2 font-display">
+                Badge Shape Form-Factor
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {shapes.map((s) => {
+                  const ShapeIcon = s.icon;
+                  const isSel = badgeShape === s.id;
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setBadgeShape(s.id)}
+                      className={`p-2.5 rounded-xl border-2 flex flex-col items-center gap-1.5 text-center transition ${
+                        isSel
+                          ? 'border-pink-500 neo-inset bg-[var(--surface-bg)] text-pink-600 dark:text-pink-400 font-bold'
+                          : 'border-[var(--neo-outline)] neo-raised bg-[var(--surface-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      <ShapeIcon className="w-4 h-4" />
+                      <span className="text-[11px] font-bold">{s.label}</span>
+                    </button>
+                  );
+                })}
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Prism Shader Glow</label>
-                <select
-                  value={glowIntensity}
-                  onChange={(e: any) => setGlowIntensity(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500"
-                >
-                  <option value="low">Subtle (20% Opacity)</option>
-                  <option value="medium">Balanced (50% Opacity)</option>
-                  <option value="high">Intense Neon (100% Prism)</option>
-                </select>
+            </div>
+
+            {/* Prism Shader Glow Custom Options */}
+            <div>
+              <label className="block text-xs font-black uppercase tracking-wider text-[var(--text-primary)] mb-2 font-display">
+                Prism Shader Glow
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {glowOptions.map((g) => {
+                  const isSel = glowIntensity === g.id;
+                  return (
+                    <button
+                      key={g.id}
+                      type="button"
+                      onClick={() => setGlowIntensity(g.id)}
+                      className={`py-2 px-3 rounded-xl border-2 text-xs font-bold transition text-center ${
+                        isSel
+                          ? 'border-pink-500 neo-inset bg-[var(--surface-bg)] text-pink-600 dark:text-pink-400'
+                          : 'border-[var(--neo-outline)] neo-raised bg-[var(--surface-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      {g.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Dynamic Metadata Fields */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-pink-400" />
+                <label className="text-xs font-black uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-1.5 font-display">
+                  <Layers className="w-3.5 h-3.5 text-pink-500" />
                   Custom Schema Attributes
                 </label>
                 <button
                   onClick={addField}
-                  className="text-xs text-pink-400 hover:text-pink-300 flex items-center gap-1 font-medium"
+                  className="text-xs text-pink-600 dark:text-pink-400 hover:underline flex items-center gap-1 font-bold"
                 >
                   <Plus className="w-3.5 h-3.5" /> Add Attribute
                 </button>
@@ -187,28 +236,33 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
 
               <div className="space-y-2 max-h-48 overflow-y-auto p-1">
                 {customFields.map((field) => (
-                  <div key={field.id} className="flex items-center gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                  <div key={field.id} className="flex items-center gap-2 p-2.5 rounded-xl neo-inset bg-[var(--surface-bg)] border border-[var(--neo-outline)]/60">
                     <input
                       type="text"
                       value={field.name}
                       onChange={(e) => updateField(field.id, { name: e.target.value })}
                       placeholder="Attribute Name"
-                      className="flex-1 bg-transparent text-xs text-white font-mono focus:outline-none border-b border-transparent focus:border-pink-500"
+                      className="flex-1 bg-transparent text-xs text-[var(--text-primary)] font-bold focus:outline-none"
                     />
-                    <select
-                      value={field.type}
-                      onChange={(e: any) => updateField(field.id, { type: e.target.value })}
-                      className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-slate-300 focus:outline-none"
-                    >
-                      <option value="string">String</option>
-                      <option value="number">Number</option>
-                      <option value="date">Timestamp</option>
-                      <option value="boolean">Boolean</option>
-                      <option value="url">URL</option>
-                    </select>
+                    <div className="flex items-center gap-1">
+                      {fieldTypes.map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => updateField(field.id, { type: t })}
+                          className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold capitalize transition ${
+                            field.type === t
+                              ? 'bg-pink-600 text-white shadow-sm'
+                              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--surface-bg)]'
+                          }`}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
                     <button
                       onClick={() => removeField(field.id)}
-                      className="text-slate-500 hover:text-rose-400 p-1"
+                      className="text-slate-400 hover:text-rose-500 p-1"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -219,15 +273,15 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
           </div>
 
           {/* Real-time 3D Card Preview (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-950/80 rounded-2xl border border-slate-800 relative overflow-hidden">
-            <span className="text-[10px] uppercase font-bold text-pink-400 tracking-wider mb-4 flex items-center gap-1">
+          <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 rounded-2xl neo-inset bg-[var(--surface-bg)] border border-[var(--neo-outline)] relative overflow-hidden">
+            <span className="text-[10px] uppercase font-bold text-pink-500 tracking-wider mb-4 flex items-center gap-1 font-display">
               <Sparkles className="w-3 h-3" /> Live Holographic Canvas
             </span>
 
             {/* Preview Card */}
-            <div className={`w-64 h-80 rounded-2xl p-5 relative flex flex-col justify-between shadow-2xl border transition-all duration-500 ${
-              badgeShape === 'hexagon' ? 'rounded-[2.5rem]' : ''
-            } bg-gradient-to-br from-slate-900 via-slate-950 to-black border-slate-700`}>
+            <div className={`w-64 h-80 rounded-2xl p-5 relative flex flex-col justify-between shadow-2xl border-2 transition-all duration-500 ${
+              badgeShape === 'hexagon' ? 'rounded-[2.5rem]' : badgeShape === 'shield' ? 'rounded-b-[3rem]' : 'rounded-2xl'
+            } bg-gradient-to-br from-slate-900 via-indigo-950 to-black border-slate-700`}>
               {/* Foil Overlay */}
               <div className={`absolute inset-0 rounded-2xl bg-gradient-to-tr ${foilGradients[foilStyle]} opacity-${
                 glowIntensity === 'high' ? '25' : glowIntensity === 'medium' ? '15' : '10'
@@ -246,12 +300,12 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
               {/* Title & Issuer Info */}
               <div className="z-10 my-auto">
                 <h4 className="text-sm font-bold text-white line-clamp-2 leading-tight">{schemaName}</h4>
-                <p className="text-[10px] text-slate-400 mt-1">Verified Sovereign Credential</p>
+                <p className="text-[10px] text-slate-300 mt-1 font-medium">Verified Sovereign Credential</p>
 
                 <div className="mt-4 pt-3 border-t border-white/10 space-y-1">
                   {customFields.slice(0, 2).map(f => (
                     <div key={f.id} className="flex justify-between text-[10px]">
-                      <span className="text-slate-400">{f.name}:</span>
+                      <span className="text-slate-300">{f.name}:</span>
                       <span className="text-white font-mono">{f.value || 'Dynamic'}</span>
                     </div>
                   ))}
@@ -259,26 +313,29 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
               </div>
 
               {/* Bottom Chip */}
-              <div className="z-10 flex justify-between items-center text-[9px] text-slate-400 font-mono">
+              <div className="z-10 flex justify-between items-center text-[9px] text-slate-300 font-mono">
                 <span>POLYGON PoS</span>
-                <span>AUTHENTIC</span>
+                <span className="text-emerald-400 font-bold">AUTHENTIC</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-800 flex justify-between items-center bg-slate-950/60">
-          <p className="text-xs text-slate-400">
-            Schema complies with <span className="text-pink-300 font-mono">W3C Verifiable Credentials v2.0</span>
+        <div className="p-6 border-t border-[var(--neo-outline)]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[var(--surface-bg)]">
+          <p className="text-xs text-[var(--text-secondary)] font-medium">
+            Schema complies with <span className="text-pink-600 dark:text-pink-400 font-mono font-bold">W3C Verifiable Credentials v2.0</span>
           </p>
-          <div className="flex gap-3">
-            <button onClick={onClose} className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+          <div className="flex gap-3 justify-end">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"
+            >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="px-6 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 flex items-center gap-2 shadow-lg shadow-pink-900/30 transition"
+              className="px-6 py-2.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 flex items-center gap-2 shadow-lg shadow-pink-900/30 transition"
             >
               <Check className="w-3.5 h-3.5" /> Save & Apply Schema
             </button>

@@ -42,7 +42,7 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full pt-3 px-3 sm:px-6 lg:px-8 transition-all">
+    <header className="sticky top-0 z-30 w-full pt-3 px-3 sm:px-6 lg:px-8 transition-all">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 rounded-full neo-raised border-2 border-[var(--neo-outline)] bg-[var(--surface-bg)] transition-all">
         {/* Unified Logo & Brand Lockup */}
         <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group">
