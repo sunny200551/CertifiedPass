@@ -7,7 +7,7 @@ export const getApiBaseUrl = (): string => {
   if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
     return "http://localhost:3001/api/v1";
   }
-  return "https://polylance-fv-1.onrender.com/api/v1";
+  return "https://polylance-fv-1-45wy.onrender.com/api/v1";
 };
 
 const API_BASE_URL = getApiBaseUrl();

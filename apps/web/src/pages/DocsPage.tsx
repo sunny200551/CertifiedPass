@@ -257,7 +257,7 @@ export default function DocsPage() {
                     Verify a credential ID or SHA-256 hash against the CertifiedPass registry & on-chain smart contracts.
                   </p>
                   <pre className="p-3 rounded-xl bg-[var(--surface-bg)] neo-inset-sm font-mono text-[11px] text-[var(--text-primary)] overflow-x-auto">
-{`curl -X GET "https://polylance-fv-1.onrender.com/api/v1/credentials/cp-8f92a104-e1b9/verify"`}
+{`curl -X GET "https://polylance-fv-1-45wy.onrender.com/api/v1/credentials/cp-8f92a104-e1b9/verify"`}
                   </pre>
                 </div>
 

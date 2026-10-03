@@ -301,10 +301,9 @@ export class PolyLanceVerificationService {
       });
     }
 
-    // 3. Fallback: Query live PolyLance backend REST API
-    try {
+      const apiUrl = process.env["POLYLANCE_API_URL"] || "https://polylance-fv-1-45wy.onrender.com";
       const response = await fetch(
-        `https://polylance-fv-1.onrender.com/api/certifiedpass/verify/${encodeURIComponent(cleanCertId)}`,
+        `${apiUrl}/api/certifiedpass/verify/${encodeURIComponent(cleanCertId)}`,
         { signal: AbortSignal.timeout(6000) }
       );
 

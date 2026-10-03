@@ -213,7 +213,8 @@ export async function verifyPolyLanceCredential(inputString: string): Promise<Ve
     }
 
     // 3. Fallback: Query PolyLance Live REST API
-    const response = await fetch(`https://polylance-fv-1.onrender.com/api/certifiedpass/verify/${encodeURIComponent(key)}`);
+    const apiUrl = process.env["POLYLANCE_API_URL"] || "https://polylance-fv-1-45wy.onrender.com";
+    const response = await fetch(`${apiUrl}/api/certifiedpass/verify/${encodeURIComponent(key)}`);
     if (response.ok) {
       const data: any = await response.json();
       if (data && data.verified) {
