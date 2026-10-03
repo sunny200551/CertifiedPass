@@ -17,6 +17,27 @@ export function parseCertificateId(input: string | undefined | null): string {
     return "";
   }
 
+  // Handle JSON strings from QR codes (e.g. {"certId": "...", "jobId": "..."})
+  if (cleaned.startsWith("{") && cleaned.endsWith("}")) {
+    try {
+      const obj = JSON.parse(cleaned);
+      const possibleKey =
+        obj.certId ||
+        obj.cert_id ||
+        obj.id ||
+        obj.jobId ||
+        obj.job_id ||
+        obj.targetAddress ||
+        obj.contractAddress ||
+        obj.hash;
+      if (possibleKey && typeof possibleKey === "string") {
+        return parseCertificateId(possibleKey);
+      }
+    } catch {
+      // Fall through to standard parsing
+    }
+  }
+
   // If it's already a clean ID with no URL syntax
   if (
     !cleaned.includes("://") &&
@@ -42,7 +63,9 @@ export function parseCertificateId(input: string | undefined | null): string {
       parsedUrl.searchParams.get("cert_id") ||
       parsedUrl.searchParams.get("cert") ||
       parsedUrl.searchParams.get("jobId") ||
-      parsedUrl.searchParams.get("id");
+      parsedUrl.searchParams.get("id") ||
+      parsedUrl.searchParams.get("targetAddress") ||
+      parsedUrl.searchParams.get("address");
 
     if (certParam) {
       return certParam.trim();
@@ -57,7 +80,9 @@ export function parseCertificateId(input: string | undefined | null): string {
         hashParams.get("cert_id") ||
         hashParams.get("cert") ||
         hashParams.get("jobId") ||
-        hashParams.get("id");
+        hashParams.get("id") ||
+        hashParams.get("targetAddress") ||
+        hashParams.get("address");
 
       if (hashCertParam) {
         return hashCertParam.trim();
@@ -72,6 +97,7 @@ export function parseCertificateId(input: string | undefined | null): string {
       "attestations",
       "audit",
       "audits",
+      "audit-report",
       "verify",
       "verification",
       "certificate",
@@ -80,6 +106,9 @@ export function parseCertificateId(input: string | undefined | null): string {
       "dashboard",
       "profile",
       "home",
+      "app",
+      "polylance",
+      "index",
     ]);
 
     // 3. Check hash path segments (e.g. #/jobs/0xeeacc05a99a2/attestation or #/attestation/PL-SBT-...)
@@ -90,7 +119,7 @@ export function parseCertificateId(input: string | undefined | null): string {
         .filter(Boolean)
         .map((s) => decodeURIComponent(s).trim());
 
-      // First check for explicit PL-SBT or PL-AUD or cp-
+      // First check for explicit PL-SBT or PL-AUD or CP-
       for (const seg of hashSegments) {
         const upper = seg.toUpperCase();
         if (upper.startsWith("PL-SBT-") || upper.startsWith("PL-AUD-") || upper.startsWith("CP-")) {

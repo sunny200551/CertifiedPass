@@ -144,19 +144,6 @@ export const HolographicCard3D: React.FC<HolographicCardProps> = ({
             </div>
           )}
 
-          {/* Settled Escrow Value / Transaction Amount */}
-          {(metadata?.settledAmount || metadata?.amount || metadata?.bounty) && (
-            <div className="flex items-center justify-between text-xs bg-[var(--accent-green-bg)] neo-raised-sm rounded-xl px-3.5 py-2 text-[var(--accent-green)] font-bold">
-              <div className="flex items-center gap-1.5 font-sans">
-                <DollarSign className="h-3.5 w-3.5 text-[var(--accent-green)]" />
-                <span>Settled Transaction:</span>
-              </div>
-              <span className="font-mono text-[var(--accent-green)] font-black text-sm">
-                {metadata?.settledAmount || metadata?.amount || metadata?.bounty}
-              </span>
-            </div>
-          )}
-
           {/* Skills / Tech Tags (Neomorphic Chips with Stagger Feel) */}
           {Array.isArray(metadata?.skills) && metadata.skills.length > 0 && (
             <div className="flex flex-wrap gap-2 pt-1">

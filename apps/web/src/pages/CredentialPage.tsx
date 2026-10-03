@@ -392,12 +392,6 @@ export default function CredentialPage() {
                 <h3 className="text-base font-black text-[var(--text-primary)] font-display">
                   Achievement Specification
                 </h3>
-                {cred.metadata?.settledAmount && (
-                  <span className="flex items-center gap-1 text-xs font-black text-[var(--accent-green)] bg-[var(--accent-green-bg)] neo-raised-sm px-3 py-1 rounded-xl font-mono">
-                    <DollarSign className="h-3.5 w-3.5" />
-                    {cred.metadata.settledAmount}
-                  </span>
-                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">

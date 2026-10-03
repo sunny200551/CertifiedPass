@@ -5,7 +5,7 @@ import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
 
 export default defineConfig({
-  base: process.env.VITE_BASE_PATH || "/CertifiedPass/",
+  base: process.env.VITE_BASE_PATH || "/",
   plugins: [react()],
   css: {
     postcss: {

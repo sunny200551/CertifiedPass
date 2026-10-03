@@ -1,16 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
+import jsQR from "jsqr";
 import {
   Camera,
   X,
-  Upload,
   RefreshCw,
   Zap,
   ZapOff,
   AlertCircle,
   CheckCircle2,
   Image as ImageIcon,
-  Smartphone,
-  ShieldCheck,
+  ScanLine,
 } from "lucide-react";
 import { parseCertificateId } from "@certifiedpass/utils";
 
@@ -26,8 +25,8 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
   isOpen,
   onClose,
   onScanSuccess,
-  title = "Scan Certificate QR Code",
-  subtitle = "Point your camera at any CertifiedPass or PolyLance certificate QR code",
+  title = "Scan Certificate QR & Barcode",
+  subtitle = "Point your camera at any CertifiedPass or PolyLance certificate QR code / barcode",
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -49,7 +48,7 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
       const gain = audioCtx.createGain();
       osc.type = "sine";
       osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 note
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
@@ -81,6 +80,7 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
         videoRef.current.setAttribute("playsinline", "true"); // Critical for iOS Safari
+        videoRef.current.muted = true;
         await videoRef.current.play();
       }
 
@@ -93,13 +93,13 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
         }
       }
     } catch (err: any) {
-      console.warn("Camera access failed:", err);
+      console.warn("Camera access error:", err);
       if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-        setErrorMsg("Camera permission was denied. Please allow camera access in browser settings or upload an image.");
+        setErrorMsg("Camera permission was denied. Please enable camera permissions in your browser or upload an image.");
       } else if (err.name === "NotFoundError" || err.name === "DevicesNotFoundError") {
-        setErrorMsg("No camera device was detected on your device. You can upload a QR image below.");
+        setErrorMsg("No camera device was detected. You can upload a photo or screenshot below.");
       } else {
-        setErrorMsg("Unable to access camera. You can select an image or screenshot from your device.");
+        setErrorMsg("Unable to access camera stream. You can upload a photo or screenshot below.");
       }
     }
   };
@@ -157,10 +157,10 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
       onClose();
       setIsProcessing(false);
       setScannedResult(null);
-    }, 600);
+    }, 500);
   };
 
-  // Main QR Detection Loop
+  // Main QR & Barcode Detection Loop
   useEffect(() => {
     if (!isOpen) {
       stopCamera();
@@ -172,16 +172,28 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
     startCamera(cameraFacing);
 
     let animationFrameId: number;
-    let detector: any = null;
+    let barcodeDetector: any = null;
 
-    // Check if BarcodeDetector is available natively
     if ("BarcodeDetector" in window) {
       try {
-        detector = new (window as any).BarcodeDetector({
-          formats: ["qr_code", "data_matrix", "aztec"],
+        barcodeDetector = new (window as any).BarcodeDetector({
+          formats: [
+            "qr_code",
+            "data_matrix",
+            "aztec",
+            "code_128",
+            "code_39",
+            "code_93",
+            "ean_13",
+            "ean_8",
+            "itf",
+            "pdf417",
+            "upc_a",
+            "upc_e",
+          ],
         });
       } catch {
-        detector = null;
+        barcodeDetector = null;
       }
     }
 
@@ -193,10 +205,10 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
       ) {
         const video = videoRef.current;
 
-        // 1. Try Native BarcodeDetector
-        if (detector) {
+        // 1. Check with native BarcodeDetector if available
+        if (barcodeDetector) {
           try {
-            const barcodes = await detector.detect(video);
+            const barcodes = await barcodeDetector.detect(video);
             if (barcodes && barcodes.length > 0) {
               const text = barcodes[0].rawValue;
               if (text) {
@@ -205,11 +217,11 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
               }
             }
           } catch {
-            // Fallback to canvas inspection
+            // Fall through to jsQR
           }
         }
 
-        // 2. Canvas-based Frame Decoder fallback
+        // 2. Universal Frame Decoder via jsQR (Runs on 100% of browsers)
         if (canvasRef.current) {
           const canvas = canvasRef.current;
           canvas.width = video.videoWidth;
@@ -217,15 +229,14 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
           const ctx = canvas.getContext("2d", { willReadFrequently: true });
           if (ctx) {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            // If barcode detector wasn't available or didn't trigger, detect via canvas image if detector supported
-            if (detector) {
-              try {
-                const barcodes = await detector.detect(canvas);
-                if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
-                  handleDecodedText(barcodes[0].rawValue);
-                  return;
-                }
-              } catch {}
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+              inversionAttempts: "attemptBoth",
+            });
+
+            if (code && code.data && code.data.trim().length > 0) {
+              handleDecodedText(code.data.trim());
+              return;
             }
           }
         }
@@ -238,7 +249,7 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
 
     const timer = setTimeout(() => {
       animationFrameId = requestAnimationFrame(scanFrame);
-    }, 400);
+    }, 300);
 
     return () => {
       clearTimeout(timer);
@@ -265,12 +276,23 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
         if (!ctx) return;
 
         ctx.drawImage(img, 0, 0, img.width, img.height);
+        const imageData = ctx.getImageData(0, 0, img.width, img.height);
 
-        // Try BarcodeDetector
+        // 1. Try jsQR
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "attemptBoth",
+        });
+
+        if (code && code.data && code.data.trim().length > 0) {
+          handleDecodedText(code.data.trim());
+          return;
+        }
+
+        // 2. Try native BarcodeDetector
         if ("BarcodeDetector" in window) {
           try {
             const detector = new (window as any).BarcodeDetector({
-              formats: ["qr_code", "data_matrix"],
+              formats: ["qr_code", "data_matrix", "code_128", "code_39", "ean_13"],
             });
             const barcodes = await detector.detect(canvas);
             if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
@@ -281,7 +303,7 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
         }
 
         setErrorMsg(
-          "Could not detect a clear QR code in this image. Please ensure the QR code is centered and well-lit."
+          "Could not detect a clear QR code or barcode in this image. Please ensure the code is centered, sharp, and well-lit."
         );
       };
       img.src = event.target?.result as string;
@@ -299,11 +321,11 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
         <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900/90">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
-              <Camera className="h-4 w-4" />
+              <ScanLine className="h-4 w-4 animate-pulse" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-100 font-display">{title}</h3>
-              <p className="text-[11px] text-slate-400">Mobile & Camera Scanner</p>
+              <p className="text-[11px] text-slate-400">Live Camera & Image Decoder</p>
             </div>
           </div>
           <button

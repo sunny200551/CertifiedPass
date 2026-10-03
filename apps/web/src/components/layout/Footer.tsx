@@ -179,7 +179,7 @@ export const Footer: React.FC = () => {
 
                 <li>
                   <Link
-                    to="/u/alex.rivera"
+                    to="/verify"
                     className="flex items-start gap-2.5 p-2 rounded-xl hover:neo-raised-sm transition-all group"
                   >
                     <div className="neo-raised-sm flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface-bg)] text-[var(--text-primary)] group-hover:scale-105 transition-all shrink-0 mt-0.5">
@@ -187,10 +187,10 @@ export const Footer: React.FC = () => {
                     </div>
                     <div>
                       <span className="block text-[13px] font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-indigo)] transition-colors leading-tight">
-                        Sample Proof Profile
+                        Live Verifier Portal
                       </span>
                       <span className="text-[11px] text-[var(--text-secondary)] font-medium leading-tight block mt-0.5">
-                        View demo 3D credential & public audit badge
+                        Verify 3D digital passes & audit badges
                       </span>
                     </div>
                   </Link>

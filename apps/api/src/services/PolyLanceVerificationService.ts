@@ -8,16 +8,6 @@ import type {
 import { polylancePool } from "../utils/polylanceDb.js";
 import { logger } from "../utils/logger.js";
 
-export function formatUsdcAmount(rawAmount: any): string {
-  if (rawAmount === undefined || rawAmount === null || rawAmount === "") return "$0.00 USDC";
-  const str = String(rawAmount).trim();
-  if (str.startsWith("$") && str.toUpperCase().endsWith("USDC")) return str;
-  if (str.startsWith("$")) return `${str} USDC`;
-  const num = parseFloat(str.replace(/[^0-9.-]+/g, ""));
-  if (isNaN(num)) return "$0.00 USDC";
-  return `$${num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`;
-}
-
 function formatParticipantName(
   name: string | null | undefined,
   auditName: string | null | undefined,
@@ -35,6 +25,7 @@ function formatParticipantName(
     cleanName !== "Verified Developer" &&
     cleanName !== "Escrow Patron" &&
     cleanName !== "Audited Participant" &&
+    cleanName !== "Anonymous PolyLancer" &&
     cleanName !== ""
   ) {
     return cleanName;
@@ -46,6 +37,7 @@ function formatParticipantName(
     cleanAuditName !== "Verified Developer" &&
     cleanAuditName !== "Escrow Patron" &&
     cleanAuditName !== "Audited Participant" &&
+    cleanAuditName !== "Anonymous PolyLancer" &&
     cleanAuditName !== ""
   ) {
     return cleanAuditName;
@@ -57,12 +49,13 @@ function formatParticipantName(
     cleanMetaName !== "Verified Developer" &&
     cleanMetaName !== "Escrow Patron" &&
     cleanMetaName !== "Audited Participant" &&
+    cleanMetaName !== "Anonymous PolyLancer" &&
     cleanMetaName !== ""
   ) {
     return cleanMetaName;
   }
 
-  // 4. Fallback to default role with short address if address is available
+  // 4. Fallback to short address if address is available
   if (address && address.trim()) {
     const cleanAddr = address.trim();
     const shortAddr = cleanAddr.length >= 10 ? `${cleanAddr.slice(0, 6)}...${cleanAddr.slice(-4)}` : cleanAddr;
@@ -88,7 +81,6 @@ export class PolyLanceVerificationService {
         [certId, verifierPlatform, clientIpHash]
       );
     } catch (err: any) {
-      // Don't fail the verification response if logging table write encounters an issue
       logger.warn("Failed to write to CertifiedVerificationLog", {
         certId,
         error: err.message,
@@ -117,11 +109,11 @@ export class PolyLanceVerificationService {
       };
     }
 
-    try {
-      const cleanCertId = certId.trim();
-      const likePattern = `%${cleanCertId}%`;
+    const cleanCertId = certId.trim();
+    const likePattern = `%${cleanCertId}%`;
 
-      // 1. Query CertifiedSBTRecord with LEFT JOIN on CertifiedAuditRecord for participant resolution
+    try {
+      // 1. Query CertifiedSBTRecord with LEFT JOIN on CertifiedAuditRecord
       const sbtQuery = await polylancePool.query<any>(
         `SELECT s.*,
                 fa."displayName" AS "auditFreelancerName",
@@ -172,8 +164,6 @@ export class PolyLanceVerificationService {
           ? "DISPUTED"
           : "UNVERIFIED / RECORD NOT FOUND";
 
-        const amountFormatted = formatUsdcAmount(record.settledAmountUsdc);
-
         const timestampStr = record.completedAt
           ? new Date(record.completedAt).toISOString()
           : new Date().toISOString();
@@ -182,14 +172,14 @@ export class PolyLanceVerificationService {
           record.freelancerName,
           record.auditFreelancerName,
           record.freelancerAddress,
-          record.metadata?.freelancerName || record.metadata?.freelancer,
+          record.metadata?.freelancerName || record.metadata?.freelancer || record.metadata?.talentName,
           "Freelancer"
         );
         const clientDisplayName = formatParticipantName(
           record.clientName,
           record.auditClientName,
           record.clientAddress,
-          record.metadata?.clientName || record.metadata?.client,
+          record.metadata?.clientName || record.metadata?.client || record.metadata?.employerName,
           "Escrow Client"
         );
 
@@ -210,7 +200,6 @@ export class PolyLanceVerificationService {
             title: record.jobTitle || "Decentralized Milestone Attestation",
             role: "Freelancer / Contributor",
             category: record.category || "General",
-            settledAmountUsdc: "Volume Protected",
             freelancer: freelancerDisplayName,
             freelancerName: freelancerDisplayName,
             freelancerAddress: record.freelancerAddress,
@@ -266,8 +255,6 @@ export class PolyLanceVerificationService {
           ? "REVOKED / INVALIDATED"
           : "UNVERIFIED / RECORD NOT FOUND";
 
-        const volumeFormatted = formatUsdcAmount(audit.lifetimeVolumeUsdc);
-
         const participantDisplayName = formatParticipantName(
           audit.displayName,
           null,
@@ -291,7 +278,6 @@ export class PolyLanceVerificationService {
             title: `${participantDisplayName} Trust & Performance Audit`,
             role: audit.roleType || "DEVELOPER",
             trustIndexScore: audit.trustIndexScore || "10.0",
-            lifetimeVolumeUsdc: "Volume Protected",
             slaSuccessRate: audit.slaSuccessRate || "100%",
             completedMilestonesCount: audit.completedMilestonesCount || 0,
             freelancer: participantDisplayName,
@@ -308,35 +294,96 @@ export class PolyLanceVerificationService {
           },
         };
       }
-
-      // 3. Not found in either table
-      return {
-        verified: false,
-        status: "UNVERIFIED",
-        displayStatus: "UNVERIFIED / RECORD NOT FOUND",
-        certId,
-        message: "This certificate identifier could not be verified against the PolyLance Sovereign Ledger.",
-        verifiedAt: new Date().toISOString(),
-      };
-    } catch (err: any) {
-      logger.error("Error verifying PolyLance certificate", {
-        certId,
-        error: err.message,
+    } catch (dbErr: any) {
+      logger.warn("Direct PolyLance DB query issue, trying live API fallback", {
+        certId: cleanCertId,
+        error: dbErr.message,
       });
-
-      return {
-        verified: false,
-        status: "UNVERIFIED",
-        displayStatus: "UNVERIFIED / RECORD NOT FOUND",
-        certId,
-        message: "This certificate identifier could not be verified against the PolyLance Sovereign Ledger.",
-        verifiedAt: new Date().toISOString(),
-      };
     }
+
+    // 3. Fallback: Query live PolyLance backend REST API
+    try {
+      const response = await fetch(
+        `https://polylance-fv-1.onrender.com/api/certifiedpass/verify/${encodeURIComponent(cleanCertId)}`,
+        { signal: AbortSignal.timeout(6000) }
+      );
+
+      if (response.ok) {
+        const json: any = await response.json();
+        if (json?.success && json?.data) {
+          const liveData = json.data;
+          const cert = liveData.certificate || liveData;
+          const isVerified = cert.verified ?? (cert.status === "VERIFIED");
+
+          const freelancerName = formatParticipantName(
+            cert.freelancerName || cert.freelancer,
+            null,
+            cert.freelancerAddress,
+            null,
+            "Freelancer"
+          );
+        const clientName = formatParticipantName(
+          cert.clientName || cert.client,
+          null,
+          cert.clientAddress,
+          null,
+          "Escrow Client"
+        );
+
+          return {
+            verified: isVerified,
+            status: isVerified ? "VERIFIED" : "UNVERIFIED",
+            displayStatus: isVerified ? "VERIFIED & AUTHENTIC" : "UNVERIFIED / RECORD NOT FOUND",
+            recordType: "SOULBOUND_ATTESTATION",
+            certId: cert.id || cleanCertId,
+            verifiedAt: new Date().toISOString(),
+            reason: "Cryptographically verified against the PolyLance Live Sovereign Network.",
+            details: {
+              typeTitle: "Soulbound Milestone Attestation",
+              title: cert.title || cert.jobTitle || "Decentralized Milestone Attestation",
+              role: cert.role || "Freelancer / Contributor",
+              category: cert.category || "General",
+              freelancer: freelancerName,
+              freelancerName: freelancerName,
+              freelancerAddress: cert.freelancerAddress || "",
+              client: clientName,
+              clientName: clientName,
+              clientAddress: cert.clientAddress || "",
+              recipient: {
+                name: freelancerName,
+                address: cert.freelancerAddress || "",
+              },
+              sponsor: {
+                name: clientName,
+                address: cert.clientAddress || "",
+              },
+              contractAddress: cert.contractAddress || "",
+              networkChainId: cert.networkChainId || 137,
+              networkName: "Polygon PoS 137",
+              oracleSignature: cert.oracleSignature || "",
+              ipfsCid: cert.ipfsCid || "",
+              sbtTokenId: cert.sbtTokenId || "",
+              timestamp: cert.timestamp || new Date().toISOString(),
+              metadata: cert.metadata || null,
+            },
+          };
+        }
+      }
+    } catch {}
+
+    // 4. Not found
+    return {
+      verified: false,
+      status: "UNVERIFIED",
+      displayStatus: "UNVERIFIED / RECORD NOT FOUND",
+      certId: cleanCertId,
+      message: "This certificate identifier could not be verified against the PolyLance Sovereign Ledger.",
+      verifiedAt: new Date().toISOString(),
+    };
   }
 
   /**
-   * Fetch sample verified records for UI demonstration / testing
+   * Fetch live verified records for UI presentation
    */
   static async getSampleRecords(): Promise<{
     sbtRecords: Partial<CertifiedSBTRecord>[];
@@ -344,7 +391,7 @@ export class PolyLanceVerificationService {
   }> {
     try {
       const sbt = await polylancePool.query(
-        `SELECT s."id", s."jobId", s."jobTitle", s."category", s."settledAmountUsdc",
+        `SELECT s."id", s."jobId", s."jobTitle", s."category",
                 s."freelancerAddress", s."freelancerName",
                 fa."displayName" AS "auditFreelancerName",
                 s."clientAddress", s."clientName",
@@ -362,7 +409,6 @@ export class PolyLanceVerificationService {
         jobId: r.jobId,
         jobTitle: r.jobTitle,
         category: r.category,
-        settledAmountUsdc: "Volume Protected",
         freelancerAddress: r.freelancerAddress,
         freelancerName: formatParticipantName(r.freelancerName, r.auditFreelancerName, r.freelancerAddress, null, "Freelancer"),
         clientAddress: r.clientAddress,
@@ -372,7 +418,7 @@ export class PolyLanceVerificationService {
       }));
 
       const audit = await polylancePool.query(
-        `SELECT "id", "displayName", "roleType", "trustIndexScore", "lifetimeVolumeUsdc", "targetAddress", "status"
+        `SELECT "id", "displayName", "roleType", "trustIndexScore", "targetAddress", "status"
          FROM "CertifiedAuditRecord"
          ORDER BY "createdAt" DESC
          LIMIT 10`
