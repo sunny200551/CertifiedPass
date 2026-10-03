@@ -40,7 +40,6 @@ import { BadgeSchemaDesigner, type SchemaDesign } from "../../components/issuer/
 import { SoulboundMintingModal } from "../../components/issuer/SoulboundMintingModal.js";
 import { MultiSigCoSigningWorkflow, type CoSigner } from "../../components/issuer/MultiSigCoSigningWorkflow.js";
 import { RevocationLifecycleModal } from "../../components/issuer/RevocationLifecycleModal.js";
-import { AutomatedDeliverySuite } from "../../components/issuer/AutomatedDeliverySuite.js";
 import { IssuerAnalyticsModal } from "../../components/issuer/IssuerAnalyticsModal.js";
 
 // Action feedback modal
@@ -745,14 +744,6 @@ export default function IssuerDashboard() {
             `Audit reason: ${reason}`
           );
         }}
-      />
-
-      <AutomatedDeliverySuite
-        isOpen={activeModal === "delivery"}
-        onClose={() => setActiveModal(null)}
-        certId={activeCertForAction}
-        recipientName={activeRecipientForAction}
-        credentialTitle={issuedList.find(c => c.id === activeCertForAction)?.title || "Verifiable Sovereign Credential"}
       />
 
       <IssuerAnalyticsModal

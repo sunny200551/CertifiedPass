@@ -51,9 +51,15 @@ export default function LandingPage() {
               transition={{ duration: 0.5, ease: "easeOut" }}
               className="lg:col-span-7 space-y-6"
             >
-              <div className="inline-flex items-center gap-2 rounded-full neo-raised-sm bg-[var(--surface-bg)] px-4 py-1.5 text-xs font-bold text-[var(--brand-indigo)]">
-                <Sparkles className="h-3.5 w-3.5 text-[var(--brand-indigo)] animate-pulse-glow" />
-                Next-Gen Verifiable Credentials on Polygon Amoy
+              <div className="flex flex-wrap items-center gap-2.5">
+                <div className="inline-flex items-center gap-2 rounded-full neo-raised-sm bg-[var(--surface-bg)] px-3.5 py-1.5 text-xs font-bold text-[var(--brand-indigo)]">
+                  <Sparkles className="h-3.5 w-3.5 text-[var(--brand-indigo)] animate-pulse-glow" />
+                  <span>Next-Gen Verifiable Credentials on Polygon Amoy</span>
+                </div>
+                <div className="inline-flex items-center gap-1.5 rounded-full neo-inset-sm bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  <span>Beta Preview • Under Active Development</span>
+                </div>
               </div>
 
               <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl text-[var(--text-primary)] leading-[1.1] font-display">

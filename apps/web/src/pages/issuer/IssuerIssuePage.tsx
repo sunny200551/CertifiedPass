@@ -25,7 +25,6 @@ import { AIExtractionModal } from "../../components/issuer/AIExtractionModal.js"
 import { BatchIssuanceEngine } from "../../components/issuer/BatchIssuanceEngine.js";
 import { BadgeSchemaDesigner } from "../../components/issuer/BadgeSchemaDesigner.js";
 import { MultiSigCoSigningWorkflow } from "../../components/issuer/MultiSigCoSigningWorkflow.js";
-import { AutomatedDeliverySuite } from "../../components/issuer/AutomatedDeliverySuite.js";
 import { SoulboundMintingModal } from "../../components/issuer/SoulboundMintingModal.js";
 
 // Action feedback modal
@@ -519,12 +518,6 @@ export default function IssuerIssuePage() {
             message: `Quorum reached with ${signers.filter(s => s.signed).length} of ${threshold} signatures.`
           });
         }}
-      />
-
-      <AutomatedDeliverySuite
-        isOpen={activeModal === "delivery"}
-        onClose={() => setActiveModal(null)}
-        certId={lastIssuedCertId || 'PL-SBT-JOB-0xce1376c2272E-0xce13'}
       />
 
       {/* Branded Feedback Modal */}
