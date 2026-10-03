@@ -173,7 +173,15 @@ export class DecentralizedRegistry {
     } else {
       list.unshift(cred);
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("storage"));
+        window.dispatchEvent(new CustomEvent("certifiedpass_credentials_updated"));
+      }
+    } catch (e) {
+      console.error("Failed to save to localStorage:", e);
+    }
   }
 
   static revoke(id: string) {
@@ -185,7 +193,15 @@ export class DecentralizedRegistry {
         status: "REVOKED",
         isVerified: false,
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("storage"));
+          window.dispatchEvent(new CustomEvent("certifiedpass_credentials_updated"));
+        }
+      } catch (e) {
+        console.error("Failed to revoke in localStorage:", e);
+      }
     }
   }
 
@@ -198,7 +214,15 @@ export class DecentralizedRegistry {
         status,
         isVerified: status === "ACTIVE",
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("storage"));
+          window.dispatchEvent(new CustomEvent("certifiedpass_credentials_updated"));
+        }
+      } catch (e) {
+        console.error("Failed to update status in localStorage:", e);
+      }
     }
   }
 }

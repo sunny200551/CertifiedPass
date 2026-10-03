@@ -72,9 +72,9 @@ export default function IssuerDashboard() {
     // Privacy & Security: Only show credentials issued by this issuer's address
     if (activeIssuerAddress) {
       const myIssued = fromRegistry.filter(
-        (c) => c.issuerAddress?.toLowerCase() === activeIssuerAddress.toLowerCase()
+        (c) => !c.issuerAddress || c.issuerAddress.toLowerCase() === activeIssuerAddress.toLowerCase()
       );
-      setIssuedList(myIssued);
+      setIssuedList(myIssued.length > 0 ? myIssued : fromRegistry);
     } else {
       // If not yet connected to a specific wallet, show the decentralized registry records
       setIssuedList(fromRegistry);
@@ -83,6 +83,15 @@ export default function IssuerDashboard() {
 
   useEffect(() => {
     loadIssuedCredentials();
+    const handleStorageChange = () => {
+      loadIssuedCredentials();
+    };
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("certifiedpass_credentials_updated", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("certifiedpass_credentials_updated", handleStorageChange);
+    };
   }, [activeIssuerAddress]);
 
   const showSuccessFeedback = (title: string, message: string, details?: string) => {
@@ -116,7 +125,7 @@ export default function IssuerDashboard() {
   const handleTriggerDelivery = (cert: DecentralizedCredential) => {
     setActiveCertForAction(cert.id);
     setActiveRecipientForAction(cert.holderName);
-    setActiveModal("delivery");
+    setActiveModal("revocation");
   };
 
   const handleExportCSV = () => {
@@ -151,7 +160,7 @@ export default function IssuerDashboard() {
 
       const matchesOrg =
         selectedOrgFilter === "ALL" ||
-        (selectedOrgFilter === "COLLEGE" && (item.issuerName.toLowerCase().includes("apsche") || item.issuerName.toLowerCase().includes("college") || item.issuerName.toLowerCase().includes("univ"))) ||
+        (selectedOrgFilter === "COLLEGE" && (item.issuerName.toLowerCase().includes("college") || item.issuerName.toLowerCase().includes("univ") || item.issuerName.toLowerCase().includes("academy") || item.issuerName.toLowerCase().includes("institute"))) ||
         (selectedOrgFilter === "POLYLANCE" && item.issuerName.toLowerCase().includes("polylance")) ||
         (selectedOrgFilter === "FOUNDATION" && (item.issuerName.toLowerCase().includes("polygon") || item.issuerName.toLowerCase().includes("certifiedpass")));
 
@@ -282,7 +291,7 @@ export default function IssuerDashboard() {
               </div>
             </div>
             <p className="text-3xl font-black text-[var(--text-primary)] font-display">4</p>
-            <span className="text-xs text-[var(--text-secondary)] mt-1 inline-block font-semibold">APSCHE, PolyLance, Polygon, CertifiedPass</span>
+            <span className="text-xs text-[var(--text-secondary)] mt-1 inline-block font-semibold">Colleges, Academies, Guilds & Enterprises</span>
           </div>
 
           <div className="rounded-[24px] neo-raised bg-[var(--surface-bg)] p-6 border-2 border-[var(--neo-outline)]">
@@ -412,7 +421,7 @@ export default function IssuerDashboard() {
               <div className="lg:col-span-6 flex flex-wrap items-center gap-1.5">
                 {[
                   { id: "ALL", label: "All Entities", icon: Globe2 },
-                  { id: "COLLEGE", label: "College / APSCHE", icon: GraduationCap },
+                  { id: "COLLEGE", label: "Colleges & Academies", icon: GraduationCap },
                   { id: "POLYLANCE", label: "PolyLance Guild", icon: Building2 },
                   { id: "FOUNDATION", label: "Polygon / CP", icon: ShieldCheck },
                 ].map((org) => {

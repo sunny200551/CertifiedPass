@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, CheckCircle2, ExternalLink, X } from 'lucide-react';
+import { DecentralizedRegistry, type DecentralizedCredential } from '../../lib/blockchain.js';
 
 interface SoulboundMintingModalProps {
   isOpen: boolean;
@@ -53,6 +54,27 @@ export const SoulboundMintingModal: React.FC<SoulboundMintingModalProps> = ({
     await new Promise(r => setTimeout(r, 1800));
     const generatedTx = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
     setTxHash(generatedTx);
+
+    const sbtId = `cp-sbt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    const newCred: DecentralizedCredential = {
+      id: sbtId,
+      credentialType: 'internship',
+      holderAddress: data.recipientAddress,
+      holderName: data.recipientName,
+      issuerName: 'Soulbound Protocol Issuer',
+      issuerAddress: data.issuerAddress || '0x51E2a819bA4F5b6c891e4a3F12c6a4F69B88793B',
+      title: data.title,
+      achievement: 'ERC-5192 Non-Transferable Soulbound Credential Attestation',
+      eventName: 'EIP-712 Sovereign Issuance',
+      skills: ['Smart Contracts', 'Web3 Architecture', 'Zero-Knowledge Proofs'],
+      issuedAt: new Date().toISOString(),
+      credentialHash: `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`,
+      txHash: generatedTx,
+      status: 'ACTIVE',
+      isVerified: true,
+    };
+    DecentralizedRegistry.save(newCred);
+
     setStep('complete');
     setIsMinting(false);
 

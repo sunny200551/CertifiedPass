@@ -113,15 +113,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateUserProfile = useCallback((data: Partial<UserProfile>) => {
     setUser((prev) => {
-      if (!prev) return null;
-      const updated = { ...prev, ...data };
+      const current: UserProfile = prev || {
+        id: `usr-${address?.slice(2, 10) || 'guest'}`,
+        walletAddress: address || '',
+        displayName: data.displayName || 'Verified User',
+      };
+      const updated = { ...current, ...data };
       localStorage.setItem("certifiedpass_user", JSON.stringify(updated));
       if (updated.walletAddress) {
         localStorage.setItem(`certifiedpass_profile_${updated.walletAddress.toLowerCase()}`, JSON.stringify(updated));
       }
       return updated;
     });
-  }, []);
+  }, [address]);
 
   const openProfileModal = () => setIsProfileModalOpen(true);
   const closeProfileModal = () => setIsProfileModalOpen(false);

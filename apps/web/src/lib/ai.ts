@@ -83,7 +83,7 @@ function extractFromDocumentHeuristics(
     }
 
     // Pattern: Organization / Issuer
-    const orgMatch = rawText.match(/(?:by|at|from|issued by)\s+([A-Z][a-zA-Z\s]{2,40}(?:Organization|University|Foundation|Council|Labs|DAO|APSCHE|ConsenSys|Polygon))/i);
+    const orgMatch = rawText.match(/(?:by|at|from|issued by)\s+([A-Z][a-zA-Z\s]{2,40}(?:Organization|University|Foundation|Council|Labs|DAO|ConsenSys|Polygon))/i);
     if (orgMatch && orgMatch[1]) {
       orgName = orgMatch[1].trim();
     }
@@ -108,7 +108,7 @@ function extractFromDocumentHeuristics(
   let achievement = `Successfully fulfilled all technical and qualification criteria validated by ${org}`;
   let skills = "Web3, Software Architecture, Smart Contracts";
 
-  if (credentialType === "internship" || /internship|APSCHE/i.test(fileName + rawText)) {
+  if (credentialType === "internship" || /internship|apprentice|practicum/i.test(fileName + rawText)) {
     title = `${org} Professional Internship Credential`;
     achievement = `Completed Certified Industry Internship Program under ${org} guidelines`;
     skills = "Full-Stack Development, Cloud Systems, Modern Web Engineering";

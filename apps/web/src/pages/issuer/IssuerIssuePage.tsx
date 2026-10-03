@@ -18,6 +18,8 @@ import { Badge } from "../../components/ui/Badge.js";
 import { extractCredentialsWithAI, type ExtractedDraft } from "../../lib/ai.js";
 import { DecentralizedRegistry, type DecentralizedCredential } from "../../lib/blockchain.js";
 import { canonicalizeJSON, computeSHA256, pinJSONToIPFS } from "../../lib/ipfs.js";
+import { useAuth } from "../../context/AuthContext.js";
+import { useAccount } from "wagmi";
 import type { CredentialType } from "@certifiedpass/types";
 
 // Feature Modals
@@ -32,6 +34,11 @@ import { ActionFeedbackModal, type FeedbackModalState } from "../../components/u
 
 export default function IssuerIssuePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { address } = useAccount();
+  const activeIssuerAddress = user?.walletAddress || address || "0x51E2a819bA4F5b6c891e4a3F12c6a4F69B88793B";
+  const activeIssuerName = user?.displayName || user?.username || "Verified Organization Issuer";
+
   const [step, setStep] = useState<"upload" | "review" | "success">("upload");
   const [credentialType, setCredentialType] = useState<CredentialType>("hackathon");
   const [isExtracting, setIsExtracting] = useState<boolean>(false);
@@ -93,7 +100,7 @@ export default function IssuerIssuePage() {
           credentialType,
           title: draft.title,
           holderName: draft.holderName,
-          issuerName: "ETHSF & Polygon Labs",
+          issuerName: activeIssuerName,
           issuedAt: new Date().toISOString().slice(0, 10),
           achievement: draft.achievement,
           eventName: draft.eventName,
@@ -111,8 +118,8 @@ export default function IssuerIssuePage() {
           credentialType,
           holderAddress: draft.holderAddress,
           holderName: draft.holderName,
-          issuerName: "ETHSF & Polygon Labs",
-          issuerAddress: "0x51E2a819bA4F5b6c891e4a3F12c6a4F69B88793B",
+          issuerName: activeIssuerName,
+          issuerAddress: activeIssuerAddress,
           title: draft.title,
           achievement: draft.achievement,
           eventName: draft.eventName,

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, FileSpreadsheet, CheckCircle2, AlertTriangle, Play, Download, Trash2, X } from 'lucide-react';
+import { DecentralizedRegistry, type DecentralizedCredential } from '../../lib/blockchain.js';
 
 export interface BatchItem {
   id: string;
@@ -144,6 +145,26 @@ export const BatchIssuanceEngine: React.FC<BatchIssuanceEngineProps> = ({
       const targetId = current.id;
       setItems(prev => prev.map(item => item.id === targetId ? { ...item, status: 'minted' } : item));
       setProgress(Math.round(((i + 1) / validItems.length) * 100));
+
+      const credId = `cp-batch-${Date.now()}-${i}`;
+      const newCred: DecentralizedCredential = {
+        id: credId,
+        credentialType: 'internship',
+        holderAddress: current.recipientAddress,
+        holderName: current.recipientName,
+        issuerName: 'Verified Batch Issuer',
+        issuerAddress: '0x51E2a819bA4F5b6c891e4a3F12c6a4F69B88793B',
+        title: current.credentialTitle,
+        achievement: `Certified for excellence in ${current.category}`,
+        eventName: 'Bulk Batch Issuance Pipeline',
+        skills: current.skills,
+        issuedAt: new Date().toISOString(),
+        credentialHash: `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`,
+        txHash: `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`,
+        status: 'ACTIVE',
+        isVerified: true,
+      };
+      DecentralizedRegistry.save(newCred);
     }
 
     setProcessing(false);
