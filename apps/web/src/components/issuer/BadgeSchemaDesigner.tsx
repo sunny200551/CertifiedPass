@@ -76,7 +76,73 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
     setCustomFields(customFields.map(f => f.id === id ? { ...f, ...updates } : f));
   };
 
-  const foilGradients: Record<string, string> = {
+  type FoilKey = 'gold' | 'silver' | 'cosmic' | 'emerald' | 'obsidian';
+
+  interface FoilTheme {
+    name: string;
+    borderGradient: string;
+    glowColor: string;
+    accentText: string;
+    accentBadge: string;
+    chipBg: string;
+    chipBorder: string;
+    dotColor: string;
+  }
+
+  const foilConfig: Record<FoilKey, FoilTheme> = {
+    cosmic: {
+      name: 'Cosmic Hologram',
+      borderGradient: 'from-purple-500 via-sky-400 to-pink-500',
+      glowColor: 'rgba(168, 85, 247, 0.25)',
+      accentText: 'text-purple-300',
+      accentBadge: 'bg-purple-950/90 text-purple-200 border-purple-400/40',
+      chipBg: 'bg-gradient-to-br from-purple-500/25 to-pink-500/25',
+      chipBorder: 'border-purple-300/50',
+      dotColor: 'bg-purple-400',
+    },
+    gold: {
+      name: '24k Sovereign Gold',
+      borderGradient: 'from-amber-300 via-yellow-200 to-amber-600',
+      glowColor: 'rgba(245, 158, 11, 0.25)',
+      accentText: 'text-amber-300',
+      accentBadge: 'bg-amber-950/90 text-amber-200 border-amber-400/40',
+      chipBg: 'bg-gradient-to-br from-amber-500/25 to-yellow-500/25',
+      chipBorder: 'border-amber-300/50',
+      dotColor: 'bg-amber-400',
+    },
+    silver: {
+      name: 'Platinum Titanium',
+      borderGradient: 'from-slate-200 via-white to-slate-400',
+      glowColor: 'rgba(226, 232, 240, 0.25)',
+      accentText: 'text-slate-200',
+      accentBadge: 'bg-slate-900/90 text-slate-100 border-slate-300/50',
+      chipBg: 'bg-gradient-to-br from-slate-200/25 to-slate-400/25',
+      chipBorder: 'border-slate-200/60',
+      dotColor: 'bg-slate-200',
+    },
+    emerald: {
+      name: 'Cyber Jade Emerald',
+      borderGradient: 'from-emerald-400 via-teal-200 to-emerald-600',
+      glowColor: 'rgba(16, 185, 129, 0.25)',
+      accentText: 'text-emerald-300',
+      accentBadge: 'bg-emerald-950/90 text-emerald-200 border-emerald-400/40',
+      chipBg: 'bg-gradient-to-br from-emerald-500/25 to-teal-500/25',
+      chipBorder: 'border-emerald-300/50',
+      dotColor: 'bg-emerald-400',
+    },
+    obsidian: {
+      name: 'Obsidian Carbon',
+      borderGradient: 'from-indigo-400 via-purple-300 to-slate-600',
+      glowColor: 'rgba(99, 102, 241, 0.25)',
+      accentText: 'text-indigo-300',
+      accentBadge: 'bg-indigo-950/90 text-indigo-200 border-indigo-400/40',
+      chipBg: 'bg-gradient-to-br from-indigo-500/25 to-purple-500/25',
+      chipBorder: 'border-indigo-300/50',
+      dotColor: 'bg-indigo-400',
+    }
+  };
+
+  const foilGradients: Record<FoilKey, string> = {
     gold: 'from-amber-400 via-yellow-200 to-amber-600',
     silver: 'from-slate-300 via-gray-100 to-slate-400',
     cosmic: 'from-purple-500 via-indigo-400 to-pink-500',
@@ -98,6 +164,8 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
   ] as const;
 
   const fieldTypes = ['string', 'number', 'date', 'boolean', 'url'] as const;
+
+  const currentFoil: FoilTheme = foilConfig[foilStyle] ?? foilConfig.cosmic;
 
   const handleSave = () => {
     if (onSaveSchema) {
@@ -288,153 +356,256 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
           </div>
 
           {/* Real-time 3D Card Preview Canvas (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 rounded-2xl neo-inset bg-[var(--surface-bg)] border border-[var(--neo-outline)] relative overflow-hidden min-h-[380px]">
-            <span className="text-[10px] uppercase font-bold text-pink-500 tracking-wider mb-4 flex items-center gap-1 font-display">
-              <Sparkles className="w-3 h-3" /> Live Holographic Canvas ({badgeShape.toUpperCase()})
-            </span>
+          <div className="lg:col-span-5 flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl neo-inset bg-[var(--surface-bg)] border border-[var(--neo-outline)] relative overflow-hidden min-h-[420px]">
+            <div className="w-full flex items-center justify-between mb-3 px-1">
+              <span className="text-[10px] uppercase font-black text-pink-600 dark:text-pink-400 tracking-wider flex items-center gap-1 font-display">
+                <Sparkles className="w-3 h-3 animate-pulse" /> Live Holographic Canvas
+              </span>
+              <span className="text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-md bg-[var(--surface-bg)] border border-[var(--neo-outline)] text-[var(--text-secondary)]">
+                {badgeShape} • {foilStyle}
+              </span>
+            </div>
 
-            {/* 1. Standard 3D Card Shape */}
+            {/* ========================================================================= */}
+            {/* 1. STANDARD 3D CARD SHAPE                                                 */}
+            {/* ========================================================================= */}
             {badgeShape === 'card' && (
-              <div className="w-64 h-80 rounded-2xl p-5 relative flex flex-col justify-between shadow-2xl border-2 transition-all duration-300 bg-gradient-to-br from-slate-900 via-indigo-950 to-black border-slate-700">
-                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-tr ${foilGradients[foilStyle]} opacity-${
-                  glowIntensity === 'high' ? '25' : glowIntensity === 'medium' ? '15' : '10'
-                } pointer-events-none`} />
+              <div className={`w-[270px] sm:w-[285px] h-[375px] rounded-[22px] p-[2px] bg-gradient-to-br ${currentFoil.borderGradient} shadow-2xl transition-all duration-300 relative group`}>
+                {/* Core Obsidian Dark Canvas with Holographic Sheen */}
+                <div className="w-full h-full rounded-[20px] bg-gradient-to-b from-[#0e1322] via-[#090c17] to-[#04060c] p-4 flex flex-col justify-between relative overflow-hidden text-left border border-white/10">
+                  {/* Holographic dynamic luster */}
+                  <div
+                    className="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(ellipse_at_50%_0%,var(--glow),transparent_70%)]"
+                    style={{ '--glow': currentFoil.glowColor } as any}
+                  />
 
-                <div className="flex justify-between items-start z-10">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-md flex items-center justify-center text-xs font-black text-white border border-white/20">
-                    CP
-                  </div>
-                  <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-white backdrop-blur-md border border-white/20">
-                    ERC-5192 SBT
-                  </span>
-                </div>
-
-                <div className="z-10 my-auto">
-                  <h4 className="text-sm font-bold text-white line-clamp-2 leading-tight">{schemaName}</h4>
-                  <p className="text-[10px] text-slate-300 mt-1 font-medium">Verified Sovereign Credential</p>
-
-                  <div className="mt-4 pt-3 border-t border-white/10 space-y-1">
-                    {customFields.slice(0, 2).map(f => (
-                      <div key={f.id} className="flex justify-between text-[10px]">
-                        <span className="text-slate-300">{f.name}:</span>
-                        <span className="text-white font-mono">{f.value || 'Dynamic'}</span>
+                  {/* Top Security Header */}
+                  <div className="flex items-center justify-between z-10">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-8 h-8 rounded-xl ${currentFoil.chipBg} border ${currentFoil.chipBorder} flex items-center justify-center font-cinzel font-black text-xs text-white shadow-inner`}>
+                        CP
                       </div>
-                    ))}
+                      <div className="flex flex-col">
+                        <span className="text-[9px] font-mono tracking-widest text-slate-400 uppercase font-bold">SOVEREIGN</span>
+                        <span className="text-[10px] font-black text-white leading-none font-jakarta tracking-tight">CERTIFIEDPASS</span>
+                      </div>
+                    </div>
+                    <span className={`text-[8.5px] font-mono font-bold px-2 py-0.5 rounded-full border ${currentFoil.accentBadge} shadow-sm`}>
+                      ERC-5192 SBT
+                    </span>
                   </div>
-                </div>
 
-                <div className="z-10 flex justify-between items-center text-[9px] text-slate-300 font-mono">
-                  <span>POLYGON PoS</span>
-                  <span className="text-emerald-400 font-bold">AUTHENTIC</span>
+                  {/* Main Attestation Content */}
+                  <div className="z-10 my-auto py-1">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className={`w-1.5 h-1.5 rounded-full ${currentFoil.dotColor} animate-ping`} />
+                      <span className="text-[8.5px] font-mono uppercase tracking-[0.22em] text-slate-300 font-bold">
+                        VERIFIED ATTESTATION
+                      </span>
+                    </div>
+
+                    <h4 className="text-[15px] font-black font-syne text-white leading-snug tracking-tight drop-shadow-md line-clamp-2">
+                      {schemaName || 'Web3 Certified Attestation'}
+                    </h4>
+
+                    {/* Metadata Attribute Capsule */}
+                    <div className="mt-3 p-2.5 rounded-xl bg-black/60 border border-white/10 backdrop-blur-sm space-y-1.5">
+                      {customFields.slice(0, 2).map((f) => (
+                        <div key={f.id} className="flex justify-between items-center text-[9.5px]">
+                          <span className="text-slate-400 font-medium tracking-wide truncate max-w-[120px]">{f.name}:</span>
+                          <span className="font-mono font-bold text-emerald-300 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-500/30 truncate max-w-[100px]">
+                            {f.value || 'Dynamic'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Bottom Verification Seal */}
+                  <div className="z-10 pt-2 border-t border-white/10 flex justify-between items-center text-[9px] font-mono">
+                    <span className="text-slate-400 flex items-center gap-1 font-semibold">
+                      <span className="text-white">◈</span> POLYGON PoS
+                    </span>
+                    <span className="text-emerald-400 font-bold flex items-center gap-1 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/30">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" /> AUTHENTIC
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* 2. EVM Hexagon Shape */}
+            {/* ========================================================================= */}
+            {/* 2. EVM HEXAGON SHAPE                                                      */}
+            {/* ========================================================================= */}
             {badgeShape === 'hexagon' && (
               <div
                 style={{
                   clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                 }}
-                className="w-68 h-80 px-6 py-8 relative flex flex-col justify-between shadow-2xl transition-all duration-300 bg-gradient-to-br from-slate-900 via-indigo-950 to-black text-center border-2 border-indigo-500/60"
+                className={`w-[275px] sm:w-[290px] h-[360px] p-[2px] bg-gradient-to-br ${currentFoil.borderGradient} shadow-2xl transition-all duration-300 relative flex items-center justify-center`}
               >
-                <div className={`absolute inset-0 bg-gradient-to-tr ${foilGradients[foilStyle]} opacity-${
-                  glowIntensity === 'high' ? '25' : glowIntensity === 'medium' ? '15' : '10'
-                } pointer-events-none`} />
+                {/* Inner Hexagon Core */}
+                <div
+                  style={{
+                    clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                  }}
+                  className="w-full h-full bg-gradient-to-b from-[#0e1322] via-[#090c17] to-[#04060c] px-5 py-6 flex flex-col justify-between items-center text-center relative overflow-hidden"
+                >
+                  {/* Holographic luster */}
+                  <div
+                    className="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(circle_at_50%_15%,var(--glow),transparent_70%)]"
+                    style={{ '--glow': currentFoil.glowColor } as any}
+                  />
 
-                <div className="flex justify-center items-center z-10 gap-2">
-                  <span className="text-[9px] font-mono px-2.5 py-0.5 rounded-full bg-white/10 text-white backdrop-blur-md border border-white/20">
-                    EVM HEXAGON • ERC-5192
-                  </span>
-                </div>
-
-                <div className="z-10 my-auto px-2">
-                  <div className="w-8 h-8 rounded-full bg-pink-500/20 text-pink-300 mx-auto flex items-center justify-center font-black text-xs mb-1 border border-pink-400/30">
-                    CP
+                  {/* Top Apex Badge */}
+                  <div className="z-10 pt-1">
+                    <span className={`text-[8.5px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${currentFoil.accentBadge} shadow-sm`}>
+                      EVM HEX • ERC-5192
+                    </span>
                   </div>
-                  <h4 className="text-xs font-bold text-white line-clamp-2 leading-tight">{schemaName}</h4>
-                  <p className="text-[9px] text-slate-300 mt-0.5">Sovereign Polygon Proof</p>
 
-                  <div className="mt-2 pt-2 border-t border-white/10 space-y-0.5 text-left">
-                    {customFields.slice(0, 2).map(f => (
-                      <div key={f.id} className="flex justify-between text-[9px]">
-                        <span className="text-slate-300">{f.name}:</span>
-                        <span className="text-white font-mono">{f.value || 'Dynamic'}</span>
-                      </div>
-                    ))}
+                  {/* Center Emblem & Title */}
+                  <div className="z-10 my-auto w-full px-2">
+                    <div className={`w-9 h-9 rounded-xl ${currentFoil.chipBg} border ${currentFoil.chipBorder} mx-auto flex items-center justify-center font-cinzel font-black text-sm text-white shadow-inner mb-2`}>
+                      CP
+                    </div>
+
+                    <h4 className="text-[14px] font-black font-syne text-white leading-snug tracking-tight drop-shadow-md line-clamp-2">
+                      {schemaName || 'Hexagonal Verifiable Credential'}
+                    </h4>
+                    <p className="text-[8.5px] font-mono uppercase tracking-[0.2em] text-slate-300 font-bold mt-1">
+                      SOVEREIGN PROOF
+                    </p>
+
+                    {/* Centered Attributes */}
+                    <div className="mt-2.5 p-2 rounded-xl bg-black/70 border border-white/10 backdrop-blur-sm space-y-1 text-left">
+                      {customFields.slice(0, 2).map((f) => (
+                        <div key={f.id} className="flex justify-between items-center text-[9px]">
+                          <span className="text-slate-400 font-medium truncate max-w-[110px]">{f.name}:</span>
+                          <span className="font-mono font-bold text-emerald-300 bg-emerald-950/60 px-1 py-0.2 rounded border border-emerald-500/20 truncate max-w-[90px]">
+                            {f.value || 'Dynamic'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <div className="z-10 flex justify-center items-center text-[9px] text-emerald-400 font-mono font-bold">
-                  <span>HEX-PROOF ANCHORED</span>
+                  {/* Bottom Apex Tag */}
+                  <div className="z-10 pb-1">
+                    <span className="text-[8.5px] font-mono font-bold text-emerald-400 bg-emerald-950/60 px-3 py-0.5 rounded-full border border-emerald-500/40 flex items-center gap-1 shadow-sm">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" /> HEX ANCHORED
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* 3. Verifiable Shield Shape */}
+            {/* ========================================================================= */}
+            {/* 3. VERIFIABLE SHIELD SHAPE                                                */}
+            {/* ========================================================================= */}
             {badgeShape === 'shield' && (
               <div
                 style={{
                   clipPath: 'polygon(0% 0%, 100% 0%, 100% 70%, 50% 100%, 0% 70%)',
                 }}
-                className="w-64 h-84 pt-6 pb-9 px-5 relative flex flex-col justify-between shadow-2xl transition-all duration-300 bg-gradient-to-br from-slate-900 via-indigo-950 to-black text-center"
+                className={`w-[270px] sm:w-[285px] h-[375px] p-[2px] bg-gradient-to-br ${currentFoil.borderGradient} shadow-2xl transition-all duration-300 relative flex items-center justify-center`}
               >
-                <div className={`absolute inset-0 bg-gradient-to-tr ${foilGradients[foilStyle]} opacity-${
-                  glowIntensity === 'high' ? '25' : glowIntensity === 'medium' ? '15' : '10'
-                } pointer-events-none`} />
+                {/* Inner Shield Core */}
+                <div
+                  style={{
+                    clipPath: 'polygon(0% 0%, 100% 0%, 100% 70%, 50% 100%, 0% 70%)',
+                  }}
+                  className="w-full h-full bg-gradient-to-b from-[#0e1322] via-[#090c17] to-[#04060c] pt-5 pb-8 px-5 flex flex-col justify-between items-center text-center relative overflow-hidden"
+                >
+                  {/* Holographic luster */}
+                  <div
+                    className="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(circle_at_50%_15%,var(--glow),transparent_70%)]"
+                    style={{ '--glow': currentFoil.glowColor } as any}
+                  />
 
-                <div className="flex justify-between items-center z-10">
-                  <div className="w-7 h-7 rounded-md bg-white/10 backdrop-blur-md flex items-center justify-center text-[10px] font-black text-white border border-white/20">
-                    CP
+                  {/* Shield Top Header */}
+                  <div className="flex items-center justify-between w-full z-10 px-1">
+                    <div className={`w-7 h-7 rounded-lg ${currentFoil.chipBg} border ${currentFoil.chipBorder} flex items-center justify-center font-cinzel font-black text-[11px] text-white`}>
+                      CP
+                    </div>
+                    <span className={`text-[8.5px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${currentFoil.accentBadge} shadow-sm`}>
+                      SHIELD PROOF
+                    </span>
                   </div>
-                  <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-white backdrop-blur-md border border-white/20">
-                    SHIELD PROOF
-                  </span>
-                </div>
 
-                <div className="z-10 my-auto px-1">
-                  <h4 className="text-xs font-bold text-white line-clamp-2 leading-tight">{schemaName}</h4>
-                  <p className="text-[9px] text-slate-300 mt-1">Cryptographic Verifiable Shield</p>
+                  {/* Shield Chest Content */}
+                  <div className="z-10 my-auto w-full px-1">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Shield className="w-3 h-3 text-white" />
+                      <span className="text-[8.5px] font-mono uppercase tracking-[0.2em] text-slate-300 font-bold">
+                        CRYPTOGRAPHIC AEGIS
+                      </span>
+                    </div>
 
-                  <div className="mt-3 pt-2 border-t border-white/10 space-y-1 text-left">
-                    {customFields.slice(0, 2).map(f => (
-                      <div key={f.id} className="flex justify-between text-[9px]">
-                        <span className="text-slate-300">{f.name}:</span>
-                        <span className="text-white font-mono">{f.value || 'Dynamic'}</span>
-                      </div>
-                    ))}
+                    <h4 className="text-[14px] font-black font-cinzel text-white leading-snug tracking-normal drop-shadow-md line-clamp-2">
+                      {schemaName || 'Shield Verifiable Credential'}
+                    </h4>
+
+                    {/* Metadata Attribute Capsule */}
+                    <div className="mt-3 p-2 rounded-xl bg-black/70 border border-white/10 backdrop-blur-sm space-y-1 text-left">
+                      {customFields.slice(0, 2).map((f) => (
+                        <div key={f.id} className="flex justify-between items-center text-[9px]">
+                          <span className="text-slate-400 font-medium truncate max-w-[110px]">{f.name}:</span>
+                          <span className="font-mono font-bold text-emerald-300 bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-500/20 truncate max-w-[90px]">
+                            {f.value || 'Dynamic'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <div className="z-10 flex justify-center items-center text-[9px] text-emerald-400 font-mono font-bold">
-                  <span>POLYGON VERIFIED SHIELD</span>
+                  {/* Shield Bottom Apex Badge */}
+                  <div className="z-10 mb-2">
+                    <span className="text-[8.5px] font-mono font-bold text-emerald-400 bg-emerald-950/70 px-3 py-0.5 rounded-full border border-emerald-500/40 flex items-center gap-1 shadow-sm">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" /> POLYGON VERIFIED
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* 4. Crypto Seal Shape */}
+            {/* ========================================================================= */}
+            {/* 4. CRYPTO SEAL SHAPE                                                      */}
+            {/* ========================================================================= */}
             {badgeShape === 'seal' && (
-              <div className="w-72 h-72 rounded-full p-6 relative flex flex-col items-center justify-between shadow-2xl border-4 border-dashed border-pink-400/50 transition-all duration-300 bg-gradient-to-br from-slate-900 via-indigo-950 to-black text-center">
-                <div className={`absolute inset-0 rounded-full bg-gradient-to-tr ${foilGradients[foilStyle]} opacity-${
-                  glowIntensity === 'high' ? '25' : glowIntensity === 'medium' ? '15' : '10'
-                } pointer-events-none`} />
+              <div className={`w-[290px] h-[290px] rounded-full p-[3px] bg-gradient-to-br ${currentFoil.borderGradient} shadow-2xl transition-all duration-300 relative flex items-center justify-center`}>
+                {/* Inner Concentric Circle with Dashed Security Ring */}
+                <div className="w-full h-full rounded-full bg-gradient-to-b from-[#0e1322] via-[#090c17] to-[#04060c] p-5 flex flex-col justify-between items-center text-center relative overflow-hidden border-2 border-dashed border-white/20">
+                  {/* Holographic Radial Sheen */}
+                  <div
+                    className="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(circle_at_50%_50%,var(--glow),transparent_70%)]"
+                    style={{ '--glow': currentFoil.glowColor } as any}
+                  />
 
-                <div className="z-10 mt-1">
-                  <span className="text-[8px] font-mono px-2.5 py-0.5 rounded-full bg-white/10 text-white border border-white/20 uppercase tracking-widest">
-                    ★ CRYPTO SEAL ★
-                  </span>
-                </div>
-
-                <div className="z-10 my-auto px-3">
-                  <div className="w-8 h-8 rounded-full bg-white/10 mx-auto flex items-center justify-center font-black text-xs text-white mb-1 border border-white/20">
-                    CP
+                  {/* Top Seal Arc */}
+                  <div className="z-10 pt-1">
+                    <span className={`text-[8px] font-mono uppercase tracking-[0.25em] font-bold px-3 py-0.5 rounded-full border ${currentFoil.accentBadge}`}>
+                      ★ PROTOCOL SEAL ★
+                    </span>
                   </div>
-                  <h4 className="text-xs font-bold text-white line-clamp-2 leading-tight">{schemaName}</h4>
-                  <p className="text-[9px] text-slate-300 mt-0.5">Official Protocol Seal</p>
-                </div>
 
-                <div className="z-10 mb-1 flex items-center gap-1 text-[9px] text-emerald-400 font-mono font-bold">
-                  <span>POLYGON PoS SEALED</span>
+                  {/* Center Medallion Crest & Title */}
+                  <div className="z-10 my-auto px-4 max-w-[230px]">
+                    <div className={`w-8 h-8 rounded-full ${currentFoil.chipBg} border ${currentFoil.chipBorder} mx-auto flex items-center justify-center font-cinzel font-black text-xs text-white shadow-inner mb-1.5`}>
+                      CP
+                    </div>
+                    <h4 className="text-[13px] font-black font-syne text-white leading-tight tracking-tight drop-shadow-md line-clamp-2">
+                      {schemaName || 'Sovereign Protocol Seal'}
+                    </h4>
+                    <p className="text-[8.5px] font-mono text-slate-300 font-bold uppercase tracking-widest mt-0.5">
+                      SOVEREIGN SBT
+                    </p>
+                  </div>
+
+                  {/* Bottom Seal Footer */}
+                  <div className="z-10 pb-1 flex items-center gap-1 text-[8.5px] text-emerald-400 font-mono font-bold bg-emerald-950/70 px-3 py-0.5 rounded-full border border-emerald-500/40 shadow-sm">
+                    <Check className="w-2.5 h-2.5 stroke-[3]" /> POLYGON PoS SEALED
+                  </div>
                 </div>
               </div>
             )}
