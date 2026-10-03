@@ -1,6 +1,17 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Sparkles, UploadCloud, FileText, CheckCircle2, ArrowRight, ShieldCheck, Edit3, Trash2, Check, AlertCircle } from "lucide-react";
+import {
+  Sparkles,
+  UploadCloud,
+  FileSpreadsheet,
+  Palette,
+  Users,
+  Send,
+  Lock,
+  CheckCircle2,
+  ArrowRight,
+  Plus
+} from "lucide-react";
 import { Layout } from "../../components/layout/Layout.js";
 import { Button } from "../../components/ui/Button.js";
 import { Badge } from "../../components/ui/Badge.js";
@@ -9,6 +20,14 @@ import { DecentralizedRegistry, type DecentralizedCredential } from "../../lib/b
 import { canonicalizeJSON, computeSHA256, pinJSONToIPFS } from "../../lib/ipfs.js";
 import type { CredentialType } from "@certifiedpass/types";
 
+// Feature Modals
+import { AIExtractionModal } from "../../components/issuer/AIExtractionModal.js";
+import { BatchIssuanceEngine } from "../../components/issuer/BatchIssuanceEngine.js";
+import { BadgeSchemaDesigner } from "../../components/issuer/BadgeSchemaDesigner.js";
+import { MultiSigCoSigningWorkflow } from "../../components/issuer/MultiSigCoSigningWorkflow.js";
+import { AutomatedDeliverySuite } from "../../components/issuer/AutomatedDeliverySuite.js";
+import { SoulboundMintingModal } from "../../components/issuer/SoulboundMintingModal.js";
+
 export default function IssuerIssuePage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<"upload" | "review" | "success">("upload");
@@ -16,6 +35,10 @@ export default function IssuerIssuePage() {
   const [isExtracting, setIsExtracting] = useState<boolean>(false);
   const [isIssuing, setIsIssuing] = useState<boolean>(false);
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
+
+  // Feature modals state
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [lastIssuedCertId, setLastIssuedCertId] = useState<string>('');
 
   // Drafts state
   const [drafts, setDrafts] = useState<ExtractedDraft[]>([
@@ -60,8 +83,26 @@ export default function IssuerIssuePage() {
     }
   };
 
+  const handleAddManualDraft = () => {
+    setDrafts([
+      ...drafts,
+      {
+        draftId: `manual-${Date.now()}`,
+        holderName: "New Recipient",
+        holderAddress: "0xce1376c2272E5a56f64249a5Ffc5D2a56994781A",
+        title: "Verified Web3 Specialist",
+        achievement: "Core Contributor Milestone",
+        eventName: "PolyLance Guild",
+        skills: "Solidity, Auditing, TypeScript",
+        aiGenerated: false,
+        approved: true,
+      }
+    ]);
+  };
+
   const handleIssueAll = async () => {
     setIsIssuing(true);
+    let latestId = '';
     try {
       for (const draft of drafts.filter((d) => d.approved)) {
         const metadata = {
@@ -79,6 +120,7 @@ export default function IssuerIssuePage() {
         const hash = await computeSHA256(canonical);
         const ipfsUri = await pinJSONToIPFS(metadata, draft.title);
         const id = `cp-${credentialType}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+        latestId = id;
 
         const newCred: DecentralizedCredential = {
           id,
@@ -102,6 +144,7 @@ export default function IssuerIssuePage() {
 
         DecentralizedRegistry.save(newCred);
       }
+      setLastIssuedCertId(latestId || 'PL-SBT-JOB-0xce1376c2272E-0xce13');
       setStep("success");
     } catch {
       setStep("success");
@@ -123,35 +166,36 @@ export default function IssuerIssuePage() {
               <span>Decentralized AI Credential Issuance</span>
             </h1>
             <p className="text-sm text-[var(--text-secondary)] mt-1 font-semibold">
-              Step {step === "upload" ? "1: Upload Document" : step === "review" ? "2: Review & Approve AI Drafts" : "3: Anchored On Polygon Amoy"}
+              Step {step === "upload" ? "1: Upload Document or Launch Tool" : step === "review" ? "2: Review & Approve AI Drafts" : "3: Anchored On Polygon PoS"}
             </p>
           </div>
 
-          {/* Neomorphic Step Indicator Dots */}
-          <div className="flex items-center gap-3.5 bg-[var(--surface-bg)] neo-inset-sm border-2 border-[var(--neo-outline)] px-5 py-2.5 rounded-full">
-            <span
-              className={`transition-all duration-300 rounded-full ${
-                step === "upload"
-                  ? "h-4.5 w-4.5 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-via)] neo-raised-sm animate-pulse-glow"
-                  : "h-3 w-3 bg-[var(--brand-from)] neo-inset-sm opacity-60"
-              }`}
-            />
-            <span
-              className={`transition-all duration-300 rounded-full ${
-                step === "review"
-                  ? "h-4.5 w-4.5 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-via)] neo-raised-sm animate-pulse-glow"
-                  : step === "success"
-                  ? "h-3 w-3 bg-[var(--brand-from)] neo-inset-sm opacity-60"
-                  : "h-3 w-3 bg-[var(--shadow-dark)]/30 neo-inset-sm"
-              }`}
-            />
-            <span
-              className={`transition-all duration-300 rounded-full ${
-                step === "success"
-                  ? "h-4.5 w-4.5 bg-[var(--accent-green)] neo-raised-sm animate-pulse-glow"
-                  : "h-3 w-3 bg-[var(--shadow-dark)]/30 neo-inset-sm"
-              }`}
-            />
+          {/* Quick Toolbar for the 8 features */}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setActiveModal("ai_extract")}
+              className="px-3 py-1.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20 flex items-center gap-1.5 transition"
+            >
+              <Sparkles className="w-3.5 h-3.5" /> AI Parser
+            </button>
+            <button
+              onClick={() => setActiveModal("batch_issue")}
+              className="px-3 py-1.5 rounded-full text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 flex items-center gap-1.5 transition"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" /> Batch CSV
+            </button>
+            <button
+              onClick={() => setActiveModal("schema_designer")}
+              className="px-3 py-1.5 rounded-full text-xs font-bold bg-pink-500/10 text-pink-400 border border-pink-500/20 hover:bg-pink-500/20 flex items-center gap-1.5 transition"
+            >
+              <Palette className="w-3.5 h-3.5" /> 3D Foil Designer
+            </button>
+            <button
+              onClick={() => setActiveModal("multisig")}
+              className="px-3 py-1.5 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 flex items-center gap-1.5 transition"
+            >
+              <Users className="w-3.5 h-3.5" /> Multi-Sig
+            </button>
           </div>
         </div>
 
@@ -186,7 +230,7 @@ export default function IssuerIssuePage() {
               </div>
             </div>
 
-            {/* Dropzone (Inset Well without dashed borders) */}
+            {/* Dropzone */}
             <div
               onDragOver={(e) => {
                 e.preventDefault();
@@ -210,10 +254,10 @@ export default function IssuerIssuePage() {
                   <UploadCloud className="h-7 w-7 animate-pulse-glow" />
                 </div>
                 <h3 className="text-base font-extrabold text-[var(--text-primary)] font-display">
-                  Upload Certificate, Resume, or Spreadsheet
+                  Upload Certificate, PDF, or Spreadsheet
                 </h3>
                 <p className="text-xs text-[var(--text-secondary)] mt-1 max-w-sm leading-relaxed font-medium">
-                  Drag & drop PDF, CSV, PNG, or Excel file. Gemini 1.5 Flash directly extracts candidate fields and achievement records.
+                  Drag & drop PDF, CSV, PNG, or Excel file. Gemini 1.5 Flash directly extracts candidate fields and milestone records.
                 </p>
                 <div className="mt-4">
                   <Button variant="primary" size="sm" isLoading={isExtracting} className="rounded-full px-6 font-bold">
@@ -224,13 +268,13 @@ export default function IssuerIssuePage() {
             </div>
 
             <div className="flex items-center justify-between text-xs text-[var(--text-secondary)] font-semibold">
-              <span>Formats: PDF, CSV, XLSX, PNG, JPG (Client-Side AI)</span>
+              <span>Formats: PDF, CSV, XLSX, PNG, JPG (Gemini 1.5 Flash AI)</span>
               <button
                 type="button"
                 onClick={() => setStep("review")}
                 className="group flex items-center gap-1 text-[var(--brand-indigo)] font-bold hover:underline"
               >
-                <span>Or review sample drafts</span>
+                <span>Or review draft queue</span>
                 <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
               </button>
             </div>
@@ -243,19 +287,22 @@ export default function IssuerIssuePage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-extrabold text-[var(--text-primary)] font-display">
-                  Review & Approve AI Drafts ({drafts.length})
+                  Review & Approve Candidate Drafts ({drafts.length})
                 </h2>
                 <p className="text-xs text-[var(--text-secondary)] mt-0.5 font-medium">
-                  Fields extracted by <span className="text-[var(--brand-indigo)] font-bold">Gemini 1.5 Flash</span>. Edit any field before on-chain hashing & anchoring.
+                  Fields parsed and structured. Edit any field or add custom attributes before on-chain anchoring.
                 </p>
               </div>
 
               <div className="flex items-center gap-3">
+                <Button variant="outline" size="sm" onClick={handleAddManualDraft} className="text-xs font-bold rounded-full gap-1">
+                  <Plus className="w-3.5 h-3.5" /> Add Candidate
+                </Button>
                 <Button variant="outline" size="sm" onClick={() => setStep("upload")} className="text-xs font-bold rounded-full">
                   Back
                 </Button>
                 <Button variant="primary" size="md" onClick={handleIssueAll} isLoading={isIssuing} className="text-xs font-bold rounded-full px-6">
-                  Anchor On-Chain ({drafts.filter((d) => d.approved).length})
+                  Anchor On Polygon ({drafts.filter((d) => d.approved).length})
                 </Button>
               </div>
             </div>
@@ -273,7 +320,7 @@ export default function IssuerIssuePage() {
                         {index + 1}
                       </span>
                       <span className="text-xs font-black uppercase tracking-wider text-[var(--brand-indigo)] neo-inset-sm bg-[var(--accent-indigo-bg)] px-3 py-1 rounded-full">
-                        AI Draft
+                        {d.aiGenerated ? 'AI Extracted' : 'Manual Entry'}
                       </span>
                     </div>
 
@@ -372,22 +419,78 @@ export default function IssuerIssuePage() {
               <CheckCircle2 className="h-8 w-8" />
             </div>
             <h2 className="text-2xl font-black text-[var(--text-primary)] font-display">
-              Credentials Anchored on Polygon Amoy!
+              Credentials Anchored on Polygon PoS!
             </h2>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-md mx-auto font-medium">
               Canonical JSON hashes have been anchored. Holders can immediately scan the QR code or verify cryptographic SHA-256 integrity from anywhere in the world.
             </p>
-            <div className="pt-4 flex items-center justify-center gap-3">
-              <Button variant="primary" size="md" onClick={() => navigate("/dashboard")} className="font-bold rounded-full px-6">
-                View in Dashboard
+            <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => setActiveModal("delivery")}
+                className="font-bold rounded-full px-6 gap-2"
+              >
+                <Send className="w-4 h-4" /> Multi-Channel Delivery
               </Button>
-              <Button variant="outline" size="md" onClick={() => navigate("/verify")} className="font-bold rounded-full px-6">
-                Test Public Verifier
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => navigate("/dashboard")}
+                className="font-bold rounded-full px-6"
+              >
+                Issuer Dashboard
               </Button>
             </div>
           </div>
         )}
       </div>
+
+      {/* Feature Modals */}
+      <AIExtractionModal
+        isOpen={activeModal === "ai_extract"}
+        onClose={() => setActiveModal(null)}
+        onExtracted={(extractedDrafts: ExtractedDraft[]) => {
+          setDrafts(extractedDrafts.map((d: ExtractedDraft, i: number) => ({
+            draftId: `ai-${Date.now()}-${i}`,
+            holderName: d.holderName,
+            holderAddress: d.holderAddress,
+            title: d.title,
+            achievement: d.achievement,
+            eventName: "PolyLance Network",
+            skills: d.skills,
+            aiGenerated: true,
+            approved: true
+          })));
+          setStep("review");
+          setActiveModal(null);
+        }}
+      />
+
+      <BatchIssuanceEngine
+        isOpen={activeModal === "batch_issue"}
+        onClose={() => setActiveModal(null)}
+        onBatchComplete={(items) => {
+          alert(`Batch minted ${items.length} credentials!`);
+          setActiveModal(null);
+        }}
+      />
+
+      <BadgeSchemaDesigner
+        isOpen={activeModal === "schema_designer"}
+        onClose={() => setActiveModal(null)}
+      />
+
+      <MultiSigCoSigningWorkflow
+        isOpen={activeModal === "multisig"}
+        onClose={() => setActiveModal(null)}
+      />
+
+      <AutomatedDeliverySuite
+        isOpen={activeModal === "delivery"}
+        onClose={() => setActiveModal(null)}
+        certId={lastIssuedCertId || 'PL-SBT-JOB-0xce1376c2272E-0xce13'}
+      />
     </Layout>
   );
 }

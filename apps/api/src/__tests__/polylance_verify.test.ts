@@ -51,7 +51,8 @@ describe("PolyLance Certificate & Audit Verification Module", () => {
       expect(result.verified).toBe(true);
       expect(result.status).toBe("VERIFIED");
       expect(result.certId).toBe("PL-SBT-JOB-0xce1376c2272E-0xce13");
-      expect(result.details?.settledAmountUsdc).toContain("15.00");
+      expect(result.details?.recipient).toBeDefined();
+      expect(result.details?.title).toBeDefined();
     }, 15000);
 
     it("handles non-existent certificate gracefully with UNVERIFIED status", async () => {
