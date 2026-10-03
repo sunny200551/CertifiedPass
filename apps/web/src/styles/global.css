@@ -205,7 +205,7 @@
 }
 
 .neo-input-glow:focus-within {
-  box-shadow: inset -4px -4px 10px var(--shadow-light), inset 4px 4px 10px var(--shadow-dark), 0 0 0 2px var(--brand-from), 0 0 16px rgba(99, 102, 241, 0.25);
+  box-shadow: inset -4px -4px 10px var(--shadow-light), inset 4px 4px 10px var(--shadow-dark), 0 0 0 2px var(--brand-from);
 }
 
 /* Neomorphic Buttons */
@@ -403,19 +403,27 @@
   }
 }
 
-@keyframes pulseGlow {
+@keyframes subtlePulse {
   0%, 100% {
     opacity: 1;
-    transform: scale(1);
   }
   50% {
-    opacity: 0.7;
-    transform: scale(1.06);
+    opacity: 0.75;
   }
 }
 
 .animate-pulse-glow {
-  animation: pulseGlow 2.5s ease-in-out infinite;
+  animation: subtlePulse 2.5s ease-in-out infinite;
+}
+
+/* Completely hide Header & Navbar when any popup or modal is open */
+body.has-active-modal header,
+body.has-active-modal nav.sticky-nav,
+body.has-active-modal [data-navbar="true"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 /* Mobile Shadow Adjustments */

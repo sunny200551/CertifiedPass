@@ -41,8 +41,22 @@ export const Navbar: React.FC = () => {
     return false;
   };
 
+  const [hasActiveModal, setHasActiveModal] = useState(false);
+
+  React.useEffect(() => {
+    const checkModal = () => {
+      setHasActiveModal(document.body.classList.contains("has-active-modal"));
+    };
+    checkModal();
+    const observer = new MutationObserver(checkModal);
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  if (hasActiveModal) return null;
+
   return (
-    <header className="sticky top-0 z-30 w-full pt-3 px-3 sm:px-6 lg:px-8 transition-all">
+    <header data-navbar="true" className="sticky top-0 z-30 w-full pt-3 px-3 sm:px-6 lg:px-8 transition-all">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 rounded-full neo-raised border-2 border-[var(--neo-outline)] bg-[var(--surface-bg)] transition-all">
         {/* Unified Logo & Brand Lockup */}
         <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group">

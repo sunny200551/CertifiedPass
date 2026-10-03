@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Palette, Sparkles, Plus, Trash2, Layers, Check, X, Shield, Hexagon, CreditCard, Award } from 'lucide-react';
 
 export interface CustomField {
@@ -37,6 +37,21 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
     { id: '2', name: 'AuditingEntity', type: 'string', required: true, value: 'CertifiedPass Protocol' },
     { id: '3', name: 'EVMChainSupport', type: 'string', required: false, value: 'Polygon PoS, Arbitrum, Base' }
   ]);
+
+  // Lock body scroll and trigger modal hiding for navbar
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('has-active-modal');
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('has-active-modal');
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.classList.remove('has-active-modal');
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -79,7 +94,7 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
   const glowOptions = [
     { id: 'low', label: 'Subtle (20%)' },
     { id: 'medium', label: 'Balanced (50%)' },
-    { id: 'high', label: 'Intense Prism (100%)' },
+    { id: 'high', label: 'Intense (100%)' },
   ] as const;
 
   const fieldTypes = ['string', 'number', 'date', 'boolean', 'url'] as const;
@@ -98,7 +113,7 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-md overflow-y-auto">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto w-screen h-screen">
       <div className="bg-[var(--surface-bg)] border-2 border-[var(--neo-outline)] rounded-[24px] w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden neo-raised text-[var(--text-primary)] my-auto animate-fadeIn">
         {/* Header */}
         <div className="p-6 border-b border-[var(--neo-outline)]/40 flex items-center justify-between bg-[var(--surface-bg)]">
@@ -196,7 +211,7 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
             {/* Prism Shader Glow Custom Options */}
             <div>
               <label className="block text-xs font-black uppercase tracking-wider text-[var(--text-primary)] mb-2 font-display">
-                Prism Shader Glow
+                Prism Shader Intensity
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {glowOptions.map((g) => {
@@ -272,52 +287,157 @@ export const BadgeSchemaDesigner: React.FC<BadgeSchemaDesignerProps> = ({
             </div>
           </div>
 
-          {/* Real-time 3D Card Preview (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 rounded-2xl neo-inset bg-[var(--surface-bg)] border border-[var(--neo-outline)] relative overflow-hidden">
+          {/* Real-time 3D Card Preview Canvas (5 cols) */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 rounded-2xl neo-inset bg-[var(--surface-bg)] border border-[var(--neo-outline)] relative overflow-hidden min-h-[380px]">
             <span className="text-[10px] uppercase font-bold text-pink-500 tracking-wider mb-4 flex items-center gap-1 font-display">
-              <Sparkles className="w-3 h-3" /> Live Holographic Canvas
+              <Sparkles className="w-3 h-3" /> Live Holographic Canvas ({badgeShape.toUpperCase()})
             </span>
 
-            {/* Preview Card */}
-            <div className={`w-64 h-80 rounded-2xl p-5 relative flex flex-col justify-between shadow-2xl border-2 transition-all duration-500 ${
-              badgeShape === 'hexagon' ? 'rounded-[2.5rem]' : badgeShape === 'shield' ? 'rounded-b-[3rem]' : 'rounded-2xl'
-            } bg-gradient-to-br from-slate-900 via-indigo-950 to-black border-slate-700`}>
-              {/* Foil Overlay */}
-              <div className={`absolute inset-0 rounded-2xl bg-gradient-to-tr ${foilGradients[foilStyle]} opacity-${
-                glowIntensity === 'high' ? '25' : glowIntensity === 'medium' ? '15' : '10'
-              } pointer-events-none`} />
+            {/* 1. Standard 3D Card Shape */}
+            {badgeShape === 'card' && (
+              <div className="w-64 h-80 rounded-2xl p-5 relative flex flex-col justify-between shadow-2xl border-2 transition-all duration-300 bg-gradient-to-br from-slate-900 via-indigo-950 to-black border-slate-700">
+                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-tr ${foilGradients[foilStyle]} opacity-${
+                  glowIntensity === 'high' ? '25' : glowIntensity === 'medium' ? '15' : '10'
+                } pointer-events-none`} />
 
-              {/* Holographic Watermark Badge */}
-              <div className="flex justify-between items-start z-10">
-                <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-md flex items-center justify-center text-xs font-black text-white border border-white/20">
-                  CP
+                <div className="flex justify-between items-start z-10">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-md flex items-center justify-center text-xs font-black text-white border border-white/20">
+                    CP
+                  </div>
+                  <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-white backdrop-blur-md border border-white/20">
+                    ERC-5192 SBT
+                  </span>
                 </div>
-                <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-white backdrop-blur-md border border-white/20">
-                  ERC-5192 SBT
-                </span>
-              </div>
 
-              {/* Title & Issuer Info */}
-              <div className="z-10 my-auto">
-                <h4 className="text-sm font-bold text-white line-clamp-2 leading-tight">{schemaName}</h4>
-                <p className="text-[10px] text-slate-300 mt-1 font-medium">Verified Sovereign Credential</p>
+                <div className="z-10 my-auto">
+                  <h4 className="text-sm font-bold text-white line-clamp-2 leading-tight">{schemaName}</h4>
+                  <p className="text-[10px] text-slate-300 mt-1 font-medium">Verified Sovereign Credential</p>
 
-                <div className="mt-4 pt-3 border-t border-white/10 space-y-1">
-                  {customFields.slice(0, 2).map(f => (
-                    <div key={f.id} className="flex justify-between text-[10px]">
-                      <span className="text-slate-300">{f.name}:</span>
-                      <span className="text-white font-mono">{f.value || 'Dynamic'}</span>
-                    </div>
-                  ))}
+                  <div className="mt-4 pt-3 border-t border-white/10 space-y-1">
+                    {customFields.slice(0, 2).map(f => (
+                      <div key={f.id} className="flex justify-between text-[10px]">
+                        <span className="text-slate-300">{f.name}:</span>
+                        <span className="text-white font-mono">{f.value || 'Dynamic'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="z-10 flex justify-between items-center text-[9px] text-slate-300 font-mono">
+                  <span>POLYGON PoS</span>
+                  <span className="text-emerald-400 font-bold">AUTHENTIC</span>
                 </div>
               </div>
+            )}
 
-              {/* Bottom Chip */}
-              <div className="z-10 flex justify-between items-center text-[9px] text-slate-300 font-mono">
-                <span>POLYGON PoS</span>
-                <span className="text-emerald-400 font-bold">AUTHENTIC</span>
+            {/* 2. EVM Hexagon Shape */}
+            {badgeShape === 'hexagon' && (
+              <div
+                style={{
+                  clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                }}
+                className="w-68 h-80 px-6 py-8 relative flex flex-col justify-between shadow-2xl transition-all duration-300 bg-gradient-to-br from-slate-900 via-indigo-950 to-black text-center border-2 border-indigo-500/60"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-tr ${foilGradients[foilStyle]} opacity-${
+                  glowIntensity === 'high' ? '25' : glowIntensity === 'medium' ? '15' : '10'
+                } pointer-events-none`} />
+
+                <div className="flex justify-center items-center z-10 gap-2">
+                  <span className="text-[9px] font-mono px-2.5 py-0.5 rounded-full bg-white/10 text-white backdrop-blur-md border border-white/20">
+                    EVM HEXAGON • ERC-5192
+                  </span>
+                </div>
+
+                <div className="z-10 my-auto px-2">
+                  <div className="w-8 h-8 rounded-full bg-pink-500/20 text-pink-300 mx-auto flex items-center justify-center font-black text-xs mb-1 border border-pink-400/30">
+                    CP
+                  </div>
+                  <h4 className="text-xs font-bold text-white line-clamp-2 leading-tight">{schemaName}</h4>
+                  <p className="text-[9px] text-slate-300 mt-0.5">Sovereign Polygon Proof</p>
+
+                  <div className="mt-2 pt-2 border-t border-white/10 space-y-0.5 text-left">
+                    {customFields.slice(0, 2).map(f => (
+                      <div key={f.id} className="flex justify-between text-[9px]">
+                        <span className="text-slate-300">{f.name}:</span>
+                        <span className="text-white font-mono">{f.value || 'Dynamic'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="z-10 flex justify-center items-center text-[9px] text-emerald-400 font-mono font-bold">
+                  <span>HEX-PROOF ANCHORED</span>
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* 3. Verifiable Shield Shape */}
+            {badgeShape === 'shield' && (
+              <div
+                style={{
+                  clipPath: 'polygon(0% 0%, 100% 0%, 100% 70%, 50% 100%, 0% 70%)',
+                }}
+                className="w-64 h-84 pt-6 pb-9 px-5 relative flex flex-col justify-between shadow-2xl transition-all duration-300 bg-gradient-to-br from-slate-900 via-indigo-950 to-black text-center"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-tr ${foilGradients[foilStyle]} opacity-${
+                  glowIntensity === 'high' ? '25' : glowIntensity === 'medium' ? '15' : '10'
+                } pointer-events-none`} />
+
+                <div className="flex justify-between items-center z-10">
+                  <div className="w-7 h-7 rounded-md bg-white/10 backdrop-blur-md flex items-center justify-center text-[10px] font-black text-white border border-white/20">
+                    CP
+                  </div>
+                  <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-white backdrop-blur-md border border-white/20">
+                    SHIELD PROOF
+                  </span>
+                </div>
+
+                <div className="z-10 my-auto px-1">
+                  <h4 className="text-xs font-bold text-white line-clamp-2 leading-tight">{schemaName}</h4>
+                  <p className="text-[9px] text-slate-300 mt-1">Cryptographic Verifiable Shield</p>
+
+                  <div className="mt-3 pt-2 border-t border-white/10 space-y-1 text-left">
+                    {customFields.slice(0, 2).map(f => (
+                      <div key={f.id} className="flex justify-between text-[9px]">
+                        <span className="text-slate-300">{f.name}:</span>
+                        <span className="text-white font-mono">{f.value || 'Dynamic'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="z-10 flex justify-center items-center text-[9px] text-emerald-400 font-mono font-bold">
+                  <span>POLYGON VERIFIED SHIELD</span>
+                </div>
+              </div>
+            )}
+
+            {/* 4. Crypto Seal Shape */}
+            {badgeShape === 'seal' && (
+              <div className="w-72 h-72 rounded-full p-6 relative flex flex-col items-center justify-between shadow-2xl border-4 border-dashed border-pink-400/50 transition-all duration-300 bg-gradient-to-br from-slate-900 via-indigo-950 to-black text-center">
+                <div className={`absolute inset-0 rounded-full bg-gradient-to-tr ${foilGradients[foilStyle]} opacity-${
+                  glowIntensity === 'high' ? '25' : glowIntensity === 'medium' ? '15' : '10'
+                } pointer-events-none`} />
+
+                <div className="z-10 mt-1">
+                  <span className="text-[8px] font-mono px-2.5 py-0.5 rounded-full bg-white/10 text-white border border-white/20 uppercase tracking-widest">
+                    ★ CRYPTO SEAL ★
+                  </span>
+                </div>
+
+                <div className="z-10 my-auto px-3">
+                  <div className="w-8 h-8 rounded-full bg-white/10 mx-auto flex items-center justify-center font-black text-xs text-white mb-1 border border-white/20">
+                    CP
+                  </div>
+                  <h4 className="text-xs font-bold text-white line-clamp-2 leading-tight">{schemaName}</h4>
+                  <p className="text-[9px] text-slate-300 mt-0.5">Official Protocol Seal</p>
+                </div>
+
+                <div className="z-10 mb-1 flex items-center gap-1 text-[9px] text-emerald-400 font-mono font-bold">
+                  <span>POLYGON PoS SEALED</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

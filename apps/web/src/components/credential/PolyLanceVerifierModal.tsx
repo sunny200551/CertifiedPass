@@ -96,16 +96,25 @@ export const PolyLanceVerifierModal: React.FC<PolyLanceVerifierModalProps> = ({
     handleVerify(parsedId);
   };
 
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('has-active-modal');
+      return () => {
+        document.body.classList.remove('has-active-modal');
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/60 backdrop-blur-md transition-all">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/60 backdrop-blur-md transition-all">
       <div className="relative w-full max-w-2xl rounded-[24px] neo-floating bg-[var(--surface-bg)] text-[var(--text-primary)] transition-all overflow-hidden my-6">
         {/* Header Bar */}
         <div className="flex items-center justify-between border-b border-[var(--shadow-dark)]/15 px-6 py-4 bg-[var(--surface-bg)]">
           <div className="flex items-center gap-2.5">
             <div className="neo-raised-sm flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent-purple-bg)] text-[var(--accent-purple)] font-bold">
-              <Sparkles className="h-5 w-5 animate-pulse-glow" />
+              <Sparkles className="h-5 w-5" />
             </div>
             <div>
               <h3 className="text-base font-bold text-[var(--text-primary)] font-display flex items-center gap-1.5">

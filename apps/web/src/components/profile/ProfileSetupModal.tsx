@@ -28,12 +28,18 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isOpen && user) {
-      setDisplayName(user.displayName || "");
-      setUsername(user.username || "");
-      setBio(user.bio || "");
-      setError(null);
-      setSavedSuccess(false);
+    if (isOpen) {
+      document.body.classList.add('has-active-modal');
+      if (user) {
+        setDisplayName(user.displayName || "");
+        setUsername(user.username || "");
+        setBio(user.bio || "");
+        setError(null);
+        setSavedSuccess(false);
+      }
+      return () => {
+        document.body.classList.remove('has-active-modal');
+      };
     }
   }, [isOpen, user]);
 
@@ -81,7 +87,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md transition-all">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-md transition-all">
       <div
         className="relative w-full max-w-lg rounded-[24px] neo-floating bg-[var(--surface-bg)] p-7 text-[var(--text-primary)] transition-all"
         onClick={(e) => e.stopPropagation()}

@@ -62,6 +62,15 @@ export const VerificationReportModal: React.FC<VerificationReportModalProps> = (
   const [copiedKey, setCopiedKey] = React.useState<string | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
 
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('has-active-modal');
+      return () => {
+        document.body.classList.remove('has-active-modal');
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const isVerified = status === "VERIFIED" || status === "VALID";
@@ -80,7 +89,7 @@ export const VerificationReportModal: React.FC<VerificationReportModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/60 backdrop-blur-md transition-all">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/60 backdrop-blur-md transition-all">
       <div className="relative w-full max-w-3xl rounded-[24px] neo-floating bg-[var(--surface-bg)] text-[var(--text-primary)] transition-all overflow-hidden my-6">
         {/* Header Bar */}
         <div className="flex items-center justify-between border-b border-[var(--shadow-dark)]/15 px-6 py-4 bg-[var(--surface-bg)] print:hidden">

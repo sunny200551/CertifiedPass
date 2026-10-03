@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Copy, Check, Code, X, Sparkles, ExternalLink } from "lucide-react";
 import { Button } from "../ui/Button.js";
 import { getAppBaseUrl } from "../../lib/urls.js";
@@ -19,6 +19,15 @@ export const ProfileBadgeEmbedModal: React.FC<ProfileBadgeEmbedModalProps> = ({
   const [activeTab, setActiveTab] = useState<"markdown" | "html">("markdown");
   const [copied, setCopied] = useState(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('has-active-modal');
+      return () => {
+        document.body.classList.remove('has-active-modal');
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const profileUrl = `${getAppBaseUrl()}/u/${encodeURIComponent(username)}`;
@@ -38,7 +47,7 @@ export const ProfileBadgeEmbedModal: React.FC<ProfileBadgeEmbedModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md transition-all">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-md transition-all">
       {/* Modal Card */}
       <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-[24px] neo-floating bg-[var(--surface-bg)] p-7 text-[var(--text-primary)]">
         <div className="flex items-center justify-between border-b border-[var(--shadow-dark)]/15 pb-4">

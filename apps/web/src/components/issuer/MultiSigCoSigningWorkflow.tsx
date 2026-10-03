@@ -29,6 +29,19 @@ export const MultiSigCoSigningWorkflow: React.FC<MultiSigCoSigningWorkflowProps>
   const [newSignerName, setNewSignerName] = useState('');
   const [newSignerAddr, setNewSignerAddr] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('has-active-modal');
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('has-active-modal');
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.classList.remove('has-active-modal');
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -64,7 +77,7 @@ export const MultiSigCoSigningWorkflow: React.FC<MultiSigCoSigningWorkflowProps>
   const isThresholdMet = signedCount >= threshold;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-md overflow-y-auto">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto w-screen h-screen">
       <div className="bg-[var(--surface-bg)] border-2 border-[var(--neo-outline)] rounded-[24px] w-full max-w-3xl flex flex-col shadow-2xl overflow-hidden neo-raised text-[var(--text-primary)] my-auto animate-fadeIn">
         {/* Header */}
         <div className="p-6 border-b border-[var(--neo-outline)]/40 flex items-center justify-between bg-[var(--surface-bg)]">

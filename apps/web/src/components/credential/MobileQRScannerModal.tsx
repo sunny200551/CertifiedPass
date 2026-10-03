@@ -169,6 +169,8 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
       return;
     }
 
+    document.body.classList.add('has-active-modal');
+
     startCamera(cameraFacing);
 
     let animationFrameId: number;
@@ -252,6 +254,7 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
     }, 300);
 
     return () => {
+      document.body.classList.remove('has-active-modal');
       clearTimeout(timer);
       cancelAnimationFrame(animationFrameId);
       stopCamera();
@@ -315,7 +318,7 @@ export const MobileQRScannerModal: React.FC<MobileQRScannerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative w-full max-w-md rounded-3xl border border-slate-700 bg-slate-900 shadow-2xl overflow-hidden text-white my-auto flex flex-col">
         {/* Top Header */}
         <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900/90">

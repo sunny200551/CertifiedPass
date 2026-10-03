@@ -22,15 +22,29 @@ export const ActionFeedbackModal: React.FC<ActionFeedbackModalProps> = ({
   modalState,
   onClose,
 }) => {
+  React.useEffect(() => {
+    if (modalState.isOpen) {
+      document.body.classList.add("has-active-modal");
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.classList.remove("has-active-modal");
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.classList.remove("has-active-modal");
+      document.body.style.overflow = "";
+    };
+  }, [modalState.isOpen]);
+
   if (!modalState.isOpen) return null;
 
   const type = modalState.type || "success";
 
   const icons = {
-    success: <CheckCircle2 className="h-8 w-8 text-emerald-600 animate-pulse-glow" />,
-    warning: <AlertTriangle className="h-8 w-8 text-amber-500 animate-pulse-glow" />,
-    info: <Info className="h-8 w-8 text-indigo-500 animate-pulse-glow" />,
-    error: <AlertTriangle className="h-8 w-8 text-rose-500 animate-pulse-glow" />,
+    success: <CheckCircle2 className="h-8 w-8 text-emerald-600" />,
+    warning: <AlertTriangle className="h-8 w-8 text-amber-500" />,
+    info: <Info className="h-8 w-8 text-indigo-500" />,
+    error: <AlertTriangle className="h-8 w-8 text-rose-500" />,
   };
 
   const badgeBg = {
@@ -41,7 +55,7 @@ export const ActionFeedbackModal: React.FC<ActionFeedbackModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn w-screen h-screen">
       <div className="relative w-full max-w-md rounded-3xl bg-[var(--surface-bg)] neo-raised-lg border-2 border-[var(--neo-outline)] p-6 sm:p-8 space-y-5 text-center text-[var(--text-primary)] shadow-2xl">
         {/* Close Button */}
         <button

@@ -20,6 +20,15 @@ export const CredentialQRModal: React.FC<QRModalProps> = ({
 }) => {
   const [copied, setCopied] = React.useState(false);
 
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('has-active-modal');
+      return () => {
+        document.body.classList.remove('has-active-modal');
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const verifyUrl = getCertificateUrl(credentialId);
@@ -31,7 +40,7 @@ export const CredentialQRModal: React.FC<QRModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-md transition-all">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 p-4 backdrop-blur-md transition-all">
       <motion.div
         initial={{ opacity: 0, scale: 0.92, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
