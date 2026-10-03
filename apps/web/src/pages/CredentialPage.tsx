@@ -114,7 +114,7 @@ export default function CredentialPage() {
                 ? `Escrow Client (${shortClient})`
                 : isAudit
                 ? "PolyLance Protocol Oracle"
-                : rawClient || "Steve Client";
+                : rawClient || "PolyLance Escrow Client";
 
             const formattedSettledAmount = formatUsdc(
               details?.settledAmountUsdc || details?.lifetimeVolumeUsdc || details?.settledAmount || details?.amount
