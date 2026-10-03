@@ -141,7 +141,7 @@ export const AutomatedDeliverySuite: React.FC<AutomatedDeliverySuiteProps> = ({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             username: "CertifiedPass Oracle",
-            avatar_url: "https://certifiedpass.io/CP_logo.png",
+            avatar_url: "https://certifiedpass.polylance.codes/CP_logo.png",
             embeds: [{
               title: `🏆 New Credential Issued: ${credentialTitle}`,
               description: `A new verifiable credential has been anchored on Polygon PoS for **${recipientName}**.`,

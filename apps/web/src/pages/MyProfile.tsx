@@ -77,11 +77,11 @@ export default function MyProfile() {
 
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-2 font-display">
-              Public Username / Handle (for certifiedpass.io/u/:username)
+              Public Username / Handle (for certifiedpass.polylance.codes/u/:username)
             </label>
             <div className="flex rounded-2xl neo-inset bg-[var(--surface-bg)] overflow-hidden">
               <span className="inline-flex items-center px-4 text-sm text-[var(--text-secondary)] font-mono border-r border-[var(--shadow-dark)]/15">
-                certifiedpass.io/u/
+                certifiedpass.polylance.codes/u/
               </span>
               <input
                 type="text"

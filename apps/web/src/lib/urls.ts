@@ -5,11 +5,15 @@
 
 export function getAppBaseUrl(): string {
   if (typeof window === "undefined") {
-    return "https://sunny200551.github.io/CertifiedPass";
+    return "https://certifiedpass.polylance.codes";
   }
   const base = import.meta.env.BASE_URL || "/";
   const cleanBase = base.endsWith("/") ? base.slice(0, -1) : base;
   return `${window.location.origin}${cleanBase}`;
+}
+
+export function getPolyLanceBaseUrl(): string {
+  return "https://polylance.codes";
 }
 
 export function getCertificateUrl(credentialId: string): string {

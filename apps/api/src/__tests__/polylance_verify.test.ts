@@ -5,17 +5,17 @@ import { PolyLanceVerificationService } from "../services/PolyLanceVerificationS
 describe("PolyLance Certificate & Audit Verification Module", () => {
   describe("Intelligent QR & URL Parser", () => {
     it("extracts certId from full PolyLance attestation URL", () => {
-      const url = "https://polylance.app/#/jobs/101/attestation?certId=PL-SBT-JOB-101-0x42F8";
+      const url = "https://polylance.codes/#/jobs/101/attestation?certId=PL-SBT-JOB-101-0x42F8";
       expect(parseCertificateId(url)).toBe("PL-SBT-JOB-101-0x42F8");
     });
 
     it("extracts certId from full PolyLance audit URL", () => {
-      const url = "https://polylance.app/#/audit/0x1234?certId=PL-AUD-0x1234";
+      const url = "https://polylance.codes/#/audit/0x1234?certId=PL-AUD-0x1234";
       expect(parseCertificateId(url)).toBe("PL-AUD-0x1234");
     });
 
     it("extracts certId from query parameter in standard URL", () => {
-      const url = "https://certifiedpass.app/verify?certId=PL-SBT-JOB-0xeeacc05a99a2-0xeeac";
+      const url = "https://certifiedpass.polylance.codes/verify?certId=PL-SBT-JOB-0xeeacc05a99a2-0xeeac";
       expect(parseCertificateId(url)).toBe("PL-SBT-JOB-0xeeacc05a99a2-0xeeac");
     });
 
@@ -45,7 +45,7 @@ describe("PolyLance Certificate & Audit Verification Module", () => {
 
     it("verifies when passed via full attestation URL", async () => {
       const fullUrl =
-        "https://polylance.app/#/jobs/0xce1376c2272E/attestation?certId=PL-SBT-JOB-0xce1376c2272E-0xce13";
+        "https://polylance.codes/#/jobs/0xce1376c2272E/attestation?certId=PL-SBT-JOB-0xce1376c2272E-0xce13";
       const result = await PolyLanceVerificationService.verifyCertificate(fullUrl);
 
       expect(result.verified).toBe(true);

@@ -107,7 +107,7 @@ export async function verifyPolyLanceCredential(inputString: string): Promise<Ve
           network: 'Polygon PoS (137)',
           completedAt: rec.completedAt,
         },
-        polyLanceUrl: `https://polylance.app/#/jobs/${rec.jobId}/attestation`,
+        polyLanceUrl: `https://polylance.codes/#/jobs/${rec.jobId}/attestation`,
       };
     }
 
@@ -160,7 +160,7 @@ export async function verifyPolyLanceCredential(inputString: string): Promise<Ve
           ipfsCid: rec.ipfsCid,
           network: 'Polygon PoS (137)',
         },
-        polyLanceUrl: `https://polylance.app/#/audit/${rec.targetAddress}`,
+        polyLanceUrl: `https://polylance.codes/#/audit/${rec.targetAddress}`,
       };
     }
 
@@ -175,7 +175,7 @@ export async function verifyPolyLanceCredential(inputString: string): Promise<Ve
           type: data.type || 'SOULBOUND_MILESTONE_ATTESTATION',
           title: data.certificate?.title || 'Verified PolyLance Credential',
           details: data.certificate || {},
-          polyLanceUrl: data.polyLanceUrl || `https://polylance.app/#/jobs/${data.certificate?.jobId || 1}/attestation`,
+          polyLanceUrl: data.polyLanceUrl || `https://polylance.codes/#/jobs/${data.certificate?.jobId || 1}/attestation`,
         };
       }
     }
@@ -186,7 +186,7 @@ export async function verifyPolyLanceCredential(inputString: string): Promise<Ve
       type: 'UNKNOWN',
       title: 'Record Not Found',
       details: { searchedIdentifier: key },
-      polyLanceUrl: 'https://polylance.app',
+      polyLanceUrl: 'https://polylance.codes',
     };
   } catch (err: any) {
     console.error('Verification error:', err);
@@ -196,7 +196,7 @@ export async function verifyPolyLanceCredential(inputString: string): Promise<Ve
       type: 'UNKNOWN',
       title: 'Verification Error',
       details: { error: err.message },
-      polyLanceUrl: 'https://polylance.app',
+      polyLanceUrl: 'https://polylance.codes',
     };
   }
 }
